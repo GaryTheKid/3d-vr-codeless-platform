@@ -27,23 +27,26 @@ import { emit } from './js/core/events.js';
 // 切语言不丢场景:先把当前场景寄存到 localStorage,刷新后自动还原。
 // 场景里的用户内容(对象名/面板文字)保持原语言;系统 UI / 之后新生成的内容用新语言
 const LANG_STASH_KEY = 'xr-lang-stash';
-document.getElementById('btn-lang').addEventListener('click', () => {
-  try {
-    const name = document.getElementById('scene-tab-name').textContent.trim();
-    localStorage.setItem(LANG_STASH_KEY, JSON.stringify(serializeScene(name)));
-  } catch (e) {
-    console.warn('[lang] 场景寄存失败(可能超出 localStorage 限额),切换后将回到默认场景', e);
-    localStorage.removeItem(LANG_STASH_KEY);
-    if (!confirm(L('场景太大,切换语言后无法自动恢复当前场景(建议先保存到项目)。仍要切换吗?',
-      'The scene is too large to restore automatically after switching (save it as a project first). Switch anyway?'))) return;
-  }
-  setLang(lang === 'en' ? 'zh' : 'en');
-});
-document.getElementById('btn-download').addEventListener('click', exportScene);
-document.getElementById('btn-share').addEventListener('click', () => toast(L(
-  '🔗 分享链接已复制,学生可在浏览器/头显中打开(演示)',
-  '🔗 Share link copied — students can open it in a browser or headset (demo)')));
-document.getElementById('scene-tab-name').textContent = L('我的第一节VR课', 'My First VR Lesson');
+function bindTopbar() {
+  document.getElementById('btn-lang').addEventListener('click', () => {
+    try {
+      const name = document.getElementById('scene-tab-name').textContent.trim();
+      localStorage.setItem(LANG_STASH_KEY, JSON.stringify(serializeScene(name)));
+    } catch (e) {
+      console.warn('[lang] 场景寄存失败(可能超出 localStorage 限额),切换后将回到默认场景', e);
+      localStorage.removeItem(LANG_STASH_KEY);
+      if (!confirm(L('场景太大,切换语言后无法自动恢复当前场景(建议先保存到项目)。仍要切换吗?',
+        'The scene is too large to restore automatically after switching (save it as a project first). Switch anyway?'))) return;
+    }
+    setLang(lang === 'en' ? 'zh' : 'en');
+  });
+  document.getElementById('btn-download').addEventListener('click', exportScene);
+  document.getElementById('btn-share').addEventListener('click', () => toast(L(
+    '🔗 分享链接已复制,学生可在浏览器/头显中打开(演示)',
+    '🔗 Share link copied — students can open it in a browser or headset (demo)')));
+  document.getElementById('scene-tab-name').textContent = L('我的第一节VR课', 'My First VR Lesson');
+}
+bindTopbar();
 
 // 渲染循环 + WebXR
 startLoop();

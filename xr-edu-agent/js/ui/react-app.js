@@ -3,6 +3,7 @@
 // React 负责声明页面结构，react-main.js 在首次 commit 后再加载 legacy runtime。
 import React from 'react';
 import htm from 'htm';
+import { waitForDom, BOOTSTRAP_IDS } from '../core/dom-ready.js';
 
 const html = htm.bind(React.createElement);
 
@@ -13,7 +14,7 @@ function TopBar() {
         <div className="logo"><span className="logo-mark">◈</span> XR <b>EduAgent</b></div>
         <div className="scene-tab active">
           <span className="tab-icon">🌌</span>
-          <span id="scene-tab-name">我的第一节VR课</span>.xrscene
+          <span id="scene-tab-name">我的第一节VR课</span><span className="tab-suffix">.xrscene</span>
           <span className="tab-dot"></span>
         </div>
       </div>
@@ -225,12 +226,16 @@ export function App() {
 
   React.useEffect(() => {
     let mounted = true;
-    // useEffect 只在 React commit 完成后运行；此时旧 controller 所需的 DOM id
-    // 已全部存在。下一阶段逐步把 controller 状态迁入 React，而不是一次重写 3D 内核。
-    import('../../main.js').catch(error => {
-      console.error('[bootstrap] XR EduAgent runtime failed:', error);
-      if (mounted) setStartupError(error);
-    });
+    (async () => {
+      try {
+        // 再等一帧 + 轮询 id，避免 GitHub Pages / 慢 CDN 下 React commit 与 legacy import 竞态
+        await waitForDom(BOOTSTRAP_IDS);
+        await import('../../main.js');
+      } catch (error) {
+        console.error('[bootstrap] XR EduAgent runtime failed:', error);
+        if (mounted) setStartupError(error);
+      }
+    })();
     return () => { mounted = false; };
   }, []);
 

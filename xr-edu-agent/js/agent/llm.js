@@ -47,12 +47,14 @@ export const BUDGETS = [
 const keys = {};          // { ANTHROPIC_API_KEY: '...' }
 let keysLoaded = false;
 const LS_KEY = 'xr-anthropic-key';
+// 相对模块路径,不依赖 index.html 在仓库哪一层
+const API_KEYS_URL = new URL('../../api-keys.txt', import.meta.url);
 
 export async function loadApiKeys() {
   if (keysLoaded) return keys;
   keysLoaded = true;
   try {
-    const res = await fetch('./api-keys.txt', { cache: 'no-store' });
+    const res = await fetch(API_KEYS_URL, { cache: 'no-store' });
     if (res.ok) {
       const text = await res.text();
       text.split(/\r?\n/).forEach(line => {

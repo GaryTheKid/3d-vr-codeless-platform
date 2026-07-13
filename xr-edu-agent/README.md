@@ -5,15 +5,17 @@
 ## 快速开始
 
 ```bash
-# 推荐:自带结构化日志落盘(logs/*.jsonl,一次会话一个文件,排查 AI 行为用)
+# 推荐:在仓库根目录运行(与 GitHub Pages 同结构,入口为 /index.html)
 python server.py
+
+# 旧路径 xr-edu-agent/server.py 已弃用;请用根目录 server.py
 
 # 也可以用任意静态服务器(此时日志降级为浏览器内存缓冲,控制台 __xrExportLog() 可导出)
 npx serve .
 python -m http.server 8000
 ```
 
-浏览器打开 `http://localhost:8000` 即可。**必须通过 http 访问**(ES 模块 + WebXR 的要求),直接双击 index.html 打不开。
+浏览器打开 `http://localhost:8000/` 即可(根目录 `index.html`)。**必须通过 http 访问**(ES 模块 + WebXR 的要求),直接双击 index.html 打不开。
 
 **接入真实 AI(可选):** 在 `api-keys.txt` 里填入 Claude API Key,刷新页面。不填也能跑——内置关键词规则会模拟 Agent 生成所有示例场景。
 
@@ -48,20 +50,20 @@ python -m http.server 8000
 ## 项目结构(细节见 AGENTS.md)
 
 ```
-index.html / style.css      界面骨架与样式
-main.js                     入口装配
-js/core/                    Three.js 场景、状态、事件总线、渲染循环
-js/assets/                  资源构建器 + AssetSkill 注册表(Agent 友好格式)
-js/panels/                  3D 教学面板系统
-js/labs/                    化学实验 / 英语对话 / 预置场景模板
-js/scene/                   场景对象管理(增删/选中/查找)
-js/ui/                      项目 / 资源库 / 层级+NL Inspector / 视口 / 聊天
-js/agent/                   LLM 客户端 / 场景上下文 / 编排器 + skills/ 技能库 + tools/ 工具库
-js/agent/agent-viewer.html  智能体可视化(工作流图/技能库/工具库三页,纯本地双击即开;规约见 js/agent/README.md)
-js/core/i18n.js             中英双语(t 字典 + L 内联双语 + data-i18n)
-js/core/projects.js         项目库(localStorage)+ 场景序列化/还原 + HTML 导入校验
-api-keys.txt                本地密钥(勿提交)
-TODO.md                     未来路线图
+index.html                  GitHub Pages / 本地开发入口(仓库根,加载 xr-edu-agent/ 下资源)
+server.py                   本地开发服务器(仓库根)
+xr-edu-agent/
+  main.js                   应用入口装配
+  style.css                 界面骨架与样式
+  js/core/                  Three.js 场景、状态、事件总线、渲染循环
+  js/assets/                资源构建器 + AssetSkill 注册表
+  js/panels/                3D 教学面板系统
+  js/labs/                  化学实验 / 英语对话 / 预置场景模板
+  js/scene/                 场景对象管理
+  js/ui/                    项目 / 资源库 / 层级 / 视口 / 聊天
+  js/agent/                 LLM / 编排器 + skills/ + tools/
+  api-keys.txt              本地密钥(勿提交)
+  TODO.md / AGENTS.md
 ```
 
 ## 保存 / 下载 / 导入
@@ -72,7 +74,7 @@ TODO.md                     未来路线图
 
 ## 部署给客户试玩
 
-见 [DEPLOY.md](DEPLOY.md):推送到 GitHub 并开启 **GitHub Pages** 即可(无需打包成单文件)。公网环境下顶栏 **🔑 API** 可让每位老师在本机浏览器填入自己的 Claude Key。
+见仓库根目录 [DEPLOY.md](../DEPLOY.md):根目录 `index.html` + GitHub Pages **root** 即可。
 
 ## 当前边界
 

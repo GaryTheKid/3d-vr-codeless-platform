@@ -1,0 +1,7 @@
+# 密钥与运行时产物(仓库根 + xr-edu-agent 子目录)
+api-keys.txt
+xr-edu-agent/api-keys.txt
+logs/
+download/
+xr-edu-agent/logs/
+xr-edu-agent/download/

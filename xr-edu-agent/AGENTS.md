@@ -6,7 +6,7 @@
 
 XR EduAgent:纯前端(无构建步骤)的 VR 教学场景创作平台。老师用自然语言指挥内置 Agent 在 Three.js/WebXR 场景里搭建交互式课程。技术栈:原生 ES Modules + Three.js 0.160(importmap CDN)+ Anthropic Messages API(浏览器直连)。
 
-运行:`python server.py`(静态伺服 + `/__log` 结构化日志端点,logs/*.jsonl 一次会话一份;`/__export` 导出端点写 download/);也可用任意静态服务器(日志降级为内存缓冲、导出降级为浏览器下载)。无 npm 依赖、无打包。
+运行:`python server.py`(在**仓库根目录**运行,静态伺服 + `/__log` 结构化日志端点,logs/*.jsonl 一次会话一份;`/__export` 导出端点写 download/);入口为根目录 `index.html`。也可用任意静态服务器(日志降级为内存缓冲、导出降级为浏览器下载)。无 npm 依赖、无打包。
 
 ## 架构总览
 

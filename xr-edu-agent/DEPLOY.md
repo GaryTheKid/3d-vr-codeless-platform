@@ -16,25 +16,22 @@
 ### 1. 创建 GitHub 仓库并推送
 
 ```bash
-cd xr-edu-agent
-git init
+# 在仓库根目录(Demo/,含 index.html 的那一层)
 git add .
 git commit -m "Initial prototype for client play-testing"
-git branch -M main
-git remote add origin https://github.com/YOUR_ORG/xr-edu-agent.git
-git push -u origin main
+git push origin main
 ```
 
-**切勿提交** `api-keys.txt`(已在 `.gitignore`)。`logs/`、`download/` 也不会进仓库。
+**切勿提交** `xr-edu-agent/api-keys.txt`(已在根 `.gitignore`)。
 
 ### 2. 开启 GitHub Pages
 
 1. 仓库 → **Settings** → **Pages**
 2. **Source**: Deploy from a branch
 3. **Branch**: `main` / **Folder**: `/ (root)`
-4. 保存后等待 1–2 分钟,访问:`https://YOUR_ORG.github.io/xr-edu-agent/`
+4. 保存后访问:`https://YOUR_ORG.github.io/YOUR_REPO/`(根目录 `index.html` 即首页)
 
-根目录已有 `index.html`,Pages 会自动把它当首页。`.nojekyll` 已添加,避免 Jekyll 处理干扰。
+根目录已有 `index.html` 与 `.nojekyll`。应用代码在 `xr-edu-agent/` 子目录,**不必**全部搬到根目录。
 
 ### 3. 给客户的使用说明
 

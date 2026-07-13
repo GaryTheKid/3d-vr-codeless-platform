@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-en="Workflow — Agent Map · XR EduAgent">工作流 — Agent Map · XR EduAgent</title>
+<link rel="stylesheet" href="agent-viewer.css">
+</head>
+<body>
+
+<header>
+  <h1>🧭 Agent Map</h1>
+  <span class="sub" data-en="Agent workflow directed graph · data source agent-map.js">智能体工作流有向图 · 数据源 agent-map.js</span>
+  <nav class="tabs">
+    <a class="tab active" href="agent-viewer.html" data-en="🔀 Workflow">🔀 工作流</a>
+    <a class="tab" href="agent-viewer-skills.html" data-en="🧠 Skills">🧠 技能库</a>
+    <a class="tab" href="agent-viewer-tools.html" data-en="🔧 Tools">🔧 工具库</a>
+    <button class="tab" id="btn-viewer-lang">EN</button>
+  </nav>
+</header>
+
+<main>
+  <div id="graph-wrap">
+    <svg id="graph-svg"></svg>
+    <div class="legend" id="legend"></div>
+    <div class="hint" data-en="🖱 Left-drag to pan · click a node for details">🖱 左键拖拽平移视图 · 点击节点看详情</div>
+  </div>
+  <aside id="detail"><div class="placeholder" id="detail-ph"></div></aside>
+</main>
+
+<script src="agent-map.js"></script>
+<script src="agent-viewer-common.js"></script>
+<script>
+const GROUP_COLOR = {
+  input: '#7fc4ff', orchestrate: '#f0a848', offline: '#9aa3af', context: '#a878f0',
+  llm: '#4a9eff', ui: '#e5748b', tools: '#3fb96f', output: '#48c8b0',
+};
+const GROUP_NAME = isEN
+  ? { input: 'Input', orchestrate: 'Orchestration', offline: 'Offline fallback', context: 'Context',
+      llm: 'LLM call', ui: 'Human confirm', tools: 'Tool execution', output: 'Output & wrap-up' }
+  : { input: '输入', orchestrate: '编排', offline: '离线回退', context: '上下文',
+      llm: 'LLM 调用', ui: '人机确认', tools: '工具执行', output: '输出与收尾' };
+
+document.getElementById('detail-ph').innerHTML = VL('点击左侧节点<br>查看这一步的详细说明', 'Click a node on the left<br>to see what this step does');
+
+const MAP = globalThis.XR_AGENT_MAP;
+const wrap = document.getElementById('graph-wrap');
+if (!MAP) {
+  wrap.innerHTML = `<div class="err">${VL('⚠ 未加载到 agent-map.js(应与本页面同目录)。', '⚠ Failed to load agent-map.js (should sit next to this page).')}</div>`;
+} else {
+  const nodes = MAP.workflow.nodes;
+  const edges = MAP.workflow.edges;
+  const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+
+  // ── 布局:col 由数据指定,同列按出现顺序纵向排布 ──
+  const NW = 172, NH = 64, GX = 92, GY = 46, PAD = 46;
+  const cols = {};
+  nodes.forEach(n => { (cols[n.col] ??= []).push(n); });
+  const maxRows = Math.max(...Object.values(cols).map(c => c.length));
+  const totalH = Math.max(maxRows * (NH + GY) - GY + PAD * 2 + 40, 420);
+  nodes.forEach(n => {
+    const list = cols[n.col];
+    const i = list.indexOf(n);
+    n.x = PAD + n.col * (NW + GX);
+    n.y = (totalH - (list.length * (NH + GY) - GY)) / 2 + i * (NH + GY);
+  });
+  const totalW = PAD * 2 + (Math.max(...nodes.map(n => n.col)) + 1) * (NW + GX) - GX;
+
+  const svg = document.getElementById('graph-svg');
+  svg.setAttribute('width', totalW);
+  svg.setAttribute('height', totalH);
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs = {}, parent = svg) => {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    parent.appendChild(e);
+    return e;
+  };
+
+  // 箭头 marker(普通 + 高亮)
+  const defs = el('defs');
+  for (const [id, color] of [['arr', '#3d4654'], ['arr-hl', '#4a9eff']]) {
+    const m = el('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+    el('path', { d: 'M 0 0 L 10 5 L 0 10 z', fill: color }, m);
+  }
+
+  // ── 边:同列/回边走上方弧线,跨列走贝塞尔 ──
+  const edgeEls = [];
+  edges.forEach(ed => {
+    const a = byId[ed.from], b = byId[ed.to];
+    const back = b.col <= a.col;
+    let d, lx, ly;
+    if (back) {
+      const x1 = a.x + NW / 2, y1 = a.y, x2 = b.x + NW / 2, y2 = b.y;
+      const top = Math.min(y1, y2) - 56;
+      d = `M ${x1} ${y1} C ${x1} ${top}, ${x2} ${top}, ${x2} ${y2}`;
+      lx = (x1 + x2) / 2; ly = top + 14;
+    } else {
+      const x1 = a.x + NW, y1 = a.y + NH / 2, x2 = b.x, y2 = b.y + NH / 2;
+      const mx = (x1 + x2) / 2;
+      d = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      lx = mx; ly = (y1 + y2) / 2 - 7;
+    }
+    const p = el('path', { d, class: 'edge-path', 'marker-end': 'url(#arr)' });
+    let t = null;
+    const label = T(ed.label);
+    if (label) {
+      t = el('text', { x: lx, y: ly, class: 'edge-label', 'text-anchor': 'middle' });
+      t.textContent = label;
+    }
+    edgeEls.push({ ed, p, t });
+  });
+
+  // ── 节点 ──
+  const nodeEls = {};
+  nodes.forEach(n => {
+    const g = el('g', { class: 'node-box', transform: `translate(${n.x},${n.y})` });
+    el('rect', { width: NW, height: NH, rx: 9 }, g);
+    el('rect', { width: 4, height: NH, rx: 2, fill: GROUP_COLOR[n.group] || '#4a9eff' }, g);
+    const ic = el('text', { x: 14, y: 27, class: 'n-icon' }, g); ic.textContent = n.icon;
+    const ti = el('text', { x: 40, y: 24, class: 'n-title' }, g); ti.textContent = T(n.title);
+    const id = el('text', { x: 40, y: 42, class: 'n-id' }, g); id.textContent = n.id;
+    const gr = el('text', { x: 40, y: 56, class: 'n-id', fill: GROUP_COLOR[n.group] }, g); gr.textContent = GROUP_NAME[n.group] || n.group;
+    g.addEventListener('click', () => selectNode(n.id));
+    nodeEls[n.id] = g;
+  });
+
+  // 图例
+  document.getElementById('legend').innerHTML = Object.entries(GROUP_NAME)
+    .map(([k, v]) => `<span><i style="background:${GROUP_COLOR[k]}"></i>${v}</span>`).join('');
+
+  // ── 左键拖拽平移视图(拖空白处;节点点击不受影响)──
+  let pan = null, moved = 0;
+  wrap.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    pan = { x: e.clientX, y: e.clientY, sl: wrap.scrollLeft, st: wrap.scrollTop };
+    moved = 0;
+    // 从节点上起手也允许拖,靠移动阈值区分"点击选中"和"拖拽平移"
+  });
+  window.addEventListener('mousemove', e => {
+    if (!pan) return;
+    const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+    moved = Math.max(moved, Math.abs(dx), Math.abs(dy));
+    if (moved > 3) {
+      wrap.classList.add('panning');
+      wrap.scrollLeft = pan.sl - dx;
+      wrap.scrollTop = pan.st - dy;
+    }
+  });
+  window.addEventListener('mouseup', () => { pan = null; wrap.classList.remove('panning'); });
+  // 拖拽后抬手落在节点上时吞掉这次 click,避免误选中
+  wrap.addEventListener('click', e => { if (moved > 3) { e.stopPropagation(); e.preventDefault(); } }, true);
+
+  // ── 详情面板 ──
+  const detail = document.getElementById('detail');
+  function selectNode(id) {
+    const n = byId[id];
+    Object.entries(nodeEls).forEach(([k, g]) => g.classList.toggle('selected', k === id));
+    edgeEls.forEach(({ ed, p, t }) => {
+      const hl = ed.from === id || ed.to === id;
+      p.classList.toggle('hl', hl);
+      p.setAttribute('marker-end', hl ? 'url(#arr-hl)' : 'url(#arr)');
+      t?.classList.toggle('hl', hl);
+    });
+    const inbound = edges.filter(e => e.to === id);
+    const outbound = edges.filter(e => e.from === id);
+    const chips = (list, dir) => list.length
+      ? list.map(e => {
+          const other = dir === 'in' ? e.from : e.to;
+          const lb = T(e.label);
+          return `<span class="chip dir-${dir}" data-nav="${other}">${esc(T(byId[other].title))}${lb ? ` <span style="color:var(--dim)">· ${esc(lb)}</span>` : ''}</span>`;
+        }).join('')
+      : `<span class="none">${VL('无', 'None')}</span>`;
+    const uses = (arr, empty) => arr?.length
+      ? `<ul>${arr.map(x => `<li>${esc(T(x))}</li>`).join('')}</ul>`
+      : `<span class="none">${empty}</span>`;
+    detail.innerHTML = `
+      <div class="d-head"><span class="ic">${n.icon}</span><h2>${esc(T(n.title))}</h2></div>
+      <span style="color:${GROUP_COLOR[n.group]};font-size:12px">${GROUP_NAME[n.group] || n.group}</span>
+      <div class="d-file">${esc(n.file)}</div>
+      <div class="d-sec"><h3>${VL('这一步做什么', 'What this step does')}</h3><p>${esc(T(n.desc))}</p></div>
+      <div class="d-sec"><h3>${VL('🧠 加载的技能', '🧠 Skills loaded')}</h3>${uses(n.uses.skills, VL('不加载技能', 'No skills loaded'))}</div>
+      <div class="d-sec"><h3>${VL('🔧 使用的工具', '🔧 Tools used')}</h3>${uses(n.uses.tools, VL('不使用工具', 'No tools used'))}</div>
+      <div class="d-sec"><h3>${VL('上游(来自)', 'Upstream (from)')}</h3>${chips(inbound, 'in')}</div>
+      <div class="d-sec"><h3>${VL('下游(去向)', 'Downstream (to)')}</h3>${chips(outbound, 'out')}</div>`;
+    detail.querySelectorAll('[data-nav]').forEach(c => c.addEventListener('click', () => selectNode(c.dataset.nav)));
+  }
+  selectNode(MAP.workflow.entry);
+}
+</script>
+</body>
+</html>

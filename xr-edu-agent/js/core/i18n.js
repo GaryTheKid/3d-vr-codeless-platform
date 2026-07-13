@@ -78,12 +78,6 @@ const DICT = {
   'proj.folderUnsupported': { zh: '⚠ 当前浏览器不支持本地文件夹存储,请用 Chrome 或 Edge', en: '⚠ This browser cannot use local folder storage — use Chrome or Edge' },
   'proj.folderDisconnectConfirm': { zh: '断开本地文件夹?项目列表将切回浏览器存储(已保存的 .xrscene 文件仍在磁盘上)。', en: 'Disconnect the local folder? The list will switch back to browser storage (your .xrscene files remain on disk).' },
 
-  // ── API Key(公网部署用)──
-  'apikey.btn': { zh: '🔑 API', en: '🔑 API' },
-  'apikey.btnTitle': { zh: '设置 Claude API Key(仅存本机浏览器,不会上传)', en: 'Set Claude API Key (stored only in this browser, never uploaded)' },
-  'apikey.prompt': { zh: 'Claude API Key(sk-ant-…):留空则清除,使用离线模式', en: 'Claude API Key (sk-ant-…): leave empty to clear and use offline mode' },
-  'apikey.saved': { zh: '🔑 API Key 已保存(仅本机)', en: '🔑 API Key saved (local only)' },
-  'apikey.cleared': { zh: '🔑 API Key 已清除,回到离线模式', en: '🔑 API Key cleared — offline mode' },
   'assets.search': { zh: '搜索教学资源…', en: 'Search assets…' },
   'assets.hint': { zh: '💡 将资源<b>拖入</b>中间视口,或<b>双击</b>直接添加', en: '💡 <b>Drag</b> an asset into the viewport, or <b>double-click</b> to add' },
   'assets.dropHint': { zh: '松开以放置到场景中', en: 'Release to place in the scene' },

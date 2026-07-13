@@ -256,12 +256,12 @@ export function renderModelOptions() {
       'LLM connected · the agent reads the scene and edits via tools; 📌 pin hierarchy objects into context');
   } else {
     const opt = document.createElement('option');
-    opt.textContent = L('离线演示模式(未配置 API Key)', 'Offline demo mode (no API key)');
+    opt.textContent = L('离线演示模式(未配置代理密钥)', 'Offline demo mode (no proxy key)');
     modelSelect.appendChild(opt);
     effortSelect.classList.add('hidden');
     budgetSelect.classList.add('hidden');
-    chatFoot.textContent = L('离线演示:在 api-keys.txt 填入 ANTHROPIC_API_KEY 后刷新即可接入真实模型',
-      'Offline demo: put an ANTHROPIC_API_KEY in api-keys.txt and refresh to connect a real model');
+    chatFoot.textContent = L('离线演示模式 · 可体验内置场景生成',
+      'Offline demo mode · built-in scene generation is available');
   }
 }
 modelSelect.addEventListener('change', () => {

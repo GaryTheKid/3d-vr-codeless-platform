@@ -20,7 +20,8 @@ python server.py
 index.html              ← GitHub Pages 入口(指向 xr-edu-agent/)
 server.py               ← 本地开发服务器(伺服整个仓库根)
 xr-edu-agent/
-  main.js               ← 应用入口
+  react-main.js         ← React 启动入口
+  main.js               ← Three.js/Agent 运行时入口
   style.css
   js/                   ← 核心代码
   api-keys.txt          ← 本地密钥(勿提交,见 .gitignore)
@@ -30,4 +31,4 @@ xr-edu-agent/
 
 1. 推送到 GitHub,Settings → Pages → 分支 `main` / 文件夹 `/ (root)`
 2. 访问 `https://<你的用户名>.github.io/<仓库名>/`
-3. 顶栏 **🔑 API** 填入 Claude Key(或离线试玩示例场景)
+3. AI 代理凭据由部署方配置；未配置时仍可离线试玩示例场景

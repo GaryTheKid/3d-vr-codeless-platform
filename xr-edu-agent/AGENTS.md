@@ -4,14 +4,17 @@
 
 ## 项目是什么
 
-XR EduAgent:纯前端(无构建步骤)的 VR 教学场景创作平台。老师用自然语言指挥内置 Agent 在 Three.js/WebXR 场景里搭建交互式课程。技术栈:原生 ES Modules + Three.js 0.160(importmap CDN)+ Anthropic Messages API(浏览器直连)。
+XR EduAgent:纯前端(无构建步骤)的 VR 教学场景创作平台。老师用自然语言指挥内置 Agent 在 Three.js/WebXR 场景里搭建交互式课程。技术栈:React 18 页面外壳(ESM CDN + HTM,无 JSX 构建)+ 原生 ES Modules + Three.js 0.160(importmap CDN)+ AStone Claude 国内代理(Messages API 兼容,禁止官方直连)。
 
 运行:`python server.py`(在**仓库根目录**运行,静态伺服 + `/__log` 结构化日志端点,logs/*.jsonl 一次会话一份;`/__export` 导出端点写 download/);入口为根目录 `index.html`。也可用任意静态服务器(日志降级为内存缓冲、导出降级为浏览器下载)。无 npm 依赖、无打包。
 
 ## 架构总览
 
 ```
-main.js                     入口:import 各 UI 模块(副作用注册)→ startLoop/setupXR → loadApiKeys → 欢迎语 + 默认场景;语言切换不丢场景(切换前 serializeScene 寄存 localStorage 'xr-lang-stash',刷新后优先还原寄存场景而非示例太阳系;还原后弹窗询问是否让 AI 把场景内文字翻译成新语言——确认则 emit 'agent-task' 走完整 Agent 流程)
+根 index.html               GitHub Pages 入口:importmap 提供 React/ReactDOM/HTM/Three.js,只挂 #root + react-main.js
+react-main.js              React createRoot(App);运行时加载交给 App.useEffect,保证 React 首次 commit 后才加载旧模块(旧 controller 会立即按 DOM id 绑定)
+js/ui/react-app.js         React 声明式页面外壳:TopBar/LeftPanel/Viewport/Inspector/RightPanel;App.useEffect 动态 import main.js 并以 React error state 接管启动失败;现阶段其余业务状态仍由 controller 持有且不主动重复渲染——所有稳定 DOM id/class 是兼容契约
+main.js                     Three.js/Agent 运行时入口:React DOM 就绪后 import 各 UI controller(副作用注册)→ startLoop/setupXR → loadApiKeys → 欢迎语 + 默认场景;语言切换不丢场景(切换前 serializeScene 寄存 localStorage 'xr-lang-stash',刷新后优先还原寄存场景而非示例太阳系;还原后弹窗询问是否让 AI 把场景内文字翻译成新语言——确认则 emit 'agent-task' 走完整 Agent 流程)
 server.py                   本地开发服务器:静态伺服 + POST /__log 日志端点 + POST /__export(单文件 HTML 场景写入 download/)(零依赖 Python)
 js/export/exporter.js       ⬇ 下载按钮:导出单文件 HTML 学生播放器。双轨还原:sceneRoot.toJSON() 序列化几何/材质(canvas 面板烘焙成 dataURL)兜底 + 含 builderCode 的对象在播放器里重跑构建代码整体重建(复活 live 面板与构建期闭包);行为代码字符串用同款 T 工具箱重编译(T 含 playerPos/distToPlayer/overlaps/teleportStudent/setSolid/notify)。播放器=蒸馏版运行时(动画/语义交互(hover 发光+点击闪烁)/XR控制器/locomotion(solid 碰撞:瞬移不穿墙、平滑贴墙滑、脚底高度采样上楼梯、悬崖保护)/面板/房间内 UI 可见性规则(updateRoomUI,与 room-ui-visibility.js 同规则),无编辑 UI,恒运行模式)。editorOnly 对象与 role≠content 的导览路线不进播放器。导出 HTML 还内嵌 `<script type="application/json" id="xr-scene-source">` 场景数据块(projects.js 的 ProjectData 格式)→ 文件可被「📥 导入 HTML」导回编辑器。⚠ PLAYER_SRC 模板里禁用反引号与插值符(它整体是模板字符串);内置 labs 实验的状态机不随导出(expAction 点击提示回编辑器)
 js/core/
@@ -48,7 +51,7 @@ js/ui/
   viewport.js               PC Interactor + 运行/编辑双模式(类 Unity Play):▶ 按钮切 playMode,默认编辑模式(全静态,点击一律=选中,Shift+点击=多选);运行模式下单击=dispatchInteraction('activate')、hover 可交互对象=highlight.js 发光+手型光标、按住拖动带 onGrab 的对象=grab/drag/release(Alt+点击仍强制选中;editorOnly 对象点击穿透)。多选联动变换(类 Unity):gizmo 挂主选中对象,objectChange 时把增量同步到其余选中对象(平移=同位移;旋转=绕主对象转位置+姿态;缩放=以主对象为中心等比)。拖放落点、工具栏(W/E/R/F/Del;运行模式 WASD 让位给学生化身驾驶)、运行提示条 #play-hint(可走动课显示 WASD 说明)、浮动检查器(仅单选显示;基础属性 + 📝面板文字直编区(打字即重绘,live 面板只给提示)+ 📖用途/🔁动画/🖱交互与联动三个只读描述区——联动区扫描行为代码里的 getObjectByName 生成可点击对象芯片(双向:→读取/控制、←被引用),点击 emit 'focus-object' 定位层级——+ 对象级 AI 指令输入框,emit 'agent-request';"自转"勾选框走 selfSpin 非破坏语义)
   chat.js                   聊天 UI:消息/工具卡/typing/流式消息句柄(startStreamMsg)/思考区块(startThinkingBlock:流式推理摘要,可折叠)/计划确认卡(showPlanConfirm)/模式栏/模型选择/上下文芯片(= 当前选中集合,✕=取消选中)/快捷 chips;监听 'agent-request'(检查器对象级指令:对象因选中已在上下文,直接 runTurn)与 'agent-task'(系统级自动任务,如切语言后的整场景翻译)
 js/agent/
-  llm.js                    MODELS(claude-sonnet-5/claude-opus-4-8/claude-fable-5;deepThinker 标记恒开思考的模型)、EFFORTS(auto/low/medium/high 思考深度档位)、loadApiKeys()(fetch api-keys.txt,KEY=VALUE)、hasLLM()、callClaude({model,system,messages,tools,onText,onThinking,effort,maxTokens})——带 anthropic-dangerous-direct-browser-access 头;传 onText 则走 SSE 流式(parseSSE 重组 content,含 tool_use 的 input_json_delta 拼装 + thinking 块的 signature 保留 + usage 捕获);传 onThinking 则实时回传模型流式吐出的推理摘要(thinking_delta,并自动 +1024 maxTokens;display 为 omitted 时内容为空则不渲染);⚠ 本 API 不接受 output_config.thinking_display 字段(传了会 400),深度只能用 output_config.effort;返回 { content, stop_reason, usage }
+  llm.js                    MODELS 把 sonnet/opus/fable5 映射到 https://astonelearning.com/api/v1/claude/{endpoint}(模型由路径决定,只发 x-api-key,禁止直连 Anthropic);代理密钥读取 api-keys.txt 的 CLAUDE_PROXY_API_KEY 或本机 localStorage xr-claude-proxy-key;EFFORTS/BUDGETS/流式 SSE(parseSSE,含 tool_use/thinking/signature/usage)保持 Anthropic Messages API 兼容
   logger.js                 结构化日志:logEvent(type,data) 带时间戳 POST 到 /__log(server.py 落盘 logs/*.jsonl);端点不可用自动降级内存缓冲(__xrExportLog() 导出);summarize/summarizeToolInput 防代码刷爆日志
   context.js                ★ LLMR 式场景序列化 + 分层上下文:sceneToJSON()(对象+实验状态+studentLocomotion)、objectToJSON(obj,detailed)、pinnedContextBlock()(当前选中对象的高细节块——"选中即上下文",Put-That-There 一脉的多模态指代)、buildContextMessage(userText)。对象数 ≤ FULL_JSON_MAX(20)发全量 JSON;超过进"大场景模式"= sceneSummary() 分类分组索引 + searchObjects() 纯 JS 相关性预取(选中/工作集/中文双字 n-gram 命中,top-8 附全参数但剥行为代码)+ 提示模型用 find_objects/get_object_detail 拉细节
   tools/                    ★ Agent 工具库(按职能分组,index.js 聚合):build-tools(add_asset/create_custom_object(AI 写 Three.js 代码现场造对象;工具说明含颗粒度铁律与 say latch 要求)/set_behavior(update/click + 语义事件 grab/drag/release 行为代码;改行为必须同步更新 description——它是大场景检索索引)/build_template/clear_scene)、edit-tools(update_object/remove_object/select_object)、panel-tools(attach_label/add_panel/update_panel(原地改面板文字,live 面板拒改)/add_quiz_panel(可点击作答的选择题面板,builderCode 模式生成,答对后 userData.quiz.done=true 可作解锁条件))、query-tools(get_scene(大场景自动降级为摘要)/find_objects(关键词+空间检索)/get_object_detail)、env-tools(set_environment/configure_locomotion/set_student_view(设学生出生点与朝向,look_at 自动算 yaw))、space-tools(add_arrow/add_path(role≠content 运行/导出中对学生隐藏)/build_room(y>0 建二层)/build_stairs——确定性几何图元:箭头/路线·轨迹/房间壳/楼梯,不让模型手写这些代码;构建器在 js/scene/guides.js 与 rooms.js)。每个 {name,label(聊天卡双语标签,就地共存),description,input_schema,exec};改场景的 exec 里调 markTouched;index.js 出 toolDefsForAPI()/execTool()/toolCallLabel()
@@ -90,7 +93,7 @@ js/agent/
 - **加新场景模板**:scenarios.js 增加 SCENARIOS 项(match 正则勿与现有冲突,run 里先 clearScene)。离线关键词与 build_template 自动生效
 - **加新 Agent 工具**:在 js/agent/tools/ 对应分组模块的数组里增加 {name,label(L() 双语),description,input_schema,exec}。无需改 index.js 与 orchestrator;需同步 agent-map.js 工具目录(见 js/agent/README.md)
 - **加新 Agent 技能**:js/agent/skills/ 建同名模块(注册表写法:globalThis.XR_AGENT_SKILLS push,零依赖无 import/export;字段含中文 name/description/prompt + 英文 nameEn/descriptionEn/promptEn,缺英文查看器英文版会回退中文)→ index.js 加 import → manifest.js 加文件名;Planner 自动可选,技能库页自动同步
-- **加新 LLM 厂商**:llm.js MODELS 加条目(provider 字段),callClaude 里按 provider 分发;api-keys.txt 加对应 KEY
+- **加新代理模型端点**:llm.js MODELS 加 endpoint 映射;不得在前端恢复 api.anthropic.com 官方直连
 - **加新虚拟对象/组件卡**:hierarchy.js getVirtualObjects() 里 push;组件 {id,icon,title,desc,toggled?,onToggle?,onEdit?}(onEdit 返回 true 表示已解析应用)
 
 ## 注意事项 / 坑

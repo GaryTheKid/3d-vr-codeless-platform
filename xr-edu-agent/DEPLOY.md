@@ -36,7 +36,7 @@ git push origin main
 ### 3. 给客户的使用说明
 
 - **浏览器**: Chrome 或 Edge(推荐,支持 WebXR + 本地项目文件夹)
-- **AI 功能**: 顶栏点 **🔑 API**,各自填入 Claude API Key(仅存本机浏览器,不上传 GitHub)
+- **AI 功能**:由部署方统一配置代理访问方式；测试界面不显示 Key 设置按钮
 - **无 Key**: 仍可离线试玩(关键词规则生成示例场景)
 - **保存项目**:
   - 默认:浏览器 localStorage(简单,但清站点数据会丢)
@@ -52,7 +52,7 @@ git push origin main
 | AI Agent(自备 Key) | ✅ | ✅(浏览器填 Key) |
 | 结构化日志 `logs/*.jsonl` | ✅ | ❌(降级为内存) |
 | 导出写入 `download/` 目录 | ✅ | ❌(改为浏览器下载) |
-| `api-keys.txt` 自动加载 | ✅ | ❌(用 🔑 API 按钮) |
+| `api-keys.txt` 自动加载 | ✅ | ❌(需部署方代理鉴权) |
 
 ## GitHub 会限制 3D 性能吗?
 

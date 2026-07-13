@@ -17,7 +17,7 @@ git push origin main
 4. 访问:`https://YOUR_ORG.github.io/YOUR_REPO/`(不再是 `/YOUR_REPO/xr-edu-agent/`)
 
 根目录已有:
-- `index.html` — 加载 `xr-edu-agent/main.js` 与 `xr-edu-agent/style.css`
+- `index.html` — 加载 React/HTM 与 `xr-edu-agent/react-main.js`
 - `.nojekyll` — 禁用 Jekyll
 
 ## 本地开发(与 Pages 同结构)
@@ -32,8 +32,24 @@ python server.py    # 在仓库根目录运行
 ## 密钥
 
 - `xr-edu-agent/api-keys.txt` 已在 `.gitignore`,不会进仓库
-- 公网试玩:每位老师点顶栏 **🔑 API** 在本机浏览器填 Key
-- 本地开发:仍可在 `xr-edu-agent/api-keys.txt` 配置
+- 应用只调用 `https://astonelearning.com/api/v1/claude/{sonnet|opus|fable5}`,不会直连 Anthropic
+- 公网试玩版不显示代理密钥设置按钮；凭据由部署方统一配置
+- 本地开发:复制 `xr-edu-agent/api-keys.example.txt` 为 `api-keys.txt`,填写 `CLAUDE_PROXY_API_KEY`
+
+### 重要安全限制
+
+GitHub Pages 是公开静态前端。把一个共享代理密钥写进 JS、HTML、GitHub
+Secret 或构建产物都**不能保密**——测试者能在 DevTools 的 Network 面板读到
+`x-api-key`。移除设置按钮并不会改变这个事实。
+
+若希望测试者“打开即用”且不接触共享密钥,代理服务必须改为以下之一:
+
+1. `astonelearning.com` 先登录,再用 HttpOnly session cookie 鉴权；
+2. 自己的后端签发短期、限额、限来源的临时 token；
+3. 每位测试者单独分配可撤销/限额的 `cpx-…` key。
+
+同时代理需允许 GitHub Pages 域名的 CORS `OPTIONS`、`POST` 和
+`x-api-key` 请求头。
 
 ## GitHub Pages 上不可用的服务端功能
 

@@ -1,0 +1,2 @@
+# 复制为 api-keys.txt 后填写；api-keys.txt 已被 .gitignore 排除。
+CLAUDE_PROXY_API_KEY=cpx-your-proxy-key

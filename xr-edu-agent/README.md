@@ -17,7 +17,10 @@ python -m http.server 8000
 
 浏览器打开 `http://localhost:8000/` 即可(根目录 `index.html`)。**必须通过 http 访问**(ES 模块 + WebXR 的要求),直接双击 index.html 打不开。
 
-**接入真实 AI(可选):** 在 `api-keys.txt` 里填入 Claude API Key,刷新页面。不填也能跑——内置关键词规则会模拟 Agent 生成所有示例场景。
+**接入真实 AI(可选):** 复制 `api-keys.example.txt` 为 `api-keys.txt`,填入
+`CLAUDE_PROXY_API_KEY`。
+应用只调用 AStone Learning 国内代理,不会直连 Anthropic。不填也能跑——
+内置关键词规则会模拟 Agent 生成示例场景。
 
 **VR 预览:** Quest 通过 Quest Link 连接电脑后,在 Chrome/Edge 里点右上角「🥽 进入 VR 预览」。
 
@@ -53,8 +56,10 @@ python -m http.server 8000
 index.html                  GitHub Pages / 本地开发入口(仓库根,加载 xr-edu-agent/ 下资源)
 server.py                   本地开发服务器(仓库根)
 xr-edu-agent/
-  main.js                   应用入口装配
+  react-main.js             React createRoot + 运行时延迟加载
+  main.js                   Three.js/Agent 运行时装配
   style.css                 界面骨架与样式
+  js/ui/react-app.js        React 页面组件(TopBar/LeftPanel/Viewport/RightPanel)
   js/core/                  Three.js 场景、状态、事件总线、渲染循环
   js/assets/                资源构建器 + AssetSkill 注册表
   js/panels/                3D 教学面板系统
@@ -78,7 +83,8 @@ xr-edu-agent/
 
 ## 当前边界
 
-- 密钥在浏览器直连 Anthropic API(仅原型可用);正式版需自建后端代理
+- LLM 只走 AStone Claude 代理；GitHub Pages 不能安全内嵌共享代理 Key,
+  公测应采用每人独立 Key、短期 token 或服务端登录 session
 - 项目保存在浏览器 localStorage(清浏览器数据会丢,重要场景请用 ⬇ 下载留档);分享按钮是占位;无用户系统与数据库
 - 英语对话只检测麦克风音量,未接 STT/TTS
 - 自然语言组件的离线解析只认数字和颜色词;接入 LLM 后由模型理解

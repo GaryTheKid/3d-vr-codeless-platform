@@ -8,7 +8,7 @@
 
 > **这一批为什么存在(背景,给新会话看)**
 >
-> 本项目是"给没有编程背景的老师用的 VR 教学场景创作平台",三栏 UI:左=资源库/场景层级(含自然语言 Inspector)、中=类 Unity SceneView 的 3D 视口、右=Ask/Plan/Agent 三模式的 AI 助教。技术栈:纯前端无构建、ES Modules + Three.js 0.160(CDN)+ Anthropic Messages API 浏览器直连,密钥放本地 `api-keys.txt`。模型可选 Sonnet 5 / Opus 4.8 / Fable 5,外加"思考深度"档位(Auto/低/中/高)。
+> 本项目是"给没有编程背景的老师用的 VR 教学场景创作平台",三栏 UI:左=资源库/场景层级(含自然语言 Inspector)、中=类 Unity SceneView 的 3D 视口、右=Ask/Plan/Agent 三模式的 AI 助教。技术栈:React 页面外壳 + 原生 ES Modules + Three.js 0.160(CDN),无构建步骤;LLM 只走 AStone Claude 国内代理(Messages API 兼容),密钥放本地 `api-keys.txt` 或测试者浏览器。模型可选 Sonnet 5 / Opus 4.8 / Fable 5,外加"思考深度"档位(Auto/低/中/高)。
 >
 > **前几轮已经做完的关键升级(本批的前提,别重复造)**:
 > 1. **修了 Fable 5 的"Planner 未返回 JSON"**:根因是 Fable/Mythos/Sonnet-5/Opus-4.8 这代模型恒开 adaptive thinking,**思考 token 计入 max_tokens**,预算太小会被思考吃光→输出被静默截断。对策:max_tokens 给足 + planner 用 `effort:'low'`。禁止对这些模型发 `thinking:{type:enabled|disabled}`(会 400),深度只能用 `output_config.effort`。
@@ -251,7 +251,8 @@
 
 ## 技术债 / 修正项
 - [x] LLM 调用改为流式(streaming),回复逐字显示 ✔ 已完成
-- [ ] 密钥从浏览器直连改为后端代理(正式版安全要求)
+- [x] LLM 从 Anthropic 官方直连切到 AStone 国内代理,模型按 sonnet/opus/fable5 三路径路由 ✔
+- [ ] 公测代理鉴权升级:GitHub Pages 不能隐藏共享 cpx key;正式试玩需登录+HttpOnly session、短期限额 token 或每测试者独立可撤销 key
 - [ ] AI 代码沙盒升级隔离级别:new Function → Worker/iframe 沙箱 + API 白名单(正式版安全要求)
 - [ ] 场景序列化保存/加载(.xrscene 格式),支撑撤销/重做
 - [ ] NL Inspector 的编辑接入 LLM 理解(目前离线只解析数字/颜色词)

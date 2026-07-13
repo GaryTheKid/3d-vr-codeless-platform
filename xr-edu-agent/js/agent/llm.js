@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════════
-//  LLM 客户端:读取本地 api-keys.txt → 浏览器直连 Anthropic Messages API
-//  · 密钥文件格式(KEY=VALUE 每行一条):ANTHROPIC_API_KEY=sk-ant-xxx
+//  LLM 客户端:只调用 AStone Learning 国内 Claude 代理
+//  · 密钥文件格式(KEY=VALUE 每行一条):CLAUDE_PROXY_API_KEY=cpx-xxx
 //  · 未配置密钥时自动回退到"离线演示模式"(关键词规则)
-//  · 未来可在 MODELS 中加入其他厂商,按 provider 分发请求
+//  · 禁止回退/直连 api.anthropic.com:模型由三个代理端点的路径决定
 // ═══════════════════════════════════════════════════════════════
 import { L } from '../core/i18n.js';
 
@@ -11,9 +11,9 @@ import { L } from '../core/i18n.js';
 // price: 每百万 token 的美元单价 { in: 输入, out: 输出 }。仅用于界面上的花费粗估
 // (按各模型公开定价填写;思考 token 计入输出,故已包含在 out 里)。改价只改这里。
 export const MODELS = [
-  { id: 'claude-sonnet-5',  label: 'Claude Sonnet 5', provider: 'anthropic', note: '速度与智能的平衡(推荐日常使用)', price: { in: 3, out: 15 } },
-  { id: 'claude-opus-4-8',  label: 'Claude Opus 4.8', provider: 'anthropic', note: '复杂场景编排', price: { in: 15, out: 75 } },
-  { id: 'claude-fable-5',   label: 'Claude Fable 5',  provider: 'anthropic', note: '最强推理,长任务(自带深度思考,较贵)', deepThinker: true, price: { in: 5, out: 25 } },
+  { id: 'claude-sonnet-5', label: 'Claude Sonnet 5', provider: 'astone-proxy', endpoint: 'sonnet', note: '速度与智能的平衡(推荐日常使用)', price: { in: 3, out: 15 } },
+  { id: 'claude-opus-4-8', label: 'Claude Opus 4.8', provider: 'astone-proxy', endpoint: 'opus', note: '复杂场景编排', price: { in: 15, out: 75 } },
+  { id: 'claude-fable-5', label: 'Claude Fable 5', provider: 'astone-proxy', endpoint: 'fable5', note: '最强推理,长任务(自带深度思考,较贵)', deepThinker: true, price: { in: 5, out: 25 } },
 ];
 
 // 按 usage 粗估单次调用花费(美元)。缓存写按 1.25×、缓存读按 0.1× 输入价近似
@@ -44,9 +44,11 @@ export const BUDGETS = [
   { id: 'max',  label: L('预算 超大', 'Budget Max'),  mult: 4, note: L('最大输出上限,超长/超复杂任务用', 'Maximum output cap for very long / complex tasks') },
 ];
 
-const keys = {};          // { ANTHROPIC_API_KEY: '...' }
+const keys = {};          // { CLAUDE_PROXY_API_KEY: '...' }
 let keysLoaded = false;
-const LS_KEY = 'xr-anthropic-key';
+const LS_KEY = 'xr-claude-proxy-key';
+const LEGACY_LS_KEY = 'xr-anthropic-key';
+const PROXY_BASE = 'https://astonelearning.com/api/v1/claude';
 // 相对模块路径,不依赖 index.html 在仓库哪一层
 const API_KEYS_URL = new URL('../../api-keys.txt', import.meta.url);
 
@@ -63,26 +65,28 @@ export async function loadApiKeys() {
       });
     }
   } catch (e) { /* 文件不存在(GitHub Pages 等) → 尝试浏览器本地 Key */ }
-  // 公网部署/GitHub Pages:api-keys.txt 不会提交,允许老师在本机浏览器里填 Key
+  // 公网部署/GitHub Pages:api-keys.txt 不提交,允许测试者在本机浏览器里填代理 Key。
+  // 旧官方 Key 不迁移:两类密钥不可互换,且本应用明确禁止官方直连。
   const stored = localStorage.getItem(LS_KEY);
-  if (stored?.trim()) keys.ANTHROPIC_API_KEY = stored.trim();
+  if (stored?.trim()) keys.CLAUDE_PROXY_API_KEY = stored.trim();
+  localStorage.removeItem(LEGACY_LS_KEY);
   return keys;
 }
 
-/** 保存/清除浏览器本地 API Key(仅存 localStorage,不上传) */
+/** 保存/清除浏览器本地代理 Key(仅存 localStorage,不上传) */
 export function saveApiKeyToBrowser(key) {
   const v = (key || '').trim();
   if (v) {
     localStorage.setItem(LS_KEY, v);
-    keys.ANTHROPIC_API_KEY = v;
+    keys.CLAUDE_PROXY_API_KEY = v;
   } else {
     localStorage.removeItem(LS_KEY);
-    delete keys.ANTHROPIC_API_KEY;
+    delete keys.CLAUDE_PROXY_API_KEY;
   }
 }
 
 export function hasLLM() {
-  return !!keys.ANTHROPIC_API_KEY;
+  return !!keys.CLAUDE_PROXY_API_KEY;
 }
 
 // 调用 Anthropic Messages API(支持工具调用 + SSE 流式 + 自适应思考)
@@ -96,17 +100,17 @@ export function hasLLM() {
 // effort: 'low' | 'medium' | 'high' 控制思考深度(Fable 5 等模型常开 adaptive thinking,
 //         思考 token 计入 max_tokens,故 max_tokens 需给足,否则输出会被思考吃光而截断)
 export async function callClaude({ model, system, messages, tools = undefined, maxTokens = 8192, onText = null, onThinking = null, effort = 'medium' }) {
+  const modelDef = MODELS.find(m => m.id === model);
+  if (!modelDef?.endpoint) throw new Error(`不支持的代理模型: ${model}`);
+  if (!keys.CLAUDE_PROXY_API_KEY) throw new Error('未配置 Claude 代理访问密钥');
   const body = { model, max_tokens: onThinking ? maxTokens + 1024 : maxTokens, system, messages, output_config: { effort } };
   if (tools?.length) body.tools = tools;
   if (onText) body.stream = true;
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch(`${PROXY_BASE}/${modelDef.endpoint}`, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'x-api-key': keys.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-      // 官方支持的浏览器直连开关(原型阶段可用;正式版应走自己的后端代理)
-      'anthropic-dangerous-direct-browser-access': 'true',
+      'x-api-key': keys.CLAUDE_PROXY_API_KEY,
     },
     body: JSON.stringify(body),
   });

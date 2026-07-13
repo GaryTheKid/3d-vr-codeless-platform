@@ -46,9 +46,9 @@ export const BUDGETS = [
 
 const keys = {};          // { CLAUDE_PROXY_API_KEY: '...' }
 let keysLoaded = false;
-const LS_KEY = 'xr-claude-proxy-key';
-const LEGACY_LS_KEY = 'xr-anthropic-key';
 const PROXY_BASE = 'https://astonelearning.com/api/v1/claude';
+// 试玩内置密钥:api-keys.txt 优先;GitHub Pages 等无密钥文件时使用
+const PLAYTEST_PROXY_KEY = 'cpx-786dc8c7fe4ec02f7d9c2d9ea219f9880ecdb5fa226b1d9b';
 // 相对模块路径,不依赖 index.html 在仓库哪一层
 const API_KEYS_URL = new URL('../../api-keys.txt', import.meta.url);
 
@@ -64,25 +64,9 @@ export async function loadApiKeys() {
         if (m && !m[2].startsWith('在这里') && !m[2].startsWith('<')) keys[m[1]] = m[2];
       });
     }
-  } catch (e) { /* 文件不存在(GitHub Pages 等) → 尝试浏览器本地 Key */ }
-  // 公网部署/GitHub Pages:api-keys.txt 不提交,允许测试者在本机浏览器里填代理 Key。
-  // 旧官方 Key 不迁移:两类密钥不可互换,且本应用明确禁止官方直连。
-  const stored = localStorage.getItem(LS_KEY);
-  if (stored?.trim()) keys.CLAUDE_PROXY_API_KEY = stored.trim();
-  localStorage.removeItem(LEGACY_LS_KEY);
+  } catch (e) { /* 文件不存在(GitHub Pages 等) */ }
+  if (!keys.CLAUDE_PROXY_API_KEY && PLAYTEST_PROXY_KEY) keys.CLAUDE_PROXY_API_KEY = PLAYTEST_PROXY_KEY;
   return keys;
-}
-
-/** 保存/清除浏览器本地代理 Key(仅存 localStorage,不上传) */
-export function saveApiKeyToBrowser(key) {
-  const v = (key || '').trim();
-  if (v) {
-    localStorage.setItem(LS_KEY, v);
-    keys.CLAUDE_PROXY_API_KEY = v;
-  } else {
-    localStorage.removeItem(LS_KEY);
-    delete keys.CLAUDE_PROXY_API_KEY;
-  }
 }
 
 export function hasLLM() {

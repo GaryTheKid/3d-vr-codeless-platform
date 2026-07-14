@@ -17,7 +17,7 @@
 //  PC 下方向键平移编辑相机,用于老师预览学生走动路线(不占用 WASD 手柄快捷键)
 // ═══════════════════════════════════════════════════════════════
 import * as THREE from 'three';
-import { renderer, scene, camera, orbit } from './three-setup.js';
+import { renderer, scene, camera, orbit, ground, sceneRoot } from './three-setup.js';
 import { toast } from './utils.js';
 import { emit } from './events.js';
 import { pointBlocked, segmentBlocked, resolveMove, groundHeightAt } from './collision.js';
@@ -99,17 +99,90 @@ function rotateWorldAroundPlayer(angle) {
 // 会话结束时复位世界姿态(setupXR 已复位 position,这里补 rotation)
 export function resetLocomotionPose() {
   scene.rotation.y = 0;
+  if (teleMarker) teleMarker.visible = false;
+  wasAiming = false;
+  aimValid = false;
 }
 
-// 每帧:XR 摇杆平滑移动 + 转向(loop.js 调用)
+// ── Unity XRI 风格摇杆瞬移:前推摇杆瞄准(落点指示环),松开瞬移 ──
+const AIM_PUSH = 0.5;               // 摇杆前推超过此值进入瞄准
+const teleRaycaster = new THREE.Raycaster();
+const _aimMat = new THREE.Matrix4();
+const _aimQ = new THREE.Vector3();  // 最新瞄准落点(内容坐标,y=脚底高度)
+let teleMarker = null;
+let wasAiming = false;
+let aimValid = false;
+
+function ensureTeleMarker() {
+  if (teleMarker) return teleMarker;
+  teleMarker = new THREE.Group();
+  teleMarker.name = 'teleport-marker';
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(0.35, 0.035, 12, 40).rotateX(Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0x4a9eff, transparent: true, opacity: 0.9, depthTest: false })
+  );
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.1, 24).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0x4a9eff, transparent: true, opacity: 0.45, depthTest: false })
+  );
+  ring.renderOrder = 999;
+  dot.renderOrder = 999;
+  teleMarker.add(ring, dot);
+  teleMarker.visible = false;
+  scene.add(teleMarker);   // 挂 scene(内容坐标)而非 sceneRoot:不参与序列化/层级
+  return teleMarker;
+}
+
+// 从控制器射线算瞄准落点:命中可站表面 → 环贴地显示;有效蓝色 / 无效红色
+function aimTeleport(controller) {
+  const m = ensureTeleMarker();
+  _aimMat.identity().extractRotation(controller.matrixWorld);
+  teleRaycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+  teleRaycaster.ray.direction.set(0, 0, -1).applyMatrix4(_aimMat);
+  const hits = teleRaycaster.intersectObjects([ground, sceneRoot], true);
+  let hit = null;
+  for (const h of hits) {
+    let top = h.object;
+    while (top.parent && top.parent !== sceneRoot && top.parent !== scene) top = top.parent;
+    if (top.userData?.editorOnly) continue;   // 学生代表物等编辑器对象不可作为落点
+    hit = h;
+    break;
+  }
+  if (!hit) { m.visible = false; aimValid = false; return; }
+  const q = clampToArea(worldToContent(hit.point));
+  const cur = studentContentPos();
+  const feet = Math.max(0, cur.y);
+  aimValid = !pointBlocked(q.x, q.z, feet) && !segmentBlocked(cur.x, cur.z, q.x, q.z, feet);
+  q.y = groundHeightAt(q.x, q.z, feet);
+  _aimQ.copy(q);
+  m.position.set(q.x, q.y + 0.02, q.z);
+  m.visible = true;
+  const color = aimValid ? 0x4a9eff : 0xe5534b;
+  m.children.forEach(c => c.material.color.setHex(color));
+}
+
+// 每帧:XR 摇杆瞬移瞄准 / 平滑移动 / 转向(loop.js 调用)
 export function updateLocomotion(dt) {
-  if (!renderer.xr.isPresenting || locomotion.mode === 'static') return;
+  if (!renderer.xr.isPresenting || locomotion.mode === 'static') {
+    if (teleMarker) teleMarker.visible = false;
+    wasAiming = false;
+    return;
+  }
   const session = renderer.xr.getSession();
   if (!session) return;
+  let aimingNow = false;
+  let idx = -1;
   for (const src of session.inputSources) {
+    idx++;
     const axes = src.gamepad?.axes;
     if (!axes || axes.length < 4) continue;
     const ax = axes[2], ay = axes[3];   // 标准映射:摇杆在 axes[2/3]
+    // 瞬移模式:摇杆前推 = 瞄准(显示落点环);由松开动作触发传送(见循环尾)
+    const aimingThis = locomotion.mode === 'teleport' && ay < -AIM_PUSH;
+    if (aimingThis && !aimingNow) {
+      aimingNow = true;
+      aimTeleport(renderer.xr.getController(idx));
+    }
     // 平滑移动(左手摇杆,按头显朝向)
     if (locomotion.mode === 'smooth' && src.handedness === 'left' && (Math.abs(ax) > 0.15 || Math.abs(ay) > 0.15)) {
       renderer.xr.getCamera().getWorldDirection(_head);
@@ -128,19 +201,26 @@ export function updateLocomotion(dt) {
       if (feet - q.y > LEDGE_DROP) continue;  // 悬崖保护:平滑移动不允许走出 >0.6 米的跌落边缘
       standAt(q);
     }
-    // 转向(右手摇杆横轴)
-    if (src.handedness === 'right') {
+    // 转向:瞬移模式双手摇杆左右皆可(前推瞄准中不转);平滑模式右手(左手是移动)
+    const canTurn = locomotion.mode === 'teleport' ? !aimingThis : src.handedness === 'right';
+    if (canTurn) {
       if (Math.abs(ax) > 0.6) {
         if (locomotion.turnMode === 'snap') {
-          if (!src._turned) { src._turned = true; rotateWorldAroundPlayer(ax > 0 ? -SNAP_ANGLE : SNAP_ANGLE); }
+          if (!src._turned) { src._turned = true; rotateWorldAroundPlayer(ax > 0 ? SNAP_ANGLE : -SNAP_ANGLE); }
         } else {
-          rotateWorldAroundPlayer((ax > 0 ? -1 : 1) * SMOOTH_TURN_SPEED * dt);
+          rotateWorldAroundPlayer((ax > 0 ? 1 : -1) * SMOOTH_TURN_SPEED * dt);
         }
       } else {
         src._turned = false;
       }
     }
   }
+  // 松开前推 → 落点有效则瞬移(Unity XRI 的 release-to-teleport)
+  if (!aimingNow) {
+    if (wasAiming && aimValid) standAt(_aimQ);
+    if (teleMarker) teleMarker.visible = false;
+  }
+  wasAiming = aimingNow;
 }
 
 // ── 配置入口(Agent 工具 / NL Inspector 组件卡共用)──

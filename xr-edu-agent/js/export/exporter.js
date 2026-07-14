@@ -640,15 +640,56 @@ renderer.xr.addEventListener('sessionstart', () => {
     scene.position.set(0, 0, -5);
   }
 });
-renderer.xr.addEventListener('sessionend', () => { scene.position.set(0, 0, 0); scene.rotation.y = 0; });
+renderer.xr.addEventListener('sessionend', () => { scene.position.set(0, 0, 0); scene.rotation.y = 0; teleMarker.visible = false; wasAiming = false; });
+// Unity XRI 风格摇杆瞬移:前推摇杆瞄准(落点环:蓝=可去/红=不可),松开瞬移
+const teleMarker = new THREE.Group();
+{
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(0.35, 0.035, 12, 40).rotateX(Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0x4a9eff, transparent: true, opacity: 0.9, depthTest: false })
+  );
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.1, 24).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0x4a9eff, transparent: true, opacity: 0.45, depthTest: false })
+  );
+  ring.renderOrder = 999; dot.renderOrder = 999;
+  teleMarker.add(ring, dot);
+  teleMarker.visible = false;
+  scene.add(teleMarker);
+}
+const _aimQ = new THREE.Vector3();
+let wasAiming = false, aimValid = false;
+function aimTeleport(c) {
+  _mat4.identity().extractRotation(c.matrixWorld);
+  raycaster.ray.origin.setFromMatrixPosition(c.matrixWorld);
+  raycaster.ray.direction.set(0, 0, -1).applyMatrix4(_mat4);
+  const hits = raycaster.intersectObjects([ground, sceneRoot], true);
+  if (!hits.length) { teleMarker.visible = false; aimValid = false; return; }
+  const q = clampToArea(worldToContent(hits[0].point));
+  const cur = worldToContent(new THREE.Vector3(0, 0, 0));
+  const feet = Math.max(0, cur.y);
+  aimValid = !pointBlocked(q.x, q.z, feet) && !segBlocked(cur.x, cur.z, q.x, q.z, feet);
+  q.y = groundHeightAt(q.x, q.z, feet);
+  _aimQ.copy(q);
+  teleMarker.position.set(q.x, q.y + 0.02, q.z);
+  teleMarker.visible = true;
+  const color = aimValid ? 0x4a9eff : 0xe5534b;
+  teleMarker.children.forEach(m => m.material.color.setHex(color));
+}
 function updateLocomotion(dt) {
-  if (!renderer.xr.isPresenting || LOCO.mode === 'static') return;
+  if (!renderer.xr.isPresenting || LOCO.mode === 'static') { teleMarker.visible = false; wasAiming = false; return; }
   const session = renderer.xr.getSession();
   if (!session) return;
+  let aimingNow = false;
+  let idx = -1;
   for (const src of session.inputSources) {
+    idx++;
     const axes = src.gamepad && src.gamepad.axes;
     if (!axes || axes.length < 4) continue;
     const ax = axes[2], ay = axes[3];
+    // 瞬移模式:前推摇杆瞄准,松开传送(循环尾统一处理)
+    const aimingThis = LOCO.mode === 'teleport' && ay < -0.5;
+    if (aimingThis && !aimingNow) { aimingNow = true; aimTeleport(renderer.xr.getController(idx)); }
     if (LOCO.mode === 'smooth' && src.handedness === 'left' && (Math.abs(ax) > 0.15 || Math.abs(ay) > 0.15)) {
       renderer.xr.getCamera().getWorldDirection(_head);
       _head.y = 0; _head.normalize();
@@ -662,18 +703,25 @@ function updateLocomotion(dt) {
       q.y = groundHeightAt(q.x, q.z, feet);   // 楼梯逐级上升 / 走出边缘回落
       if (feet - q.y <= 0.6) standAt(q);      // 悬崖保护:平滑移动不走出 >0.6 米跌落沿
     }
-    if (src.handedness === 'right') {
+    // 转向:瞬移模式双手左右皆可(瞄准中不转);平滑模式右手(左手是移动)
+    const canTurn = LOCO.mode === 'teleport' ? !aimingThis : src.handedness === 'right';
+    if (canTurn) {
       if (Math.abs(ax) > 0.6) {
         if (LOCO.turnMode === 'snap') {
-          if (!src._turned) { src._turned = true; rotateWorld(ax > 0 ? -Math.PI / 4 : Math.PI / 4); }
+          if (!src._turned) { src._turned = true; rotateWorld(ax > 0 ? Math.PI / 4 : -Math.PI / 4); }
         } else {
-          rotateWorld((ax > 0 ? -1 : 1) * 1.6 * dt);
+          rotateWorld((ax > 0 ? 1 : -1) * 1.6 * dt);
         }
       } else {
         src._turned = false;
       }
     }
   }
+  if (!aimingNow) {
+    if (wasAiming && aimValid) standAt(_aimQ);
+    teleMarker.visible = false;
+  }
+  wasAiming = aimingNow;
 }
 // PC 方向键行走
 const keysDown = new Set();
@@ -751,6 +799,8 @@ function updateRoomUI(dt) {
 // ═══ 主循环(蒸馏自 loop.js:面板朝向/live 重绘/动画 switch/customUpdate 保险丝)═══
 const _camQuat = new THREE.Quaternion();
 const _parentQuat = new THREE.Quaternion();
+const mirrorCam = new THREE.PerspectiveCamera(70, 4 / 3, 0.1, 500);   // VR 会话时 PC 画布镜像头显位姿
+const _mirrorScale = new THREE.Vector3();
 let panelTimer = 0;
 renderer.setAnimationLoop(() => {
   const dt = clock.getDelta();
@@ -832,9 +882,17 @@ renderer.setAnimationLoop(() => {
       }
     }
     setHover(hv);
+    // 头显渲染 + PC 画布镜像(像头显投屏:学生真实所见,含手柄射线/瞬移环)
+    renderer.render(scene, camera);
+    renderer.xr.enabled = false;
+    renderer.xr.getCamera().matrixWorld.decompose(mirrorCam.position, mirrorCam.quaternion, _mirrorScale);
+    mirrorCam.aspect = innerWidth / Math.max(innerHeight, 1);
+    mirrorCam.updateProjectionMatrix();
+    renderer.render(scene, mirrorCam);
+    renderer.xr.enabled = true;
   } else {
     orbitCtl.update();
+    renderer.render(scene, camera);
   }
-  renderer.render(scene, camera);
 });
 `;

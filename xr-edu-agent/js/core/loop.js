@@ -30,6 +30,10 @@ const _pipSize = new THREE.Vector2();
 const _pipHidden = [];
 let orbitWasOn = true;   // 进 VR 预览前 orbit 是否开着,退出时还原
 
+// 真 VR 会话时 PC 画布的镜像相机(= 头显位姿,像看头显投屏)
+const mirrorCam = new THREE.PerspectiveCamera(70, 4 / 3, 0.1, 500);
+const _mirrorScale = new THREE.Vector3();
+
 // 桌面 VR 预览下手柄激光(模拟 XR 控制器射线;真 immersive 会话用 interaction.js 的控制器)
 const previewRays = new THREE.Group();
 previewRays.name = 'vr-preview-rays';
@@ -258,6 +262,20 @@ export function startLoop() {
       renderer.setViewport(0, 0, size.x, size.y);
       renderer.render(scene, studentCam);
       restoreAfterPiP();
+    } else if (renderer.xr.isPresenting) {
+      // 真 VR 会话:头显画面 + PC 画布镜像(头显投屏效果——学生真实所见,
+      // 含手柄射线/瞬移落点环;编辑器 UI 双端都不出现)
+      hideEditorUIForPiP();
+      renderer.render(scene, camera);                       // 头显(XR framebuffer)
+      renderer.xr.enabled = false;                          // 临时关 XR → 下面这次渲染落到页面画布
+      renderer.xr.getCamera().matrixWorld.decompose(mirrorCam.position, mirrorCam.quaternion, _mirrorScale);
+      const size = renderer.getSize(_pipSize);
+      mirrorCam.aspect = size.x / Math.max(size.y, 1);
+      mirrorCam.updateProjectionMatrix();
+      renderer.render(scene, mirrorCam);
+      renderer.xr.enabled = true;
+      restoreAfterPiP();
+      pipFrame.classList.add('hidden');
     } else {
       renderer.render(scene, camera);
       renderStudentPiP();   // 学生相机画中画(主画面之后叠加渲染)

@@ -2,7 +2,7 @@
 //  视口交互:点选 / 拖放 / 工具栏 / 快捷键 / 浮动属性检查器
 // ═══════════════════════════════════════════════════════════════
 import * as THREE from 'three';
-import { renderer, camera, sceneRoot, tctrl, orbit, grid, vpEl } from '../core/three-setup.js';
+import { renderer, sceneRoot, tctrl, orbit, grid, vpEl } from '../core/three-setup.js';
 import { state, setPlayMode } from '../core/state.js';
 import { on, emit } from '../core/events.js';
 import { toast, escapeHtml } from '../core/utils.js';
@@ -15,6 +15,7 @@ import { findAssetSkill } from '../assets/registry.js';
 import { t } from '../core/i18n.js';
 import { animDesc, ACTION_DESC } from './hierarchy.js';
 import { updatePanelContent } from '../panels/panel3d.js';
+import { getViewCamera } from '../core/loop.js';
 
 // ── 点选 / PC Interactor(鼠标 → 语义交互事件)──
 // 运行模式(▶):单击可交互对象 = 触发交互;按住拖动带 onGrab 的对象 = grab/drag/release;Alt+单击 = 强制选中
@@ -30,7 +31,7 @@ function setPointer(e) {
   const rect = renderer.domElement.getBoundingClientRect();
   pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
   pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-  raycaster.setFromCamera(pointer, camera);
+  raycaster.setFromCamera(pointer, getViewCamera());
 }
 
 // skipEditorOnly:运行模式下学生化身等编辑器对象点击穿透(Alt+点击仍可选中)
@@ -141,7 +142,7 @@ vpEl.addEventListener('drop', e => {
   const rect = renderer.domElement.getBoundingClientRect();
   pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
   pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-  raycaster.setFromCamera(pointer, camera);
+  raycaster.setFromCamera(pointer, getViewCamera());
   const hit = new THREE.Vector3();
   raycaster.ray.intersectPlane(groundPlane, hit);
   record();

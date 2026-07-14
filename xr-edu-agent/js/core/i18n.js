@@ -29,7 +29,10 @@ const DICT = {
   'top.shareTitle': { zh: '分享给学生(演示)', en: 'Share with students (demo)' },
   'top.shareToast': { zh: '🔗 分享链接已复制,学生可在浏览器/头显中打开(演示)', en: '🔗 Share link copied. Students can open it in a browser or headset (demo)' },
   'top.vr': { zh: '🥽 进入 VR 预览', en: '🥽 Enter VR' },
-  'top.vrTitle': { zh: '使用 WebXR 进入 VR 预览', en: 'Preview in VR via WebXR' },
+  'top.vrExit': { zh: '👁 退出 VR 预览', en: '👁 Exit VR Preview' },
+  'top.vrTitle': { zh: '以学生第一人称预览 VR 画面(含手柄射线);再点一次或停止运行可退出', en: 'Preview the student first-person VR view (with controller rays); click again or stop play to exit' },
+  'top.vrOn': { zh: '🥽 已进入学生第一人称 VR 预览 — WASD 移动,点击交互;再点顶栏或停止运行退出', en: '🥽 Student first-person VR preview — WASD to move, click to interact; click the top bar again or stop play to exit' },
+  'top.vrOff': { zh: '👁 已退出 VR 预览,回到编辑视角', en: '👁 Exited VR preview — back to editor view' },
   'top.langTitle': { zh: '切换界面语言 / Switch language', en: 'Switch language / 切换界面语言' },
 
   // ── 左栏 Tab ──

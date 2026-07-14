@@ -7,8 +7,9 @@ import { renderer, scene, camera, sceneRoot, orbit, resize, tctrl, grid } from '
 import { clock } from './three-setup.js';
 import { state, setPlayMode } from './state.js';
 import { toast } from './utils.js';
-import { L } from './i18n.js';
-import { selBox, extraBoxes } from '../scene/manager.js';
+import { L, t } from './i18n.js';
+import { on } from './events.js';
+import { selBox, extraBoxes, deselect } from '../scene/manager.js';
 import { drawPanel } from '../panels/panel3d.js';
 import { chemLabUpdate } from '../labs/chem-oxygen.js';
 import { engLabUpdate } from '../labs/english-cafe.js';
@@ -22,15 +23,85 @@ const _camQuat = new THREE.Quaternion();
 const _parentQuat = new THREE.Quaternion();
 let panelRedrawTimer = 0;
 
-// ── 学生相机画中画预览(类 Unity Camera Preview)──
-// 选中学生视角对象 / 运行可走动课时,在视口右下角渲染学生眼中的画面。
-// 相机参数固定(FOV 60°),不随代表物缩放而变 —— 缩放只是 gizmo 大小;
-// 渲染前隐藏所有编辑器 UI(gizmo/选择框/网格/编辑器专用对象/导览路线),
-// 这个画面要严格等于真学生眼中的样子
+// ── 学生相机(PiP + 桌面 VR 预览共用)──
 const studentCam = new THREE.PerspectiveCamera(60, 4 / 3, 0.1, 200);
 const pipFrame = document.getElementById('cam-preview-frame');
 const _pipSize = new THREE.Vector2();
 const _pipHidden = [];
+let orbitWasOn = true;   // 进 VR 预览前 orbit 是否开着,退出时还原
+
+// 桌面 VR 预览下手柄激光(模拟 XR 控制器射线;真 immersive 会话用 interaction.js 的控制器)
+const previewRays = new THREE.Group();
+previewRays.name = 'vr-preview-rays';
+previewRays.visible = false;
+scene.add(previewRays);
+function makePreviewRay(xSign) {
+  const g = new THREE.Group();
+  const hand = new THREE.Mesh(
+    new THREE.SphereGeometry(0.035, 10, 10),
+    new THREE.MeshBasicMaterial({ color: 0xddeeff })
+  );
+  hand.position.set(xSign * 0.22, -0.28, -0.18);
+  const line = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0, 0, -1)]),
+    new THREE.LineBasicMaterial({ color: 0x4a9eff, transparent: true, opacity: 0.75 })
+  );
+  line.position.copy(hand.position);
+  line.scale.z = 5;
+  g.add(hand, line);
+  previewRays.add(g);
+}
+makePreviewRay(-1);
+makePreviewRay(1);
+
+function syncPreviewRays() {
+  if (!state.vrPreview || !syncStudentCam()) { previewRays.visible = false; return; }
+  previewRays.visible = true;
+  previewRays.position.copy(studentCam.position);
+  previewRays.rotation.set(0, studentCam.rotation.y, 0);
+}
+
+/** 当前主视口用于点选/渲染的相机(VR 预览=学生眼;否则=编辑相机) */
+export function getViewCamera() {
+  return state.vrPreview ? studentCam : camera;
+}
+
+export function isVrPreview() {
+  return !!state.vrPreview;
+}
+
+function syncVrButton() {
+  const btn = document.getElementById('btn-vr');
+  if (!btn) return;
+  btn.textContent = state.vrPreview ? t('top.vrExit') : t('top.vr');
+  btn.title = t('top.vrTitle');
+  btn.classList.toggle('primary', !state.vrPreview);
+}
+
+export function enterVrPreview() {
+  if (state.vrPreview) return;
+  state.vrPreview = true;
+  if (!state.playMode) setPlayMode(true);
+  orbitWasOn = orbit.enabled;
+  orbit.enabled = false;
+  deselect();
+  syncVrButton();
+  toast(t('top.vrOn'));
+}
+
+export function exitVrPreview({ toastMsg = true } = {}) {
+  if (!state.vrPreview) return;
+  state.vrPreview = false;
+  previewRays.visible = false;
+  orbit.enabled = orbitWasOn;
+  syncVrButton();
+  if (toastMsg) toast(t('top.vrOff'));
+}
+
+export function toggleVrPreview() {
+  if (state.vrPreview) exitVrPreview();
+  else enterVrPreview();
+}
 
 // 学生眼中不存在的东西:编辑器专用对象(含 rig 自身)+ 运行时隐藏的导览路线
 function hideEditorUIForPiP() {
@@ -59,7 +130,8 @@ function syncStudentCam() {
 }
 
 function renderStudentPiP() {
-  if (renderer.xr.isPresenting) { pipFrame.classList.add('hidden'); return; }
+  // VR 预览时主视口已经是学生眼,不再叠小窗;真 XR 会话也不叠
+  if (renderer.xr.isPresenting || state.vrPreview) { pipFrame.classList.add('hidden'); return; }
   const rig = getStudentRig();
   const show = rig && (state.selection.includes(rig) || (state.playMode && locomotion.mode !== 'static'));
   pipFrame.classList.toggle('hidden', !show);
@@ -93,7 +165,7 @@ export function startLoop() {
     panelRedrawTimer += dt;
     const doRedraw = panelRedrawTimer > 0.15;
     if (doRedraw) panelRedrawTimer = 0;
-    const useStudentView = state.playMode && !renderer.xr.isPresenting && syncStudentCam();
+    const useStudentView = (state.playMode || state.vrPreview) && !renderer.xr.isPresenting && syncStudentCam();
     (useStudentView ? studentCam : camera).getWorldQuaternion(_camQuat);
     sceneRoot.traverse(o => {
       if (o.userData.isBillboard) {
@@ -175,16 +247,31 @@ export function startLoop() {
     // 房间内 UI 面板可见性:观看者在房间外→隐藏该房间的面板;在房间内→面板顶层渲染不被遮挡
     updateRoomUIVisibility(dt);
     orbit.update();
-    renderer.render(scene, camera);
-    renderStudentPiP();   // 学生相机画中画(主画面之后叠加渲染)
+    syncPreviewRays();
+
+    if (state.vrPreview && !renderer.xr.isPresenting && syncStudentCam()) {
+      // 桌面 VR 预览:整视口渲染学生第一人称(隐藏编辑器 UI / 代表物 / 路线)
+      const size = renderer.getSize(_pipSize);
+      studentCam.aspect = size.x / Math.max(size.y, 1);
+      studentCam.updateProjectionMatrix();
+      hideEditorUIForPiP();
+      renderer.setViewport(0, 0, size.x, size.y);
+      renderer.render(scene, studentCam);
+      restoreAfterPiP();
+    } else {
+      renderer.render(scene, camera);
+      renderStudentPiP();   // 学生相机画中画(主画面之后叠加渲染)
+    }
   });
 }
 
-// ── WebXR ──
-// 进入 VR 时按「学生视角」代表物摆放世界:学生出生在老师拖好的位置、面向老师定好的方向
-// 数学:学生恒在世界原点 → scene.rotation.y = −yaw,scene.position = −R(−yaw)·spawn
+// ── WebXR + 桌面 VR 预览 ──
+// 顶栏「进入 VR 预览」= 桌面第一人称(学生眼中所见 + 模拟手柄射线)。
+// 不再从编辑器直接拉起 immersive-vr(会把页面画布整屏变黑);真头显仍可在导出播放器里体验。
+// 若已有 immersive 会话(扩展入口),仍按学生出生点摆世界。
 export function setupXR() {
   renderer.xr.addEventListener('sessionstart', () => {
+    exitVrPreview({ toastMsg: false });   // 真头显优先,退出桌面预览
     const sp = getStudentSpawn();
     if (sp) {
       scene.rotation.y = -sp.yaw;
@@ -205,19 +292,30 @@ export function setupXR() {
   });
   setupXRInteraction();   // 控制器射线:扳机=activate/瞬移,grip=抓取(语义交互层)
 
+  // 隐藏 three.js 默认 VRButton;顶栏按钮改为桌面第一人称预览
   const vrButton = VRButton.createButton(renderer);
   vrButton.style.display = 'none';
   document.body.appendChild(vrButton);
-  document.getElementById('btn-vr').addEventListener('click', () => {
-    if (navigator.xr) {
+
+  const btn = document.getElementById('btn-vr');
+  btn?.addEventListener('click', e => {
+    // 普通点击 = 桌面学生第一人称预览;Shift+点击 = 真 immersive 头显会话(若设备支持)
+    if (e.shiftKey) {
+      if (!navigator.xr) {
+        toast(L('🥽 当前浏览器不支持 WebXR', '🥽 This browser does not support WebXR'));
+        return;
+      }
       navigator.xr.isSessionSupported('immersive-vr').then(ok => {
         if (ok) vrButton.click();
-        else toast(L('🥽 当前设备不支持 WebXR VR 会话(需 VR 头显),但场景已具备 VR 能力',
-          '🥽 This device does not support WebXR VR sessions (headset required), but the scene is VR-ready'));
+        else toast(L('🥽 当前设备不支持 WebXR VR 会话(需 VR 头显)',
+          '🥽 This device does not support WebXR VR sessions (headset required)'));
       });
-    } else {
-      toast(L('🥽 当前浏览器不支持 WebXR,正式版中学生可通过头显进入此场景',
-        '🥽 This browser does not support WebXR; students can enter this scene with a headset'));
+      return;
     }
+    toggleVrPreview();
   });
+
+  syncVrButton();
+  // 停止运行 → 同步退出 VR 预览,回到编辑视角
+  on('play-mode-changed', v => { if (!v) exitVrPreview({ toastMsg: false }); });
 }

@@ -9,6 +9,7 @@ export const state = {
   selection: [],       // 全部选中对象(Shift 多选;选中即加入 AI 对话上下文)
   objCounter: 0,       // 对象计数器(用于命名与 oid)
   playMode: false,     // 运行模式(类 Unity Play):开=动画播放+学生交互生效;关=编辑模式,点击一律选中
+  vrPreview: false,    // 桌面 VR 预览:主视口切学生第一人称(含模拟手柄射线);非 immersive 会话
   animPlaying: false,  // 全局动画时钟开关(playMode 的子开关:运行中老师仍可单独暂停动画)
   contextPins: [],     // 已加入对话上下文的场景对象(= selection 的镜像,选中即上下文)
   ctxTurn: 0,          // 对话轮次计数(orchestrator 每轮 +1,工作集判定用)

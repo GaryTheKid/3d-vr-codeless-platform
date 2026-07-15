@@ -6,9 +6,9 @@
 globalThis.XR_AGENT_MAP =
 {
   "meta": {
-    "version": 2,
-    "updated": "2026-07-12",
-    "note": "Agent 工作流有向图 + 工具目录,全部文案为 zh/en 双语对象。维护方式见 js/agent/README.md;可视化页 agent-viewer*.html 纯本地,直接双击打开。技能库不在此文件里——技能页加载 skills/ 目录的注册表脚本(技能的英文版写在技能文件的 nameEn/descriptionEn/promptEn 字段),技能改动自动同步。"
+    "version": 3,
+    "updated": "2026-07-14",
+    "note": "Agent 工作流有向图 + 工具目录(v3:流水线阶段 + report_progress 进度 UI + debugging 排障技能),全部文案为 zh/en 双语对象。维护方式见 js/agent/README.md;可视化页 agent-viewer*.html 纯本地,直接双击打开。技能库不在此文件里——技能页加载 skills/ 目录的注册表脚本(含 debugging.js;英文版写在 nameEn/descriptionEn/promptEn),技能改动自动同步。"
   },
 
   "workflow": {
@@ -34,8 +34,8 @@ globalThis.XR_AGENT_MAP =
         "group": "orchestrate",
         "title": { "zh": "一轮编排开始 runTurn", "en": "Turn orchestration starts (runTurn)" },
         "desc": {
-          "zh": "编排器主入口:busy 加锁防并发;state.ctxTurn++(工作集轮次,近 3 轮被工具创建/修改的对象会自动进大场景预取);resetTurnStats() 清零本轮 token/花费统计;logEvent('turn_start') 落结构化日志。然后按 hasLLM() 分流:api-keys.txt 里有有效密钥走 LLM 路径,否则走离线关键词规则。",
-          "en": "Main orchestrator entry: takes the busy lock against concurrent turns; increments state.ctxTurn (working-set round — objects created/modified by tools in the last 3 rounds are auto-prefetched in large-scene mode); resetTurnStats() zeroes this turn's token/cost stats; logEvent('turn_start') writes a structured log. Then routes by hasLLM(): a valid key in api-keys.txt takes the LLM path, otherwise the offline keyword-rule path."
+          "zh": "编排器主入口:busy 加锁防并发;state.ctxTurn++(工作集轮次,近 3 轮被工具创建/修改的对象会自动进大场景预取);resetTurnStats() 清零本轮 token/花费统计;清空 lastProgress 并 emit('agent-turn-start') 让聊天区重置流水线进度卡;logEvent('turn_start') 落结构化日志。然后按 hasLLM() 分流:已配置代理密钥走 LLM 路径,否则走离线关键词规则。",
+          "en": "Main orchestrator entry: takes the busy lock against concurrent turns; increments state.ctxTurn (working-set round — objects created/modified by tools in the last 3 rounds are auto-prefetched in large-scene mode); resetTurnStats() zeroes this turn's token/cost stats; clears lastProgress and emits 'agent-turn-start' so chat resets the pipeline progress card; logEvent('turn_start') writes a structured log. Then routes by hasLLM(): a configured proxy key takes the LLM path, otherwise the offline keyword-rule path."
         },
         "uses": { "skills": [], "tools": [] },
         "file": "js/agent/orchestrator.js#runTurn"
@@ -96,8 +96,8 @@ globalThis.XR_AGENT_MAP =
         "group": "llm",
         "title": { "zh": "只读问答 runAsk", "en": "Read-only Q&A (runAsk)" },
         "desc": {
-          "zh": "单次 LLM 调用,不带工具定义——模型只能解释、答疑、给建议,物理上改不了场景。系统提示 = BASE_SYSTEM(含 LANG_RULE 语言规则);消息 = 近 12 轮 history + 本轮上下文消息。流式渲染:思考摘要进可折叠的思考区块(startThinkingBlock),正文进流式消息。complexity=chat 的闲聊也走这里。",
-          "en": "A single LLM call with no tool definitions — the model can only explain, answer and advise; it physically cannot modify the scene. System prompt = BASE_SYSTEM (with the LANG_RULE language rule); messages = last 12 history turns + this turn's context message. Streaming render: thinking summaries go into a collapsible thinking block (startThinkingBlock), body text into a streaming message. complexity=chat small talk also lands here."
+          "zh": "单次 LLM 调用,不带工具定义——模型只能解释、答疑、给建议,物理上改不了场景。系统提示 = BASE_SYSTEM(含 LANG_RULE 语言规则);消息 = 近 12 轮 history + 本轮上下文消息。流式渲染:思考摘要进可折叠的思考区块(startThinkingBlock),正文进流式消息;等待时打字区显示灰字「正在思考…」。complexity=chat 的闲聊也走这里。",
+          "en": "A single LLM call with no tool definitions — the model can only explain, answer and advise; it physically cannot modify the scene. System prompt = BASE_SYSTEM (with the LANG_RULE language rule); messages = last 12 history turns + this turn's context message. Streaming render: thinking summaries go into a collapsible thinking block (startThinkingBlock), body text into a streaming message; while waiting, typing shows grey status 'Thinking…'. complexity=chat small talk also lands here."
         },
         "uses": { "skills": [], "tools": [] },
         "file": "js/agent/orchestrator.js#runAsk"
@@ -109,8 +109,8 @@ globalThis.XR_AGENT_MAP =
         "group": "llm",
         "title": { "zh": "规划 runPlanner", "en": "Planning (runPlanner)" },
         "desc": {
-          "zh": "小型 LLM 调用(effort 固定 low,预算小),输出严格 JSON:{intent 一句话意图, complexity: chat|simple|complex, skills: [技能id], plan: [步骤]}。这是技能路由发生的地方:系统提示里只给技能目录(id + description 一行,即\"路由规则\"),模型按任务挑 1~4 个技能——渐进暴露的第一层,完整技能 prompt 此时不进上下文。可靠性处理:stop_reason=max_tokens 时预算×2 自动重试一次;JSON 解析失败(extractJSON 三级尝试)不硬崩,退化为 complex 兜底计划。",
-          "en": "A small LLM call (effort fixed to low, small budget) outputting strict JSON: {intent one-liner, complexity: chat|simple|complex, skills: [skill ids], plan: [steps]}. This is where skill routing happens: the system prompt carries only the skill catalog (one id + description line per skill — the 'routing rule'), and the model picks 1–4 skills — the first layer of progressive disclosure; full skill prompts don't enter the context yet. Reliability: on stop_reason=max_tokens, retries once with budget ×2; JSON parse failure (extractJSON's three-stage attempt) doesn't hard-fail — it degrades to a complex fallback plan."
+          "zh": "小型 LLM 调用(effort 固定 low,预算小),输出严格 JSON:{intent 一句话意图, complexity: chat|simple|complex, skills: [技能id], plan: [步骤]}。这是技能路由发生的地方:系统提示里只给技能目录(id + description 一行,即\"路由规则\"),模型按任务挑 1~4 个技能——渐进暴露的第一层,完整技能 prompt 此时不进上下文(排障类需求会路由到 debugging)。complex 任务的 plan 须按标准流水线组织:搭建类 = 语义本体(对象清单与关系)→搭建场景→加交互与动画→核验;修复类 = 分层排查→修复→免疫加固→验收。聊天打字区显示灰字「正在拆解任务、挑选技能…」。可靠性:stop_reason=max_tokens 时预算×2 重试;JSON 解析失败退化为 complex 兜底计划。",
+          "en": "A small LLM call (effort fixed to low, small budget) outputting strict JSON: {intent one-liner, complexity: chat|simple|complex, skills: [skill ids], plan: [steps]}. This is where skill routing happens: the system prompt carries only the skill catalog (one id + description line per skill — the 'routing rule'), and the model picks 1–4 skills — the first layer of progressive disclosure; full skill prompts don't enter context yet (bug-fix requests route to debugging). Complex plans must follow the standard pipeline: build = ontology (object list & relationships) → scene build → interactions & animation → verification; repair = layered diagnosis → fix → immunize → acceptance. Chat typing shows grey status 'Breaking down the task & picking skills…'. Reliability: on max_tokens retries with budget ×2; JSON parse failure degrades to a complex fallback plan."
         },
         "uses": {
           "skills": [
@@ -147,15 +147,15 @@ globalThis.XR_AGENT_MAP =
         "group": "llm",
         "title": { "zh": "执行器工具循环 runExecutor", "en": "Executor tool loop (runExecutor)" },
         "desc": {
-          "zh": "核心执行阶段:带全部工具定义的多轮 tool-use 循环(上限 20 轮)。系统提示分两块做 Prompt Caching:稳定块 = BASE_SYSTEM + 资源/模板目录(标 cache_control: ephemeral,连带工具定义一起缓存);变化块 = Planner 选中技能的完整 prompt(skillPrompts,渐进暴露的第二层——只有被选中的技能才占上下文)。循环内:模型流式输出思考/正文/tool_use → 本地执行工具 → tool_result 回填 → setMsgCacheBreakpoint 把缓存断点滑到最新消息(第 2 轮起前缀全命中缓存读,0.1× 价)。质量纪律:validation 技能引导模型多步修改后调 get_scene 自检;stop_reason=max_tokens 时给老师可读的截断提示(不再静默\"完成。\")。预算由 callBudget(stage, complexity) 按思考深度档位+模型算出(deepThinker 执行放 high 且预算×1.5,simple 任务降档提速)。",
-          "en": "The core execution stage: a multi-round tool-use loop with all tool definitions (capped at 20 rounds). The system prompt is split in two for prompt caching: a stable block = BASE_SYSTEM + asset/template catalogs (marked cache_control: ephemeral, cached together with tool definitions); a variable block = full prompts of the Planner-selected skills (skillPrompts — the second layer of progressive disclosure: only chosen skills occupy context). Inside the loop: the model streams thinking/body/tool_use → tools execute locally → tool_result feeds back → setMsgCacheBreakpoint slides the cache breakpoint to the latest message (from round 2 on, the prefix is a full cache read at 0.1× price). Quality discipline: the validation skill nudges the model to self-check with get_scene after multi-step edits; on stop_reason=max_tokens the teacher gets a readable truncation notice (no more silent 'Done.'). Budgets come from callBudget(stage, complexity) based on thinking-effort tier + model (deepThinker executes at high with ×1.5 budget; simple tasks downshift for speed)."
+          "zh": "核心执行阶段:带全部 23 个工具定义的多轮 tool-use 循环(上限 20 轮)。系统提示分两块做 Prompt Caching:稳定块 = BASE_SYSTEM + 资源/模板目录(标 cache_control: ephemeral);变化块 = Planner 选中技能的完整 prompt(skillPrompts)。复杂任务(≥3 步)按流水线推进——每进入新阶段先调 report_progress(语义本体→搭建场景→加交互→核验;修复类:排查→修复→免疫→验收);打字三个点上方同步显示灰字阶段状态(类 Cursor)。循环内:流式思考/正文/tool_use → 本地执行 → tool_result 回填 → 缓存断点滑动(第 2 轮起 0.1× 价)。report_progress 零副作用,不触发场景快照/Keep 卡。质量纪律:validation 引导 get_scene 自检;排障任务带 debugging;max_tokens 给可读截断提示。结束时 emit('agent-progress-end') 把进度卡末阶段标完成。",
+          "en": "Core execution: a multi-round tool-use loop with all 23 tool definitions (capped at 20 rounds). System prompt split for caching: stable = BASE_SYSTEM + catalogs (cache_control: ephemeral); variable = full prompts of selected skills (skillPrompts). Complex tasks (≥3 steps) follow the pipeline — call report_progress on each new stage (ontology → build → interact → verify; repair: diagnose → fix → immunize → accept); grey stage status appears above the typing dots (Cursor-like). Loop: stream thinking/body/tool_use → local exec → tool_result → sliding cache breakpoint (0.1× from round 2). report_progress is zero-side-effect and does not trigger scene snapshots/Keep cards. Quality: validation nudges get_scene; bug-fix loads debugging; max_tokens shows a readable truncation notice. On finish, emit('agent-progress-end') seals the last pipeline stage as done."
         },
         "uses": {
           "skills": [
-            { "zh": "Planner 选中的技能完整 prompt 注入系统提示变化块(常见组合:scene-organization + object-creation + pedagogy;造精细对象加 custom-modeling;交互实验加 experiment-logic + interaction-design;室内课加 room-design;涉及学生视角/导览加 view-navigation;收尾常带 validation / locomotion)", "en": "Full prompts of Planner-selected skills injected into the variable system-prompt block (common combos: scene-organization + object-creation + pedagogy; add custom-modeling for refined builds; experiment-logic + interaction-design for interactive experiments; room-design for in-room lessons; view-navigation when student viewpoint/touring matters; often validation / locomotion at wrap-up)" }
+            { "zh": "Planner 选中的技能完整 prompt 注入变化块(常见:scene-organization + object-creation + pedagogy;精细建模 + custom-modeling;交互实验 + experiment-logic + interaction-design;室内 + room-design;导览 + view-navigation;收尾 validation / locomotion;排障 + debugging)", "en": "Full prompts of selected skills in the variable block (common: scene-organization + object-creation + pedagogy; custom-modeling for refined builds; experiment-logic + interaction-design; room-design indoors; view-navigation for touring; wrap-up validation / locomotion; debugging for bug-fix)" }
           ],
           "tools": [
-            { "zh": "全部 22 个工具的定义都发给模型,由模型按需发起 tool_use", "en": "All 22 tool definitions are sent to the model, which issues tool_use on demand" }
+            { "zh": "全部 23 个工具;复杂任务每阶段开头调 report_progress 汇报流水线进度", "en": "All 23 tools; complex tasks call report_progress at the start of each pipeline stage" }
           ]
         },
         "file": "js/agent/orchestrator.js#runExecutor"
@@ -167,8 +167,8 @@ globalThis.XR_AGENT_MAP =
         "group": "tools",
         "title": { "zh": "工具执行 execTool", "en": "Tool execution (execTool)" },
         "desc": {
-          "zh": "本地执行模型发起的 tool_use:tools/index.js 按 name 分发到六个分组模块(build/edit/panel/query/env/space),exec(input) 直接操作 Three.js 场景;改场景的工具都会 markTouched(obj)(维护大场景工作集)并 emit 事件刷新 UI。聊天区同步渲染工具卡(toolCallLabel 双语标签),执行结果 {ok, msg} 作为 tool_result 回填给模型继续推理。异常被捕获成 fail 消息——模型看到错误会自行修正参数重试(如行为代码编译失败)。",
-          "en": "Executes the model's tool_use locally: tools/index.js dispatches by name to the six group modules (build/edit/panel/query/env/space); exec(input) manipulates the Three.js scene directly; scene-mutating tools call markTouched(obj) (maintains the large-scene working set) and emit events to refresh the UI. The chat renders a tool card in sync (bilingual toolCallLabel), and the {ok, msg} result feeds back to the model as tool_result to continue reasoning. Exceptions are caught into fail messages — the model sees the error, fixes its parameters and retries (e.g. behavior-code compile errors)."
+          "zh": "本地执行模型发起的 tool_use:tools/index.js 按 name 分发到六个分组模块(build/edit/panel/query/env/space),exec(input) 直接操作 Three.js 场景;改场景的工具都会 markTouched(obj) 并 emit 事件刷 UI。普通工具在聊天区渲染工具卡;report_progress 不渲染工具卡(改走流水线进度节点)。结果 {ok, msg} 作为 tool_result 回填;异常捕获成 fail——模型自行改参重试。",
+          "en": "Executes tool_use locally: tools/index.js dispatches by name to six modules (build/edit/panel/query/env/space); exec(input) mutates the Three.js scene; scene-mutating tools call markTouched(obj) and emit UI events. Normal tools render a chat tool card; report_progress skips the card (routes to the pipeline-progress node instead). {ok, msg} feeds back as tool_result; exceptions become fail messages for the model to retry."
         },
         "uses": {
           "skills": [],
@@ -177,11 +177,31 @@ globalThis.XR_AGENT_MAP =
             { "zh": "修改类 edit-tools:update_object / remove_object / select_object", "en": "Edit group edit-tools: update_object / remove_object / select_object" },
             { "zh": "面板类 panel-tools:attach_label / add_panel / update_panel / add_quiz_panel", "en": "Panel group panel-tools: attach_label / add_panel / update_panel / add_quiz_panel" },
             { "zh": "查询类 query-tools:get_scene / find_objects / get_object_detail", "en": "Query group query-tools: get_scene / find_objects / get_object_detail" },
-            { "zh": "环境类 env-tools:set_environment / configure_locomotion / set_student_view", "en": "Environment group env-tools: set_environment / configure_locomotion / set_student_view" },
+            { "zh": "环境类 env-tools:report_progress / set_environment / configure_locomotion / set_student_view", "en": "Environment group env-tools: report_progress / set_environment / configure_locomotion / set_student_view" },
             { "zh": "空间引导类 space-tools:add_arrow / add_path / build_room / build_stairs", "en": "Space & guidance group space-tools: add_arrow / add_path / build_room / build_stairs" }
           ]
         },
         "file": "js/agent/tools/index.js#execTool"
+      },
+      {
+        "id": "progress",
+        "icon": "🧩",
+        "col": 7,
+        "group": "pipeline",
+        "title": { "zh": "流水线进度 UI", "en": "Pipeline progress UI" },
+        "desc": {
+          "zh": "复杂任务执行中的可视进度层(类 Cursor 的步骤状态)。report_progress 工具 emit('agent-progress'):chat.js 渲染「🧩 执行流水线」进度卡(已完成阶段打勾、当前阶段高亮 + note);同时 lastProgress 更新 → 打字指示器上方灰字显示「阶段 2/4 · 语义本体」。标准阶段:搭建类 = 语义本体(列对象与关系:谁控制谁/谁和谁交互)→搭建场景→加交互与动画→核验;修复类 = 分层排查→修复→免疫加固→验收。简单任务(1~2 工具)不调、不渲染进度卡。轮末 agent-progress-end 封口;下一轮 agent-turn-start 重置。",
+          "en": "Visible progress layer during complex execution (Cursor-like step status). report_progress emits 'agent-progress': chat.js renders a '🧩 Pipeline' card (done stages checkmarked, current stage highlighted + note); lastProgress also drives the grey line above the typing dots ('Stage 2/4 · Ontology'). Standard stages: build = ontology (object list & relationships: who controls whom / who interacts) → scene build → interactions & animation → verification; repair = layered diagnosis → fix → immunize → acceptance. Simple tasks (1–2 tools) skip this. Sealed by agent-progress-end; reset on next agent-turn-start."
+        },
+        "uses": {
+          "skills": [
+            { "zh": "(不直接加载技能;阶段划分来自 Planner 的流水线 plan + Executor 提示词纪律)", "en": "(Does not load skills directly; stages come from the Planner's pipeline plan + Executor prompt discipline)" }
+          ],
+          "tools": [
+            { "zh": "report_progress:{stage,total,title,note} — 零副作用,只广播事件刷新 UI", "en": "report_progress:{stage,total,title,note} — zero side effects; only emits events to refresh the UI" }
+          ]
+        },
+        "file": "js/ui/chat.js + js/agent/tools/env-tools.js#report_progress"
       },
       {
         "id": "reply",
@@ -190,8 +210,8 @@ globalThis.XR_AGENT_MAP =
         "group": "output",
         "title": { "zh": "流式回复与统计", "en": "Streamed reply & stats" },
         "desc": {
-          "zh": "模型不再发起工具调用后,最终正文以流式消息渲染进聊天区(思考摘要区块自动折叠为\"查看推理过程\")。回复语言由系统提示的 LANG_RULE 跟随界面语言。轮末如有 LLM 调用,渲染本轮统计条(调用次数/输入输出 token/缓存读写/估算花费,estimateCost 按缓存分价)。",
-          "en": "Once the model stops issuing tool calls, the final body streams into the chat (the thinking block auto-collapses into 'View reasoning'). Reply language follows the system prompt's LANG_RULE, which tracks the UI language. If the turn made LLM calls, a stats bar renders (call count / input & output tokens / cache reads & writes / estimated cost — estimateCost prices cache tiers separately)."
+          "zh": "模型不再发起工具调用后,最终正文以流式消息渲染进聊天区;思考摘要区块自动折叠为「查看推理过程」。等待模型时打字区显示三跳动点 + 上方灰字状态行(规划/流水线阶段/思考中)。回复语言由 LANG_RULE 跟随界面语言。轮末如有 LLM 调用,显示本轮统计条(调用次数/输入输出 token/缓存读写/估算花费)。",
+          "en": "Once tool calls stop, the final body streams into chat; the thinking block auto-collapses to 'View reasoning'. While waiting, typing shows three bouncing dots plus a grey status line above (planning / pipeline stage / thinking). Reply language follows LANG_RULE (UI language). If the turn made LLM calls, a stats bar renders (calls / in-out tokens / cache / estimated cost)."
         },
         "uses": { "skills": [], "tools": [] },
         "file": "js/ui/chat.js"
@@ -203,8 +223,8 @@ globalThis.XR_AGENT_MAP =
         "group": "output",
         "title": { "zh": "收尾:历史 / 撤销 / 日志", "en": "Wrap-up: history / undo / logs" },
         "desc": {
-          "zh": "runTurn 收尾:① agent.history 追加本轮 user + assistant(去 HTML 标签,后续轮次只带近 12 条);② 本轮改过场景(turnMutated)则弹「保留 / 撤销」卡——老师不满意可一键回滚整轮改动(history.js 快照),未点选就开始下一轮视为保留;③ 若当前处于运行模式且本轮改了场景,refreshPlaySnapshot() 更新\"停止运行\"的回滚基线(防止老师停止运行时把 AI 本轮成果一起还原);④ logEvent('turn_end') 落日志(回复摘要 + 统计);busy 解锁。",
-          "en": "runTurn wrap-up: ① appends this turn's user + assistant to agent.history (HTML stripped; later turns carry only the last 12 entries); ② if the turn mutated the scene (turnMutated), shows the Keep / Undo card — the teacher can roll back the whole turn in one click (history.js snapshot); starting the next turn without choosing counts as Keep; ③ if play mode is on and the turn mutated the scene, refreshPlaySnapshot() refreshes the stop-play rollback baseline (so stopping play won't also revert the AI's work from this turn); ④ logEvent('turn_end') (reply summary + stats); releases the busy lock."
+          "zh": "runTurn 收尾:① agent.history 追加本轮 user + assistant(去 HTML 标签,后续轮次只带近 12 条);② 本轮改过场景(turnMutated,不含纯 report_progress)则弹「保留 / 撤销」卡——老师可一键回滚整轮(history.js 快照),未点选就开始下一轮视为保留;③ 运行模式中改了场景则 refreshPlaySnapshot() 更新停止运行的回滚基线;④ logEvent('turn_end');busy 解锁。",
+          "en": "runTurn wrap-up: ① append user + assistant to agent.history (HTML stripped; later turns keep last 12); ② if the turn mutated the scene (turnMutated; pure report_progress alone does not count), show Keep / Undo — teacher can roll back the whole turn (history.js snapshot); starting the next turn without choosing counts as Keep; ③ if play mode is on and the turn mutated, refreshPlaySnapshot() updates the stop-play baseline; ④ logEvent('turn_end'); release busy."
         },
         "uses": { "skills": [], "tools": [] },
         "file": "js/agent/orchestrator.js#runTurn"
@@ -224,7 +244,9 @@ globalThis.XR_AGENT_MAP =
       { "from": "plan-confirm", "to": "executor", "label": { "zh": "老师确认执行", "en": "Teacher confirms" } },
       { "from": "plan-confirm", "to": "post", "label": { "zh": "老师取消", "en": "Teacher cancels" } },
       { "from": "executor", "to": "tool-exec", "label": { "zh": "模型发起 tool_use", "en": "Model issues tool_use" } },
-      { "from": "tool-exec", "to": "executor", "label": { "zh": "tool_result 回填,继续循环(≤20 轮)", "en": "tool_result fed back, loop continues (≤20 rounds)" } },
+      { "from": "tool-exec", "to": "progress", "label": { "zh": "report_progress(进新阶段)", "en": "report_progress (new stage)" } },
+      { "from": "progress", "to": "executor", "label": { "zh": "进度卡更新,继续循环", "en": "Progress card updated, continue loop" } },
+      { "from": "tool-exec", "to": "executor", "label": { "zh": "其他工具 tool_result 回填(≤20 轮)", "en": "Other tool_result fed back (≤20 rounds)" } },
       { "from": "executor", "to": "reply", "label": { "zh": "无更多工具调用 / 截断", "en": "No more tool calls / truncated" } },
       { "from": "ask", "to": "reply", "label": "" },
       { "from": "offline", "to": "post", "label": "" },
@@ -263,6 +285,8 @@ globalThis.XR_AGENT_MAP =
       "summary": { "zh": "关键词语义检索 + 可选空间过滤,返回完整参数;大场景模式的主要查找手段。", "en": "Keyword semantic search + optional spatial filter, returns full params; the primary lookup in large-scene mode." } },
     { "name": "get_object_detail", "group": { "zh": "查询 query", "en": "Query" }, "file": "js/agent/tools/query-tools.js",
       "summary": { "zh": "按 oid 读单个对象完整参数与行为代码(改之前先看清现状)。", "en": "Reads one object's full params and behavior code by oid (look before you edit)." } },
+    { "name": "report_progress", "group": { "zh": "环境 env", "en": "Environment" }, "file": "js/agent/tools/env-tools.js",
+      "summary": { "zh": "零副作用的进度汇报:执行器每进入流水线新阶段(语义本体→搭建→交互→核验)先调它,聊天区渲染流水线进度卡并更新打字指示器上方的灰字状态。", "en": "Zero-side-effect progress report: the executor calls it on entering each pipeline stage (ontology → build → interaction → verification); the chat renders a pipeline progress card and updates the grey status line above the typing indicator." } },
     { "name": "set_environment", "group": { "zh": "环境 env", "en": "Environment" }, "file": "js/agent/tools/env-tools.js",
       "summary": { "zh": "运行/编辑模式、动画时钟、主光源、网格、视角锁定等全局开关。", "en": "Global switches: play/edit mode, animation clock, main light, grid, camera lock." } },
     { "name": "configure_locomotion", "group": { "zh": "环境 env", "en": "Environment" }, "file": "js/agent/tools/env-tools.js",

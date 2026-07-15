@@ -21,7 +21,7 @@ import { skillCatalogForLLM, skillPrompts } from './skills/index.js';
 import { assetCatalogForLLM } from '../assets/registry.js';
 import { scenarioCatalogForLLM, SCENARIOS } from '../labs/scenarios.js';
 import { setMainColor, COLOR_WORDS } from '../scene/manager.js';
-import { emit } from '../core/events.js';
+import { emit, on } from '../core/events.js';
 import { logEvent, summarize, summarizeToolInput } from './logger.js';
 import { record as recordHistory, beginTentative, commitTentative } from '../core/history.js';
 import { refreshPlaySnapshot } from '../core/play-reset.js';
@@ -42,6 +42,18 @@ const HISTORY_KEEP = 12;
 // 当前模型是否为"深思考"模型(如 Fable 5:恒开自适应思考)
 function isDeepThinker() {
   return !!MODELS.find(m => m.id === agent.model)?.deepThinker;
+}
+
+// ── 流水线进度(report_progress 工具广播的最新阶段)──
+// 用于打字指示器上方的灰字状态("阶段 2/5 · 语义本体"),让长思考不再是黑盒
+let lastProgress = null;
+on('agent-progress', p => { lastProgress = p; });
+function progressLabel() {
+  if (lastProgress?.title) {
+    const no = lastProgress.total ? `${lastProgress.stage}/${lastProgress.total}` : `${lastProgress.stage}`;
+    return L(`阶段 ${no} · ${lastProgress.title}`, `Stage ${no} · ${lastProgress.title}`);
+  }
+  return L('正在推演下一步工具调用…', 'Working out the next tool calls…');
 }
 
 // ── 各阶段思考深度与 token 预算 ──
@@ -168,7 +180,12 @@ ${skillCatalogForLLM()}
 可用场景模板:
 ${scenarioCatalogForLLM()}
 
-${isEN() ? 'Write intent and plan in plain English the teacher can read.' : 'plan 用老师能看懂的中文短句。'}complex 时 3~6 步,simple 时 1~2 步,chat 时空数组。`);
+${isEN() ? 'Write intent and plan in plain English the teacher can read.' : 'plan 用老师能看懂的中文短句。'}complex 时 3~6 步,simple 时 1~2 步,chat 时空数组。
+
+complex 任务的 plan 按标准流水线组织步骤(这也是后续执行的路线图):
+- 搭建类:① 语义本体——列对象清单与关系(谁控制谁/谁和谁交互/共享什么状态)② 搭建场景(静态几何与布局)③ 加交互与动画 ④ 核验(自检场景 + 逐条走通交互链路)
+- 修复类:① 分层排查定位病灶(环境→数据→驱动→依赖)② 修复 ③ 免疫加固(防复发)④ 给老师可验证的验收动作
+可按任务裁剪合并,但顺序不要乱(先想清对象与关系,再动手;先搭静态,再加行为)。`);
 }
 
 // 稳定部分(缓存前缀)与本轮技能提示(变化部分)分块,前者标缓存断点
@@ -177,6 +194,7 @@ function executorSystem(skillIds) {
 
 你现在是 Executor(执行层),通过工具调用完成搭建/修改。做法:
 - 按计划一步步调用工具;一条消息里可以并行发多个独立的工具调用${cotGuidance()}
+- 复杂任务(≥3 步)按流水线推进,每进入一个新阶段先调用 report_progress {stage,total,title,note}(老师会看到进度卡);标准阶段:语义本体(对象清单与关系)→ 搭建场景 → 加交互与动画 → 核验。修复类任务:分层排查 → 修复 → 免疫加固 → 验收。简单任务不用调
 - 复杂搭建完成后用 get_scene 自检一次
 - 场景很大时上下文里只有摘要索引:改对象前先用 find_objects / get_object_detail 查清现状,不要凭索引猜
 - 编辑器默认处于"编辑模式"(全静态,点击=选中);搭好含动画/交互的场景后,提醒老师点视口工具栏的 ▶ 运行按钮体验效果(或在老师明确想立即体验时用 set_environment {play_mode:true} 帮 ta 打开)
@@ -275,8 +293,9 @@ async function runExecutor(userText, plan, ui, complexity = null, ctxMsg = '') {
   const budget = callBudget('executor', complexity);
 
   for (let iter = 0; iter < MAX_TOOL_ITERATIONS; iter++) {
-    // 每轮:先显示打字点;推理摘要先到→思考区块,首个正文 token 到达→流式消息
-    const typing = ui.addTyping();
+    // 每轮:先显示打字点(上方灰字 = 当前流水线阶段,类 Cursor 的步骤状态);
+    // 推理摘要先到→思考区块,首个正文 token 到达→流式消息
+    const typing = ui.addTyping(progressLabel());
     let sm = null;
     let tb = null;   // 思考区块(每轮独立,思考片段归属本轮的工具/文本)
     let res;
@@ -323,20 +342,26 @@ async function runExecutor(userText, plan, ui, complexity = null, ctxMsg = '') {
 
     messages.push({ role: 'assistant', content: res.content });
     // 首次真正改动场景前存一份快照,整轮 Agent 改动可作为一步整体撤销
-    if (!turnMutated) recordHistory();
-    turnMutated = true;
+    // (report_progress 是零副作用的进度汇报,不算改动,不触发快照/Keep 卡)
+    if (toolUses.some(tu => tu.name !== 'report_progress')) {
+      if (!turnMutated) recordHistory();
+      turnMutated = true;
+    }
     const results = [];
     for (const tu of toolUses) {
-      const card = ui.addToolCard(toolCallLabel(tu.name, tu.input), true);
-      await sleep(120);
+      const isProgress = tu.name === 'report_progress';
+      // 进度汇报不渲染工具卡(exec 广播事件 → chat.js 画流水线进度卡,避免重复展示)
+      const card = isProgress ? null : ui.addToolCard(toolCallLabel(tu.name, tu.input), true);
+      if (!isProgress) await sleep(120);
       const t0 = performance.now();
       const r = execTool(tu.name, tu.input);
       logEvent('tool_call', { name: tu.name, input: summarizeToolInput(tu.input), ok: r.ok, msg: summarize(r.msg), ms: Math.round(performance.now() - t0) });
-      ui.finishToolCard(card, `${toolCallLabel(tu.name, tu.input)}${r.ok ? '' : ' ⚠ ' + r.msg}`, r.ok);
+      if (card) ui.finishToolCard(card, `${toolCallLabel(tu.name, tu.input)}${r.ok ? '' : ' ⚠ ' + r.msg}`, r.ok);
       results.push({ type: 'tool_result', tool_use_id: tu.id, content: r.msg, is_error: !r.ok });
     }
     messages.push({ role: 'user', content: results });
   }
+  emit('agent-progress-end');   // 收尾:进度卡上最后一个阶段标记为完成
   if (!finalText) {
     logEvent('empty_output', { stage: 'executor' });
     finalText = L('完成。', 'Done.');
@@ -347,7 +372,7 @@ async function runExecutor(userText, plan, ui, complexity = null, ctxMsg = '') {
 
 // ── Ask 调用(流式输出 + 推理摘要可见)──
 async function runAsk(userText, ui, ctxMsg) {
-  const typing = ui.addTyping();
+  const typing = ui.addTyping(L('正在思考…', 'Thinking…'));
   let sm = null;
   let tb = null;
   try {
@@ -384,6 +409,8 @@ export async function runTurn(userText, ui) {
   agent.busy = true;
   state.ctxTurn++;   // 工作集轮次:本轮被工具创建/修改的对象,近几轮内自动进大场景上下文
   resetTurnStats();
+  lastProgress = null;
+  emit('agent-turn-start');   // chat.js 据此重置流水线进度卡
   logEvent('turn_start', { mode: agent.mode, model: agent.model, effort: agent.effort, input: summarize(userText, 300) });
   try {
     if (!hasLLM()) {
@@ -406,7 +433,7 @@ export async function runTurn(userText, ui) {
         finalReply = await runAsk(userText, ui, ctxMsg);
       } else {
         // Planner:判复杂度 + 选技能 + 出计划(CoT 的第一跳)
-        const typing = ui.addTyping();
+        const typing = ui.addTyping(L('正在拆解任务、挑选技能…', 'Breaking down the task & picking skills…'));
         let p;
         try { p = await runPlanner(userText, ctxMsg); }
         finally { typing.remove(); }

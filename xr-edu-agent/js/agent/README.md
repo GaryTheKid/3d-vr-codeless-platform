@@ -22,7 +22,7 @@ js/agent/
 │   ├── edit-tools.js         修改类:update_object / remove_object / select_object
 │   ├── panel-tools.js        面板类:attach_label / add_panel / update_panel / add_quiz_panel
 │   ├── query-tools.js        查询类:get_scene / find_objects / get_object_detail
-│   ├── env-tools.js          环境类:set_environment / configure_locomotion / set_student_view
+│   ├── env-tools.js          环境类:report_progress / set_environment / configure_locomotion / set_student_view
 │   └── space-tools.js        空间引导类:add_arrow / add_path / build_room / build_stairs(确定性几何图元,不让模型手写)
 ├── agent-map.js              📊 工作流有向图 + 工具目录(可视化数据源,需手动维护;JSON 字面量包一层赋值)
 ├── agent-viewer.html         🧭 可视化·工作流页(SVG 有向图,左键拖拽平移,点节点看详情)
@@ -74,7 +74,7 @@ js/agent/
 | 新增/删除 **技能**(skills/*.js) | ① `skills/index.js` 加/删 import;② `skills/manifest.js` 加/删文件名(两处顺序保持一致);③ **新技能必须同时写英文字段 `nameEn/descriptionEn/promptEn`**(查看器英文版靠它)。技能内容本身零同步——技能库页直接加载这些文件。另检查 `agent-map.js` 中 executor 节点 `uses.skills` 的"常见组合"举例是否还成立 |
 | 修改技能内容(description/prompt) | **中英文字段一起改**(prompt 变了 promptEn 同步翻译),其余零同步,技能库页自动生效 |
 | 新增/删除 **工具**(tools/*.js) | 更新 `agent-map.js` 的 `tools` 数组(name/group/file/summary,**group 和 summary 必须是 {zh,en} 双语对象**)+ `tool-exec` 节点 `uses.tools` 的分组清单 + executor 节点里的工具总数 |
-| 改 **工作流**(orchestrator/context/llm 的路由、新增阶段) | 更新 `agent-map.js` 的 `workflow.nodes` / `workflow.edges`:节点含 id/icon/col(布局列)/group(图例色)/title/desc/uses/file,**title/desc/uses 各条目均为 {zh,en} 双语对象**;边含 from/to/label(条件,{zh,en} 或空串)。新增分组色需在 agent-viewer.html 的 `GROUP_COLOR` 与中英两套 `GROUP_NAME` 里各补一行(唯一需要动页面的情形) |
+| 改 **工作流**(orchestrator/context/llm 的路由、新增阶段) | 更新 `agent-map.js` 的 `workflow.nodes` / `workflow.edges`:节点含 id/icon/col(布局列)/group(图例色)/title/desc/uses/file,**title/desc/uses 各条目均为 {zh,en} 双语对象**;边含 from/to/label(条件,{zh,en} 或空串)。新增分组色需在 agent-viewer.html 的 `GROUP_COLOR` 与中英两套 `GROUP_NAME` 里各补一行(唯一需要动页面的情形)。当前图含流水线进度节点 `progress`(group=`pipeline`,对接 `report_progress`) |
 | 任何改动 | 顺手更新 `agent-map.js` 的 `meta.updated` 日期;双击打开三个页面,**中英两种语言各验证一遍**(右上角 EN/中 切换) |
 
 校验清单:① 图上没有悬空边(from/to 都存在);② 每个节点的 desc 与代码实际行为一致;③ 工具目录数量 = `TOOLS.length`;④ 技能库页能列出全部技能(证明技能模块仍是零依赖注册表写法,且 manifest 与文件一致);⑤ 切到英文后没有残留中文(所有 zh/en 字段成对、技能三个 *En 字段齐全)。

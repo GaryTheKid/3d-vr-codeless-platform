@@ -24,6 +24,7 @@ import './locomotion.js';
 import './xr-design.js';
 import './view-navigation.js';
 import './room-design.js';
+import './debugging.js';
 
 export const AGENT_SKILLS = globalThis.XR_AGENT_SKILLS ?? [];
 

@@ -755,6 +755,43 @@ body.resizing-cols { cursor: col-resize; user-select: none; }
 .typing i:nth-child(3) { animation-delay: 0.4s; }
 @keyframes blink { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
 
+/* 打字指示器上方的灰字步骤状态(类 Cursor:「阶段 2/5 · 语义本体」) */
+.typing-wrap { padding: 2px 0; }
+.typing-label {
+  font-size: 11px;
+  color: var(--text-1);
+  margin-bottom: 3px;
+  opacity: 0.85;
+  animation: slideIn 0.25s ease;
+}
+
+/* 流水线进度卡:执行器阶段进度(report_progress) */
+.pipeline-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 11px;
+  animation: slideIn 0.25s ease;
+}
+.pipe-head { font-size: 11px; font-weight: 600; color: var(--text-1); margin-bottom: 5px; }
+.pipe-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.pipe-steps li { display: flex; align-items: baseline; gap: 6px; font-size: 12px; color: var(--text-1); }
+.pipe-steps li .pipe-no {
+  flex: 0 0 auto;
+  font-size: 10px;
+  padding: 0 5px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  color: var(--text-1);
+}
+.pipe-steps li .pipe-title { font-weight: 600; }
+.pipe-steps li .pipe-note { font-size: 11px; opacity: 0.75; }
+.pipe-steps li.current { color: var(--text-0); }
+.pipe-steps li.current .pipe-no { border-color: var(--accent); color: var(--accent); }
+.pipe-steps li.current .pipe-title::after { content: ' …'; color: var(--accent); }
+.pipe-steps li.done .pipe-title::after { content: ' ✓'; color: var(--green); }
+
 #chat-chips {
   padding: 8px 12px 4px;
   display: flex;

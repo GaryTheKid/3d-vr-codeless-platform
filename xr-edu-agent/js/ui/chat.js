@@ -42,13 +42,20 @@ function finishToolCard(card, text, ok = true) {
   card.innerHTML = `<span class="tc-check">${ok ? '✓' : '✕'}</span><span>${escapeHtml(text)}</span>`;
 }
 
-function addTyping() {
+// 打字指示器:可选灰字状态行(类 Cursor 的步骤提示,如「阶段 2/5 · 语义本体」)显示在三个点上方
+function addTyping(label = '') {
   const div = document.createElement('div');
-  div.className = 'typing';
-  div.innerHTML = '<i></i><i></i><i></i>';
+  div.className = 'typing-wrap';
+  div.innerHTML = '<div class="typing-label"></div><div class="typing"><i></i><i></i><i></i></div>';
+  const labelEl = div.querySelector('.typing-label');
+  const setLabel = t => {
+    labelEl.textContent = t || '';
+    labelEl.style.display = t ? '' : 'none';
+  };
+  setLabel(label);
   chatMessages.appendChild(div);
   chatMessages.scrollTop = chatMessages.scrollHeight;
-  return div;
+  return { remove: () => div.remove(), setLabel };
 }
 
 // 流式消息句柄:append() 增量追加(带光标),done() 定稿
@@ -180,6 +187,33 @@ function showPlanConfirm(intent, plan, skills) {
     }
   });
 }
+
+// ── 流水线进度卡:执行器每进入新阶段调用 report_progress 工具 → 这里追加一行 ──
+// 一轮一张卡(首个进度事件时创建);上一阶段自动标记完成,当前阶段高亮
+let pipeCard = null;
+function sealPipeCard() {
+  if (!pipeCard) return;
+  pipeCard.ul.querySelectorAll('li.current').forEach(li => { li.classList.remove('current'); li.classList.add('done'); });
+}
+on('agent-turn-start', () => { sealPipeCard(); pipeCard = null; });
+on('agent-progress-end', sealPipeCard);
+on('agent-progress', p => {
+  if (!pipeCard || !pipeCard.div.isConnected) {
+    const div = document.createElement('div');
+    div.className = 'pipeline-card';
+    div.innerHTML = `<div class="pipe-head">🧩 ${L('执行流水线', 'Pipeline')}</div><ul class="pipe-steps"></ul>`;
+    chatMessages.appendChild(div);
+    pipeCard = { div, ul: div.querySelector('.pipe-steps') };
+  }
+  sealPipeCard();
+  const li = document.createElement('li');
+  li.className = 'current';
+  const no = p.total ? `${p.stage}/${p.total}` : `${p.stage}`;
+  li.innerHTML = `<span class="pipe-no">${escapeHtml(no)}</span><span class="pipe-title">${escapeHtml(p.title)}</span>`
+    + (p.note ? `<span class="pipe-note">${escapeHtml(p.note)}</span>` : '');
+  pipeCard.ul.appendChild(li);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
 
 const ui = { addMsg, addToolCard, finishToolCard, addTyping, showPlanConfirm, startStreamMsg, startThinkingBlock, addTurnStats, showKeepUndo };
 

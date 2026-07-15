@@ -640,7 +640,7 @@ renderer.xr.addEventListener('sessionstart', () => {
     scene.position.set(0, 0, -5);
   }
 });
-renderer.xr.addEventListener('sessionend', () => { scene.position.set(0, 0, 0); scene.rotation.y = 0; teleMarker.visible = false; wasAiming = false; });
+renderer.xr.addEventListener('sessionend', () => { scene.position.set(0, 0, 0); scene.rotation.y = 0; teleMarker.visible = false; wasAiming = false; if (mirror) mirror.canvas.style.display = 'none'; });
 // Unity XRI 风格摇杆瞬移:前推摇杆瞄准(落点环:蓝=可去/红=不可),松开瞬移
 const teleMarker = new THREE.Group();
 {
@@ -799,8 +799,37 @@ function updateRoomUI(dt) {
 // ═══ 主循环(蒸馏自 loop.js:面板朝向/live 重绘/动画 switch/customUpdate 保险丝)═══
 const _camQuat = new THREE.Quaternion();
 const _parentQuat = new THREE.Quaternion();
-const mirrorCam = new THREE.PerspectiveCamera(70, 4 / 3, 0.1, 500);   // VR 会话时 PC 画布镜像头显位姿
+// VR 会话时 PC 镜像:独立第二渲染器(独立画布/GL 上下文,共享场景图),
+// 避免"临时关 renderer.xr 再渲到页面画布"与 XR framebuffer 状态打架导致黑屏;30fps + pixelRatio 1 控开销
+const mirrorCam = new THREE.PerspectiveCamera(70, 4 / 3, 0.1, 500);
 const _mirrorScale = new THREE.Vector3();
+let mirror = null;
+let mirrorTimer = 1;
+function ensureMirror() {
+  if (mirror) return mirror;
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;display:none;pointer-events:none;background:#0a0c10;';
+  document.body.insertBefore(canvas, document.body.firstChild);
+  const r = new THREE.WebGLRenderer({ canvas, antialias: false });
+  r.setPixelRatio(1);
+  r.shadowMap.enabled = true;
+  r.shadowMap.type = THREE.PCFSoftShadowMap;
+  mirror = { r, canvas };
+  return mirror;
+}
+function renderMirror(dt) {
+  const m = ensureMirror();
+  if (m.canvas.style.display !== 'block') { m.canvas.style.display = 'block'; mirrorTimer = 1; }
+  mirrorTimer += dt;
+  if (mirrorTimer < 1 / 30) return;
+  mirrorTimer = 0;
+  const w = innerWidth || 2, h = innerHeight || 2;
+  if (m.canvas.width !== w || m.canvas.height !== h) m.r.setSize(w, h, false);
+  renderer.xr.getCamera().matrixWorld.decompose(mirrorCam.position, mirrorCam.quaternion, _mirrorScale);
+  mirrorCam.aspect = w / h;
+  mirrorCam.updateProjectionMatrix();
+  m.r.render(scene, mirrorCam);
+}
 let panelTimer = 0;
 renderer.setAnimationLoop(() => {
   const dt = clock.getDelta();
@@ -882,14 +911,9 @@ renderer.setAnimationLoop(() => {
       }
     }
     setHover(hv);
-    // 头显渲染 + PC 画布镜像(像头显投屏:学生真实所见,含手柄射线/瞬移环)
+    // 头显渲染 + 第二渲染器镜像到 PC(像头显投屏:学生真实所见,含手柄射线/瞬移环)
     renderer.render(scene, camera);
-    renderer.xr.enabled = false;
-    renderer.xr.getCamera().matrixWorld.decompose(mirrorCam.position, mirrorCam.quaternion, _mirrorScale);
-    mirrorCam.aspect = innerWidth / Math.max(innerHeight, 1);
-    mirrorCam.updateProjectionMatrix();
-    renderer.render(scene, mirrorCam);
-    renderer.xr.enabled = true;
+    renderMirror(dt);
   } else {
     orbitCtl.update();
     renderer.render(scene, camera);

@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 //  环境类工具:全局运行环境与学生体验配置
-//  set_environment / configure_locomotion / set_student_view
+//  report_progress / set_environment / configure_locomotion / set_student_view
 // ═══════════════════════════════════════════════════════════════
 import { state, setPlayMode } from '../../core/state.js';
 import { emit } from '../../core/events.js';
@@ -11,6 +11,31 @@ import { L } from '../../core/i18n.js';
 import { ok, fail } from './shared.js';
 
 export default [
+  {
+    // 零副作用的"进度汇报"工具:执行器每进入流水线新阶段先调它,
+    // exec 只广播事件 → chat.js 渲染流水线进度卡 + 更新打字指示器上方的灰字状态
+    name: 'report_progress',
+    label: inp => L(`🧩 阶段 ${inp.stage ?? '?'}${inp.total ? '/' + inp.total : ''}:${inp.title || ''}`,
+      `🧩 Stage ${inp.stage ?? '?'}${inp.total ? '/' + inp.total : ''}: ${inp.title || ''}`),
+    description: '汇报执行进度(零副作用)。复杂任务每进入一个新阶段(如 语义本体→搭建场景→加交互→核验)时先调用一次,老师会在聊天区看到流水线进度卡。title 用老师能看懂的短语;note 一句话说明本阶段准备做什么。简单任务(1~2 个工具)不需要调。',
+    input_schema: {
+      type: 'object',
+      properties: {
+        stage: { type: 'number', description: '当前阶段序号(从 1 开始)' },
+        total: { type: 'number', description: '总阶段数' },
+        title: { type: 'string', description: '阶段名(如「语义本体」「搭建场景」「加交互」「核验」)' },
+        note: { type: 'string', description: '本阶段一句话说明(可选)' },
+      },
+      required: ['stage', 'title'],
+    },
+    exec(inp) {
+      emit('agent-progress', {
+        stage: +inp.stage || 0, total: +inp.total || 0,
+        title: String(inp.title || ''), note: String(inp.note || ''),
+      });
+      return ok('已汇报;继续执行本阶段');
+    },
+  },
   {
     name: 'set_environment',
     label: () => L('调整全局环境', 'Adjust global environment'),

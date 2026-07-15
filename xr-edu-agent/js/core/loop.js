@@ -30,9 +30,45 @@ const _pipSize = new THREE.Vector2();
 const _pipHidden = [];
 let orbitWasOn = true;   // 进 VR 预览前 orbit 是否开着,退出时还原
 
-// 真 VR 会话时 PC 画布的镜像相机(= 头显位姿,像看头显投屏)
+// ── 真 VR 会话时的 PC 镜像(头显投屏效果)──
+// 用独立第二渲染器(独立画布 + 独立 GL 上下文),不再"渲染头显后临时关 renderer.xr
+// 再渲一遍到页面画布"——那种切换会与 three 内部的 XR framebuffer 绑定/视口状态打架,
+// 部分环境下 PC 画布黑屏。两个渲染器共享同一份场景图(各自上传 GPU 资源,无需同步);
+// 镜像限 30fps + pixelRatio 1,控制双倍渲染的开销。
 const mirrorCam = new THREE.PerspectiveCamera(70, 4 / 3, 0.1, 500);
 const _mirrorScale = new THREE.Vector3();
+let mirror = null;        // { r: WebGLRenderer, canvas }(懒创建,不进 VR 不占第二个 GL 上下文)
+let mirrorTimer = 1;
+function ensureMirror() {
+  if (mirror) return mirror;
+  const canvas = document.createElement('canvas');
+  canvas.id = 'vr-mirror';
+  // 无 z-index + 插为首个子元素:定位元素天然盖住静态的主画布,又不遮住工具栏等后续定位元素
+  canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;background:#0a0c10;';
+  const host = renderer.domElement.parentElement;
+  host.insertBefore(canvas, host.firstChild);
+  const r = new THREE.WebGLRenderer({ canvas, antialias: false });
+  r.setPixelRatio(1);
+  r.shadowMap.enabled = true;
+  r.shadowMap.type = THREE.PCFSoftShadowMap;
+  mirror = { r, canvas };
+  return mirror;
+}
+function renderMirror(dt) {
+  const m = ensureMirror();
+  if (m.canvas.style.display !== 'block') { m.canvas.style.display = 'block'; mirrorTimer = 1; }
+  mirrorTimer += dt;
+  if (mirrorTimer < 1 / 30) return;   // 旁观画面 30fps 足够;跳过的帧保留上一帧画面不闪
+  mirrorTimer = 0;
+  const host = m.canvas.parentElement;
+  const w = host.clientWidth || 2, h = host.clientHeight || 2;
+  if (m.canvas.width !== w || m.canvas.height !== h) m.r.setSize(w, h, false);
+  renderer.xr.getCamera().matrixWorld.decompose(mirrorCam.position, mirrorCam.quaternion, _mirrorScale);
+  mirrorCam.aspect = w / h;
+  mirrorCam.updateProjectionMatrix();
+  m.r.render(scene, mirrorCam);
+}
+function hideMirror() { if (mirror) mirror.canvas.style.display = 'none'; }
 
 // 桌面 VR 预览下手柄激光(模拟 XR 控制器射线;真 immersive 会话用 interaction.js 的控制器)
 const previewRays = new THREE.Group();
@@ -263,17 +299,11 @@ export function startLoop() {
       renderer.render(scene, studentCam);
       restoreAfterPiP();
     } else if (renderer.xr.isPresenting) {
-      // 真 VR 会话:头显画面 + PC 画布镜像(头显投屏效果——学生真实所见,
-      // 含手柄射线/瞬移落点环;编辑器 UI 双端都不出现)
+      // 真 VR 会话:头显画面 + 第二渲染器把头显位姿的画面渲到镜像画布(投屏效果——
+      // 学生真实所见,含手柄射线/瞬移落点环;编辑器 UI 双端都不出现)
       hideEditorUIForPiP();
-      renderer.render(scene, camera);                       // 头显(XR framebuffer)
-      renderer.xr.enabled = false;                          // 临时关 XR → 下面这次渲染落到页面画布
-      renderer.xr.getCamera().matrixWorld.decompose(mirrorCam.position, mirrorCam.quaternion, _mirrorScale);
-      const size = renderer.getSize(_pipSize);
-      mirrorCam.aspect = size.x / Math.max(size.y, 1);
-      mirrorCam.updateProjectionMatrix();
-      renderer.render(scene, mirrorCam);
-      renderer.xr.enabled = true;
+      renderer.render(scene, camera);   // 头显(XR framebuffer)
+      renderMirror(dt);                 // PC 镜像(独立画布/GL 上下文,30fps)
       restoreAfterPiP();
       pipFrame.classList.add('hidden');
     } else {
@@ -303,6 +333,7 @@ export function setupXR() {
   });
   renderer.xr.addEventListener('sessionend', () => {
     scene.position.set(0, 0, 0);
+    hideMirror();
     resetLocomotionPose();
     // 退出 VR 后 XR 改过 renderer 的尺寸/pixelRatio,不重置桌面画面会被上下压缩变形;
     // 等一帧让浏览器把 canvas 尺寸恢复后再重算相机 aspect 与画布

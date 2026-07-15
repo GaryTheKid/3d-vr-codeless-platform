@@ -14,4 +14,5 @@ globalThis.XR_SKILL_FILES = [
   'xr-design.js',
   'view-navigation.js',
   'room-design.js',
+  'debugging.js',
 ];

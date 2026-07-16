@@ -25,18 +25,22 @@ import './xr-design.js';
 import './view-navigation.js';
 import './room-design.js';
 import './debugging.js';
+import { isEN } from '../../core/i18n.js';
 
 export const AGENT_SKILLS = globalThis.XR_AGENT_SKILLS ?? [];
 
-// Planner 用的技能目录(紧凑,description 即路由规则)
+// Planner 用的技能目录(紧凑,description 即路由规则;EN 界面用 descriptionEn)
 export function skillCatalogForLLM() {
-  return AGENT_SKILLS.map(s => `- ${s.id}: ${s.description}`).join('\n');
+  return AGENT_SKILLS.map(s => {
+    const desc = isEN() ? (s.descriptionEn || s.description) : s.description;
+    return `- ${s.id}: ${desc}`;
+  }).join('\n');
 }
 
-// 按 id 取技能提示词(注入 Executor 系统提示的变化块)
+// 按 id 取技能提示词(注入 Executor 系统提示的变化块;EN 界面用 promptEn)
 export function skillPrompts(ids) {
   return AGENT_SKILLS
     .filter(s => ids.includes(s.id))
-    .map(s => s.prompt)
+    .map(s => (isEN() ? (s.promptEn || s.prompt) : s.prompt))
     .join('\n\n');
 }

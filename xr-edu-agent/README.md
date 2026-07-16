@@ -1,90 +1,88 @@
-# XR EduAgent — VR 教学场景智能创作平台
+# XR EduAgent — AI-assisted VR lesson authoring
 
-给**没有编程背景的老师**用的 VR 课堂搭建工具:像用 Cursor 写代码一样,用自然语言"写"出一节可以在 VR 头显里上的课。
+A VR classroom builder for **teachers with no coding background**: like Cursor for code, but natural language “writes” a lesson that runs in a VR headset.
 
-## 快速开始
+## Quick start
 
 ```bash
-# 推荐:在仓库根目录运行(与 GitHub Pages 同结构,入口为 /index.html)
+# Recommended: run from the repo root (same layout as GitHub Pages; entry = /index.html)
 python server.py
 
-# 旧路径 xr-edu-agent/server.py 已弃用;请用根目录 server.py
+# The old xr-edu-agent/server.py path is deprecated; use the root server.py
 
-# 也可以用任意静态服务器(此时日志降级为浏览器内存缓冲,控制台 __xrExportLog() 可导出)
+# Any static server also works (logs fall back to an in-browser buffer; console __xrExportLog() to export)
 npx serve .
 python -m http.server 8000
 ```
 
-浏览器打开 `http://localhost:8000/` 即可(根目录 `index.html`)。**必须通过 http 访问**(ES 模块 + WebXR 的要求),直接双击 index.html 打不开。
+Open `http://localhost:8000/` (root `index.html`). **Must be served over http** (ES modules + WebXR) — double-clicking `index.html` will not work.
 
-**接入真实 AI(可选):** 复制 `api-keys.example.txt` 为 `api-keys.txt`,填入
-`CLAUDE_PROXY_API_KEY`。
-应用只调用 AStone Learning 国内代理,不会直连 Anthropic。不填也能跑——
-内置关键词规则会模拟 Agent 生成示例场景。
+**Enable real AI (optional):** copy `api-keys.example.txt` to `api-keys.txt` and set
+`CLAUDE_PROXY_API_KEY`.
+The app only talks to the AStone Learning China proxy — never Anthropic directly. Without a key it still runs: built-in keyword rules simulate the Agent for sample scenes.
 
-**VR 预览:** Quest 通过 Quest Link 连接电脑后,在 Chrome/Edge 里点右上角「🥽 进入 VR 预览」。
+**VR preview:** with Quest Link to a PC, in Chrome/Edge click top-right **🥽 Enter VR preview**.
 
-**界面语言:** 顶栏「EN/中」一键切换简体中文 / English(整页刷新生效,UI、模板、实验、AI 交流语言全量跟随;切换后会询问是否让 AI 顺带把场景里的文字也翻译成新语言)。
+**UI language:** top bar **EN/中** toggles Simplified Chinese / English (full-page reload; UI, templates, labs, and Agent language all follow). After switch, you can ask the AI to translate in-scene text too.
 
-## 界面(三栏,类 Cursor)
+## UI (three panes, Cursor-like)
 
-| 区域 | 功能 |
-|---|---|
-| **左栏 · 项目** | 浏览器本地项目库:新建(从空场景开始)/复制副本/重命名/删除,点项目卡片即打开(当前项目蓝色高亮);顶栏「💾 保存」落到当前项目;「📥 导入 HTML」可把之前下载的场景文件导回编辑器(带格式与安全校验) |
-| **左栏 · 资源库** | 分类的 STEM 教学资源,拖入视口或双击添加 |
-| **左栏 · 场景层级** | 所有场景对象;点 ▸ 展开**自然语言组件**(动画/交互/面板,可开关可编辑);底部折叠区是相机、灯光、实验控制器等**虚拟对象**;**选中即上下文**——选中的对象(Shift 可多选)自动进入 AI 对话上下文 |
-| **中栏 · 3D 视口** | 类 Unity SceneView:点选(Shift 多选可整组移动/旋转/缩放)、变换手柄(W/E/R)、聚焦(F)、删除(Del);**▶ 运行/编辑双模式**——编辑模式全静态、点击=选中,运行模式播放动画+学生交互生效、WASD 可驾驶学生化身试玩、停止后场景自动复位(进 VR 自动切运行);场景里的 🧍 **学生视角代表物**决定学生出生点与朝向,选中或运行时右下角**画中画**实时预览学生真实所见;右上角检查器除基础属性外,还显示对象的**用途/动画/交互联动**(联动对象可点击定位),并带**对象级 AI 指令输入框** |
-| **右栏 · AI 助教** | 三种模式:**Ask** 只答疑、**Plan** 先出计划确认后执行、**Agent** 直接干活;可选 Sonnet/Opus/Fable 模型 + 思考深度(**Auto** 预设组合,或手动低/中/高,深度越高越贵) |
+| Area | Role |
+|------|------|
+| **Left · Projects** | Browser-local project library: new (empty scene) / copy / rename / delete; click a card to open (current = blue); top **💾 Save** writes the current project; **📥 Import HTML** reloads a previously downloaded scene (format + safety checks) |
+| **Left · Assets** | Categorized STEM teaching assets; drag into the viewport or double-click |
+| **Left · Hierarchy** | All scene objects; ▸ expands **NL components** (anim / interact / panel, toggle & edit); bottom foldout = virtual objects (camera, lights, lab controllers); **selection is context** — selected objects (Shift multi-select) enter the AI context automatically |
+| **Center · Viewport** | Unity-like Scene view: pick (Shift multi-select transforms as a group), gizmos (W/E/R), focus (F), delete (Del); **▶ Play / Edit** — Edit is fully static (click = select); Play runs anim + student interaction, WASD drives the student avatar, stop restores the scene (entering VR forces Play); 🧍 **Student View** proxy sets spawn & facing; PiP lower-right shows what students see; inspector shows purpose / anim / links plus a per-object AI command box |
+| **Right · AI** | **Ask** (Q&A only) / **Plan** (confirm then run) / **Agent** (act); Sonnet / Opus / Fable + thinking effort (**Auto** preset or Low/Med/High) |
 
-## AI 助教能做什么
+## What the AI can do
 
-- **读懂场景**:每轮对话都带着场景状态(对象、位置、动画、实验状态);大场景(>20 对象)自动切换为"摘要索引 + 相关对象预取"模式,AI 需要细节时用检索工具自己查,几百个对象也不会撑爆上下文
-- **一句话生成整节课**:"做高锰酸钾制取氧气的分步实验" → 完整装置 + 步骤引导 + 错误分支
-- **资源库没有的,现场写代码造**:AI 直接编写 Three.js 代码生成精细模型(车削玻璃器皿、弯管、粒子效果)和自定义交互实验(状态机 + 考点分支),不受预制资源限制
-- **搭建可行走的空间课堂**:房间/多层楼+楼梯/导览路线与箭头都是确定性工具生成(学生在 VR 里瞬移不穿墙、能上下楼梯);还能设计**条件解锁**(密室逃脱式"答对才开门")、选择题面板、临时提示等交互学习环节
-- **一句话修改**:"把地球放大一点"、"帮我改一下验满步骤"
-- **计划确认**:复杂任务先给出分步计划,老师点「确认执行」后才动手
-- **技能化执行**:执行时按任务加载领域技能(场景组织/教学面板/动画/校验…),保证产出质量
+- **Read the scene**: every turn carries scene state; large scenes (>20 objects) use summary index + relevance prefetch; AI pulls detail with search tools
+- **One-shot whole lessons**: e.g. oxygen prep lab → apparatus + steps + failure branches
+- **Code what the library lacks**: `create_custom_object` writes Three.js for fine models and custom interaction (state machines + check-point branches)
+- **Walkable spatial classrooms**: rooms / multi-floor + stairs / guide paths via deterministic tools; conditional unlocks, quiz panels, temporary tips
+- **One-line edits**: “make Earth larger”, “fix the verify step”
+- **Plan confirmation**: complex work shows a step plan before execution
+- **Skill-routed execution**: domain skills load per task (layout / panels / animation / validation / debugging…)
 
-## 示例场景(离线也可用)
+## Sample scenes (offline-capable)
 
-太阳系 · 制取氧气分步实验(含"先熄灯→水倒吸炸试管"错误分支)· 餐厅英语点餐(数字人 + 麦克风)· 化学实验室 · DNA 双螺旋 · 单摆对比 · 多面体几何 · 斜面对比
+Solar system · Oxygen prep (incl. “douse lamp first → suck-back explosion” branch) · Cafe English ordering (NPC + mic) · Chemistry lab · DNA helix · Pendulum compare · Polyhedra · Inclined planes
 
-## 项目结构(细节见 AGENTS.md)
+## Project layout (see AGENTS.md for detail)
 
 ```
-index.html                  GitHub Pages / 本地开发入口(仓库根,加载 xr-edu-agent/ 下资源)
-server.py                   本地开发服务器(仓库根)
+index.html                  GitHub Pages / local entry (repo root; loads xr-edu-agent/)
+server.py                   Local dev server (repo root)
 xr-edu-agent/
-  react-main.js             React createRoot + 运行时延迟加载
-  main.js                   Three.js/Agent 运行时装配
-  style.css                 界面骨架与样式
-  js/ui/react-app.js        React 页面组件(TopBar/LeftPanel/Viewport/RightPanel)
-  js/core/                  Three.js 场景、状态、事件总线、渲染循环
-  js/assets/                资源构建器 + AssetSkill 注册表
-  js/panels/                3D 教学面板系统
-  js/labs/                  化学实验 / 英语对话 / 预置场景模板
-  js/scene/                 场景对象管理
-  js/ui/                    项目 / 资源库 / 层级 / 视口 / 聊天
-  js/agent/                 LLM / 编排器 + skills/ + tools/
-  api-keys.txt              本地密钥(勿提交)
+  react-main.js             React createRoot + deferred runtime load
+  main.js                   Three.js / Agent runtime wiring
+  style.css
+  js/ui/react-app.js        React shell (TopBar / LeftPanel / Viewport / RightPanel)
+  js/core/                  Scene, state, events, render loop
+  js/assets/                Asset builders + AssetSkill registry
+  js/panels/                3D teaching panels
+  js/labs/                  Chem / English / scenario templates
+  js/scene/                 Scene object managers
+  js/ui/                    Projects / library / hierarchy / viewport / chat
+  js/agent/                 LLM / orchestrator + skills/ + tools/
+  api-keys.txt              Local secrets (do not commit)
   TODO.md / AGENTS.md
 ```
 
-## 保存 / 下载 / 导入
+## Save / Download / Import
 
-- **💾 保存**:存到浏览器本地项目库(左栏「📁 项目」Tab 管理多个项目,可随时切换);推荐 Chrome/Edge 用户点 **📂 选择项目文件夹**,把项目存成磁盘上的 `.xrscene` 文件(不怕清浏览器缓存)
-- **⬇ 下载**:把当前场景导出为**单个 HTML 文件**(用 `python server.py` 运行时自动存到项目 `download/` 目录;GitHub Pages / 静态托管则走浏览器下载)。学生双击打开即可:鼠标点击/拖拽交互、方向键行走,连着头显点 ENTER VR 就能进 VR,瞬移/转向等移动配置与编辑器一致。AI 生成的自定义模型、动画、交互实验都完整可玩;仅内置实验模板(制氧/英语点餐)的状态机交互和实时数据面板需回编辑器体验。文件依赖 CDN 加载 Three.js,首次打开需联网
-- **📥 导入**:下载的 HTML 内嵌了场景数据块,可在「📁 项目」Tab 导回编辑器继续编辑(导入前做大小/格式/结构校验,并提示"场景可能含 AI 行为代码,只导入信任的文件")
+- **💾 Save**: browser project library (left **📁 Projects**); Chrome/Edge users can **📂 Choose project folder** for on-disk `.xrscene` files
+- **⬇ Download**: export a **single HTML** student player (`python server.py` also writes `download/`; on Pages, browser download). Students open it, click/drag, arrow-walk, or ENTER VR. Custom models/anim/interaction ship with the file; built-in lab state machines need the editor. CDN Three.js needs network on first open
+- **📥 Import**: exported HTML embeds scene JSON; import from **📁 Projects** (size/format/structure checks + code-risk confirm)
 
-## 部署给客户试玩
+## Deploy for playtest
 
-见仓库根目录 [DEPLOY.md](../DEPLOY.md):根目录 `index.html` + GitHub Pages **root** 即可。
+See repo-root [DEPLOY.md](../DEPLOY.md): root `index.html` + GitHub Pages **root**.
 
-## 当前边界
+## Current limits
 
-- LLM 只走 AStone Claude 代理；GitHub Pages 不能安全内嵌共享代理 Key,
-  公测应采用每人独立 Key、短期 token 或服务端登录 session
-- 项目保存在浏览器 localStorage(清浏览器数据会丢,重要场景请用 ⬇ 下载留档);分享按钮是占位;无用户系统与数据库
-- 英语对话只检测麦克风音量,未接 STT/TTS
-- 自然语言组件的离线解析只认数字和颜色词;接入 LLM 后由模型理解
+- LLM only via AStone Claude proxy; GitHub Pages cannot safely embed a shared proxy key — use per-user keys, short-lived tokens, or a login session
+- Projects default to localStorage (clearing site data loses them; use ⬇ Download for important work); Share is a stub; no user accounts / DB
+- English cafe detects mic volume only — no STT/TTS yet
+- Offline NL component parsing only understands numbers and color words; with LLM, the model understands freer language

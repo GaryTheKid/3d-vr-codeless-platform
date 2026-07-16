@@ -1,63 +1,61 @@
-# 部署到 GitHub Pages(给客户试玩)
+# Deploy to GitHub Pages (client playtest)
 
-**入口在仓库根目录** `index.html`,应用代码在 `xr-edu-agent/`。GitHub Pages 选 **root** 即可,无需把全部文件搬到根目录。
+The entry is the **repo-root** `index.html`; app code lives under `xr-edu-agent/`. Point GitHub Pages at **root** — you do not need to flatten everything into the root.
 
-## 一键部署
+## One-shot deploy
 
 ```bash
-# 在仓库根目录(Demo/)
+# From the repo root (Demo/)
 git add .
 git commit -m "Deploy: root index.html for GitHub Pages"
 git push origin main
 ```
 
-1. GitHub 仓库 → **Settings** → **Pages**
+1. GitHub repo → **Settings** → **Pages**
 2. **Source**: Deploy from a branch
 3. **Branch**: `main` / **Folder**: `/ (root)`
-4. 访问:`https://YOUR_ORG.github.io/YOUR_REPO/`(不再是 `/YOUR_REPO/xr-edu-agent/`)
+4. Open: `https://YOUR_ORG.github.io/YOUR_REPO/` (not `/YOUR_REPO/xr-edu-agent/`)
 
-根目录已有:
-- `index.html` — 加载 React/HTM 与 `xr-edu-agent/react-main.js`
-- `.nojekyll` — 禁用 Jekyll
+Already at root:
 
-## 本地开发(与 Pages 同结构)
+- `index.html` — loads React/HTM and `xr-edu-agent/react-main.js`
+- `.nojekyll` — disables Jekyll
+
+## Local development (same layout as Pages)
 
 ```bash
-python server.py    # 在仓库根目录运行
+python server.py    # run from the repo root
 # → http://localhost:8000/
 ```
 
-**不要**再在 `xr-edu-agent/` 里单独跑旧版 `server.py`(已弃用,仅保留重定向说明)。
+**Do not** run the old `xr-edu-agent/server.py` alone (deprecated; redirect note only).
 
-## 密钥
+## Secrets
 
-- `xr-edu-agent/api-keys.txt` 已在 `.gitignore`,不会进仓库
-- 应用只调用 `https://astonelearning.com/api/v1/claude/{sonnet|opus|fable5}`,不会直连 Anthropic
-- 公网试玩版不显示代理密钥设置按钮；凭据由部署方统一配置
-- 本地开发:复制 `xr-edu-agent/api-keys.example.txt` 为 `api-keys.txt`,填写 `CLAUDE_PROXY_API_KEY`
+- `xr-edu-agent/api-keys.txt` is gitignored and must not be committed
+- The app only calls `https://astonelearning.com/api/v1/claude/{sonnet|opus|fable5}` — never Anthropic directly
+- The public playtest UI has no API-key settings button; credentials are configured by the deployer
+- Locally: copy `xr-edu-agent/api-keys.example.txt` to `api-keys.txt` and set `CLAUDE_PROXY_API_KEY`
 
-### 重要安全限制
+### Important security limits
 
-GitHub Pages 是公开静态前端。把一个共享代理密钥写进 JS、HTML、GitHub
-Secret 或构建产物都**不能保密**——测试者能在 DevTools 的 Network 面板读到
-`x-api-key`。移除设置按钮并不会改变这个事实。
+GitHub Pages is a public static front end. Putting a shared proxy key in JS, HTML, a GitHub Secret, or a build artifact **cannot** keep it private — testers can read `x-api-key` in DevTools Network. Removing the settings button does not change that.
 
-若希望测试者“打开即用”且不接触共享密钥,代理服务必须改为以下之一:
+For “open and use” without exposing a shared key, the proxy must do one of:
 
-1. `astonelearning.com` 先登录,再用 HttpOnly session cookie 鉴权；
-2. 自己的后端签发短期、限额、限来源的临时 token；
-3. 每位测试者单独分配可撤销/限额的 `cpx-…` key。
+1. Login on `astonelearning.com`, then authenticate with an HttpOnly session cookie;
+2. A backend that issues short-lived, rate-limited, origin-bound tokens;
+3. Per-tester revocable / rate-limited `cpx-…` keys.
 
-同时代理需允许 GitHub Pages 域名的 CORS `OPTIONS`、`POST` 和
-`x-api-key` 请求头。
+The proxy must also allow CORS `OPTIONS` / `POST` and the `x-api-key` header from the GitHub Pages origin.
 
-## GitHub Pages 上不可用的服务端功能
+## Server features unavailable on GitHub Pages
 
-| 功能 | 根目录 `python server.py` | GitHub Pages |
-|------|---------------------------|--------------|
-| 静态页面 / 3D / VR | ✅ | ✅ |
-| AI(自备 Key) | ✅ | ✅ |
-| 日志 `logs/*.jsonl` | ✅ | ❌ |
-| 导出写入 `download/` | ✅ | ❌(浏览器下载) |
+| Feature | Root `python server.py` | GitHub Pages |
+|---------|-------------------------|--------------|
+| Static pages / 3D / VR | ✅ | ✅ |
+| AI (with key configured) | ✅ | ✅ |
+| Logs `logs/*.jsonl` | ✅ | ❌ |
+| Export write to `download/` | ✅ | ❌ (browser download) |
 
-完整说明见 [xr-edu-agent/DEPLOY.md](xr-edu-agent/DEPLOY.md) 中的性能与客户使用章节。
+More detail (performance, client tips) is in [xr-edu-agent/DEPLOY.md](xr-edu-agent/DEPLOY.md).

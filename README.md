@@ -1,34 +1,34 @@
-# XR EduAgent — VR 教学场景智能创作平台
+# XR EduAgent — AI-assisted VR lesson authoring
 
-给**没有编程背景的老师**用的 VR 课堂搭建工具:用自然语言指挥 AI 在 Three.js/WebXR 场景里搭建交互式课程。
+A VR classroom builder for **teachers with no coding background**: describe a lesson in natural language and the AI builds an interactive Three.js / WebXR scene.
 
-## 快速开始
+## Quick start
 
 ```bash
-# 在仓库根目录(本 README 所在位置)
+# From the repo root (this README's folder)
 python server.py
-# 浏览器打开 http://localhost:8000/
+# Open http://localhost:8000/
 ```
 
-**GitHub Pages**: 根目录 `index.html` 即入口,应用代码在 `xr-edu-agent/` 子目录。详见 [DEPLOY.md](DEPLOY.md)。
+**GitHub Pages**: root `index.html` is the entry; app code lives under `xr-edu-agent/`. See [DEPLOY.md](DEPLOY.md).
 
-**开发文档**: [xr-edu-agent/README.md](xr-edu-agent/README.md) · [xr-edu-agent/AGENTS.md](xr-edu-agent/AGENTS.md)
+**Dev docs**: [xr-edu-agent/README.md](xr-edu-agent/README.md) · [xr-edu-agent/AGENTS.md](xr-edu-agent/AGENTS.md)
 
-## 仓库结构
+## Repo layout
 
 ```
-index.html              ← GitHub Pages 入口(指向 xr-edu-agent/)
-server.py               ← 本地开发服务器(伺服整个仓库根)
+index.html              ← GitHub Pages entry (loads xr-edu-agent/)
+server.py               ← local dev server (serves the whole repo root)
 xr-edu-agent/
-  react-main.js         ← React 启动入口
-  main.js               ← Three.js/Agent 运行时入口
+  react-main.js         ← React bootstrap
+  main.js               ← Three.js / Agent runtime entry
   style.css
-  js/                   ← 核心代码
-  api-keys.txt          ← 本地密钥(勿提交,见 .gitignore)
+  js/                   ← core code
+  api-keys.txt          ← local secrets (do not commit; see .gitignore)
 ```
 
-## 给客户试玩
+## Client playtest
 
-1. 推送到 GitHub,Settings → Pages → 分支 `main` / 文件夹 `/ (root)`
-2. 访问 `https://<你的用户名>.github.io/<仓库名>/`
-3. AI 代理凭据由部署方配置；未配置时仍可离线试玩示例场景
+1. Push to GitHub → Settings → Pages → branch `main` / folder `/ (root)`
+2. Open `https://<your-username>.github.io/<repo-name>/`
+3. Proxy credentials are configured by the deployer; without them, offline demo scenes still work

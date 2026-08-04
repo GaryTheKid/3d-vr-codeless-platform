@@ -5,3 +5,6 @@ logs/
 download/
 xr-edu-agent/logs/
 xr-edu-agent/download/
+.venv/
+__pycache__/
+*.pyc

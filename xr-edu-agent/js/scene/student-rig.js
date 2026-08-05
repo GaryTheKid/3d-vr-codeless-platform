@@ -16,6 +16,7 @@ import { on, emit } from '../core/events.js';
 import { locomotion, LEDGE_DROP } from '../core/locomotion.js';
 import { resolveMove, groundHeightAt } from '../core/collision.js';
 import { L } from '../core/i18n.js';
+import { studyFlag } from '../core/study-test-flags.js';
 
 const EYE_HEIGHT = 1.6;      // 视锥顶点高度(米,近似成人/头显眼高)
 const FRUSTUM_LEN = 1.3;     // 视锥长度
@@ -107,6 +108,11 @@ function syncVisual() {
   rig.userData.behaviorDesc = walkable
     ? L('学生出生点与初始朝向(可走动课):拖动/旋转它设置学生进 VR 的起始位置与视线方向;运行模式下可用 WASD 移动、←→ 转向', 'Student spawn point & facing (walkable lesson): drag/rotate to set where students start in VR; in play mode drive it with WASD and turn with ←/→')
     : L('学生观察点(定点课):拖动/旋转它设置学生在 VR 里站的位置与视线方向', 'Student viewpoint (stationary lesson): drag/rotate to set where students stand in VR and where they look');
+  // Study TEMP: hide player-controller gizmo entirely (flag in study-test-flags.js)
+  if (studyFlag('disableVrPlayerController')) {
+    rig.visible = false;
+    return;
+  }
   rig.visible = !renderer.xr.isPresenting;
 }
 

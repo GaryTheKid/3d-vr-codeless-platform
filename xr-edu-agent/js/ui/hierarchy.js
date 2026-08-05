@@ -16,6 +16,7 @@ import { engLab } from '../labs/english-cafe.js';
 import { dispatchInteraction } from '../core/interaction.js';
 import { locomotion, configureLocomotion, locomotionDesc } from '../core/locomotion.js';
 import { record } from '../core/history.js';
+import { studyFlag } from '../core/study-test-flags.js';
 
 const hierarchyList = document.getElementById('hierarchy-list');
 const hierarchyEmpty = document.getElementById('hierarchy-empty');
@@ -244,39 +245,42 @@ export function getVirtualObjects() {
         'Global clock driving all animations / experiments / dialogue; linked to the viewport ▶ Play button, can also pause independently'),
     }]),
   });
-  list.push({
-    id: 'xr', icon: '🥽', name: L('XR 会话管理器', 'XR Session Manager'), comps: wrap('xr', [
-      {
-        id: 'spawn', icon: '🚏', title: L('学生出生点规则', 'Student Spawn Rule'),
-        desc: L('学生戴头显进入时,出生在场景边缘约 5 米处、面向教学内容,地面高度自动对齐',
-          'Students entering in a headset spawn ~5 m from the scene edge, facing the content, floor-aligned'),
-      },
-      {
-        id: 'loco', icon: '🚶', title: L('学生移动方式 · Locomotion', 'Student Locomotion'),
-        toggled: locomotion.mode !== 'static',
-        onToggle: v => configureLocomotion({ mode: v ? 'teleport' : 'static' }),
-        desc: locomotionDesc(),
-        onEdit: text => {
-          const cfg = {};
-          if (/瞬移|传送|teleport/i.test(text)) cfg.mode = 'teleport';
-          else if (/平滑移动|自由移动|smooth/i.test(text)) cfg.mode = 'smooth';
-          else if (/固定|静态|不动|static/i.test(text)) cfg.mode = 'static';
-          const r = text.match(/半径|范围|radius|range/i) && text.match(/(\d+\.?\d*)\s*(?:米|m)?/i);
-          if (r) cfg.allowedRadius = +r[1];
-          if (/跳转|snap/i.test(text)) cfg.turnMode = 'snap';
-          else if (/平滑(旋)?转|连续转|smooth\s*turn/i.test(text)) cfg.turnMode = 'smooth';
-          const done = configureLocomotion(cfg);
-          if (!done.length) toast(L('📝 已记录(未识别到移动方式配置)', '📝 Noted (no locomotion setting recognized)'));
-          return done.length > 0;
+  // Study TEMP: hide VR player / locomotion designer (STUDY_TEST_FLAGS.md)
+  if (!studyFlag('disableVrPlayerController')) {
+    list.push({
+      id: 'xr', icon: '🥽', name: L('XR 会话管理器', 'XR Session Manager'), comps: wrap('xr', [
+        {
+          id: 'spawn', icon: '🚏', title: L('学生出生点规则', 'Student Spawn Rule'),
+          desc: L('学生戴头显进入时,出生在场景边缘约 5 米处、面向教学内容,地面高度自动对齐',
+            'Students entering in a headset spawn ~5 m from the scene edge, facing the content, floor-aligned'),
         },
-      },
-      {
-        id: 'interact', icon: '🎮', title: L('交互方式 · 设备无关', 'Interaction · Device-agnostic'),
-        desc: L('同一套触发器,PC 与 VR 自动适配:点击/扳机=触发,按住拖动/手柄抓握=抓取移动',
-          'One set of triggers auto-adapts to PC and VR: click/trigger = activate, hold-drag/grip = grab & move'),
-      },
-    ]),
-  });
+        {
+          id: 'loco', icon: '🚶', title: L('学生移动方式 · Locomotion', 'Student Locomotion'),
+          toggled: locomotion.mode !== 'static',
+          onToggle: v => configureLocomotion({ mode: v ? 'teleport' : 'static' }),
+          desc: locomotionDesc(),
+          onEdit: text => {
+            const cfg = {};
+            if (/瞬移|传送|teleport/i.test(text)) cfg.mode = 'teleport';
+            else if (/平滑移动|自由移动|smooth/i.test(text)) cfg.mode = 'smooth';
+            else if (/固定|静态|不动|static/i.test(text)) cfg.mode = 'static';
+            const r = text.match(/半径|范围|radius|range/i) && text.match(/(\d+\.?\d*)\s*(?:米|m)?/i);
+            if (r) cfg.allowedRadius = +r[1];
+            if (/跳转|snap/i.test(text)) cfg.turnMode = 'snap';
+            else if (/平滑(旋)?转|连续转|smooth\s*turn/i.test(text)) cfg.turnMode = 'smooth';
+            const done = configureLocomotion(cfg);
+            if (!done.length) toast(L('📝 已记录(未识别到移动方式配置)', '📝 Noted (no locomotion setting recognized)'));
+            return done.length > 0;
+          },
+        },
+        {
+          id: 'interact', icon: '🎮', title: L('交互方式 · 设备无关', 'Interaction · Device-agnostic'),
+          desc: L('同一套触发器,PC 与 VR 自动适配:点击/扳机=触发,按住拖动/手柄抓握=抓取移动',
+            'One set of triggers auto-adapts to PC and VR: click/trigger = activate, hold-drag/grip = grab & move'),
+        },
+      ]),
+    });
+  }
   if (chemLab.active) {
     const stepName = {
       check: L('查气密性', 'Seal check'), load: L('装药品', 'Load reagent'), heat: L('待点燃', 'Ready to light'),
@@ -425,7 +429,9 @@ function renderVirtualSection() {
 
 export function refreshHierarchy() {
   hierarchyList.innerHTML = '';
-  const items = sceneRoot.children;
+  // Study TEMP: hide student player gizmo from hierarchy while VR player is off
+  const items = sceneRoot.children.filter(o =>
+    !(studyFlag('disableVrPlayerController') && o.userData.studentRig));
   hierarchyEmpty.classList.toggle('hidden', items.length > 0);
   items.forEach(obj => {
     const li = document.createElement('li');

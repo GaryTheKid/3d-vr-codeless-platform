@@ -29,7 +29,7 @@ export default [
     },
     exec(inp) {
       const obj = findObject(inp.ref);
-      if (!obj) return fail(`找不到对象 ${inp.ref}`);
+      if (!obj) return fail(L(`找不到对象 ${inp.ref}`, `Object not found: ${inp.ref}`));
       if (inp.x !== undefined) obj.position.x = inp.x;
       if (inp.y !== undefined) obj.position.y = inp.y;
       if (inp.z !== undefined) obj.position.z = inp.z;
@@ -44,7 +44,7 @@ export default [
       markTouched(obj);
       emit('hierarchy-changed');
       emit('selection-changed');
-      return ok(`已更新 ${obj.userData.displayName}`);
+      return ok(L(`已更新 ${obj.userData.displayName}`, `Updated ${obj.userData.displayName}`));
     },
   },
   {
@@ -54,11 +54,14 @@ export default [
     input_schema: { type: 'object', properties: { ref: { type: 'string' } }, required: ['ref'] },
     exec(inp) {
       const obj = findObject(inp.ref);
-      if (!obj) return fail(`找不到对象 ${inp.ref}`);
-      if (obj.userData.system) return fail(`${obj.userData.displayName} 是系统对象(学生视角),不能删除;可用 set_student_view 移动它`);
+      if (!obj) return fail(L(`找不到对象 ${inp.ref}`, `Object not found: ${inp.ref}`));
+      if (obj.userData.system) return fail(L(
+        `${obj.userData.displayName} 是系统对象(学生视角),不能删除;可用 set_student_view 移动它`,
+        `${obj.userData.displayName} is a system object (student view) and cannot be deleted; use set_student_view to move it`
+      ));
       const n = obj.userData.displayName;
       removeObject(obj);
-      return ok(`已删除 ${n}`);
+      return ok(L(`已删除 ${n}`, `Deleted ${n}`));
     },
   },
   {
@@ -68,9 +71,9 @@ export default [
     input_schema: { type: 'object', properties: { ref: { type: 'string' } }, required: ['ref'] },
     exec(inp) {
       const obj = findObject(inp.ref);
-      if (!obj) return fail(`找不到对象 ${inp.ref}`);
+      if (!obj) return fail(L(`找不到对象 ${inp.ref}`, `Object not found: ${inp.ref}`));
       select(obj);
-      return ok(`已选中 ${obj.userData.displayName}`);
+      return ok(L(`已选中 ${obj.userData.displayName}`, `Selected ${obj.userData.displayName}`));
     },
   },
 ];

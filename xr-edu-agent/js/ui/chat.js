@@ -5,11 +5,22 @@
 import { state } from '../core/state.js';
 import { on } from '../core/events.js';
 import { escapeHtml, toast } from '../core/utils.js';
-import { removeFromSelection } from '../scene/manager.js';
-import { L } from '../core/i18n.js';
+import { removeFromSelection, clearScene } from '../scene/manager.js';
+import { ensureStudentRig } from '../scene/student-rig.js';
+import { L, t } from '../core/i18n.js';
 import { MODELS, EFFORTS, BUDGETS, hasLLM } from '../agent/llm.js';
 import { agent, runTurn } from '../agent/orchestrator.js';
 import { undo as historyUndo } from '../core/history.js';
+import {
+  convertDocumentFile, getUploadedDoc, clearUploadedDoc, snapshotUploadedDoc,
+  formatDocSummaryHtml, formatDocSummaryFullHtml, summarizeDocWithLLM,
+} from '../agent/doc-context.js';
+import { getKnowledgeGraph, clearKnowledgeGraph } from '../core/knowledge-graph.js';
+import { setOutline, createDefaultOutline } from '../core/outline.js';
+import { resetVrSceneBinding } from '../core/section-scene.js';
+import { resetOrbitCamera } from '../core/three-setup.js';
+import { renderOutline } from './outline.js';
+import { runCoursePipeline } from '../agent/course-pipeline.js';
 
 const chatMessages = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
@@ -19,8 +30,11 @@ const chatFoot = document.querySelector('.chat-foot');
 export function addMsg(role, html) {
   const div = document.createElement('div');
   div.className = `msg ${role}`;
-  const roleName = role === 'user' ? L('你(李老师)', 'You (Teacher)') : L('AI 助教', 'AI Assistant');
-  const badge = role === 'user' ? '👩‍🏫' : '✨';
+  const learn = state.learnMode;
+  const roleName = role === 'user'
+    ? (learn ? L('你(学生)', 'You (Student)') : L('你(李老师)', 'You (Teacher)'))
+    : (learn ? L('学习助教', 'Learning companion') : L('AI 助教', 'AI Assistant'));
+  const badge = role === 'user' ? (learn ? '🎓' : '👩‍🏫') : (learn ? '📘' : '✨');
   div.innerHTML = `<div class="msg-role"><span class="role-badge">${badge}</span>${roleName}</div><div class="msg-body">${html}</div>`;
   chatMessages.appendChild(div);
   chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -76,6 +90,11 @@ function startStreamMsg() {
       body.innerHTML = buf;
       chatMessages.scrollTop = chatMessages.scrollHeight;
       return buf;
+    },
+    /** Replace the finalized body (e.g. to strip control markers post-stream). */
+    setFinalHtml(html) {
+      buf = html;
+      body.innerHTML = html;
     },
     get text() { return buf; },
     remove() { div.remove(); },
@@ -215,6 +234,63 @@ on('agent-progress', p => {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
+// ── Course pipeline: per-section sub-agent progress card ──
+let sectionFillCard = null;
+function ensureSectionFillCard(plan = null) {
+  if (sectionFillCard?.div?.isConnected) return sectionFillCard;
+  const div = document.createElement('div');
+  div.className = 'section-fill-card';
+  const total = plan?.total ?? '…';
+  const para = plan?.parallel ?? '…';
+  const vr = plan?.sequentialVr ?? '…';
+  div.innerHTML = `
+    <div class="sec-fill-head">
+      <span>🤖 ${L('小节子 Agent', 'Section sub-agents')}</span>
+      <span class="sec-fill-meta">${escapeHtml(L(
+        `共 ${total} · 并行 ${para} · 3D 串行 ${vr}`,
+        `${total} total · ${para} parallel · ${vr} 3D serial`
+      ))}</span>
+    </div>
+    <ul class="sec-fill-list"></ul>`;
+  chatMessages.appendChild(div);
+  sectionFillCard = { div, ul: div.querySelector('.sec-fill-list'), rows: new Map() };
+  return sectionFillCard;
+}
+function typeIcon(type) {
+  return ({ reading: '📖', h5: '🖥', quiz: '❓', vr: '🧊' })[type] || '◌';
+}
+on('course-pipeline-start', () => { sectionFillCard = null; });
+on('course-pipeline-fill-plan', plan => {
+  ensureSectionFillCard(plan);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+on('course-pipeline-section', ev => {
+  const card = ensureSectionFillCard();
+  const id = ev.sectionId;
+  let li = card.rows.get(id);
+  if (!li) {
+    li = document.createElement('li');
+    li.dataset.sectionId = id;
+    card.ul.appendChild(li);
+    card.rows.set(id, li);
+  }
+  const st = ev.status || 'running';
+  li.className = st;
+  const title = ev.title || id;
+  const err = ev.error ? `<span class="sf-err">${escapeHtml(ev.error)}</span>` : '';
+  const ico = st === 'done' ? '✓' : st === 'error' ? '⚠' : '◌';
+  li.innerHTML = `<span class="sf-ico">${ico}</span><span class="sf-type">${escapeHtml(ev.type || '')}</span>`
+    + `<span class="sf-title">${typeIcon(ev.type)} ${escapeHtml(title)}</span>${err}`;
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+on('course-pipeline-done', () => {
+  if (!sectionFillCard) return;
+  sectionFillCard.div.querySelectorAll('li.running').forEach(li => {
+    li.classList.remove('running');
+    li.classList.add('done');
+  });
+});
+
 const ui = { addMsg, addToolCard, finishToolCard, addTyping, showPlanConfirm, startStreamMsg, startThinkingBlock, addTurnStats, showKeepUndo };
 
 // 实验/对话系统的主动播报(炸试管复盘等)
@@ -242,6 +318,10 @@ on('agent-request', ({ obj, text }) => {
 // ── 模式切换 ──
 document.querySelectorAll('.mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    if (state.learnMode && btn.dataset.mode !== 'ask') {
+      toast(L('学习模式只能使用 Ask 学习助教', 'Learning mode only supports the Ask learning companion'));
+      return;
+    }
     agent.mode = btn.dataset.mode;
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b === btn));
     const tip = L(
@@ -331,6 +411,246 @@ function renderContextPins() {
   });
 }
 on('context-changed', renderContextPins);
+
+// ── 教学文档挂载条(Docling → md+图;注入 buildContextMessage)──
+const docBar = document.getElementById('doc-context-bar');
+const chatAttach = document.getElementById('chat-attach');
+const chatDocFile = document.getElementById('chat-doc-file');
+
+function renderDocBar() {
+  const doc = getUploadedDoc();
+  if (!doc || !docBar) { docBar?.classList.add('hidden'); return; }
+  docBar.classList.remove('hidden');
+  const n = doc.images?.length || 0;
+  docBar.innerHTML = `
+    <span class="doc-bar-label">${escapeHtml(t('chat.docBarLabel'))}</span>
+    <span class="doc-bar-name" title="${escapeHtml(doc.filename)}">📄 ${escapeHtml(doc.filename)}</span>
+    <span class="doc-bar-meta">${n} ${L('图', 'img')} · ${(doc.charCount || 0).toLocaleString()} ${L('字', 'chars')}</span>
+    <span class="doc-bar-actions">
+      <button type="button" class="mini-btn primary" data-act="build">${escapeHtml(t('chat.docBuild'))}</button>
+      <button type="button" class="mini-btn" data-act="clear">${escapeHtml(t('chat.docClear'))}</button>
+    </span>`;
+  docBar.querySelector('[data-act="clear"]').addEventListener('click', () => {
+    clearUploadedDoc();
+    state.activeDocJobId = null;
+    // Drop prior agent memory so Ask/Agent can't keep teaching the removed PDF
+    agent.history = [];
+    agent.currentSkills = [];
+    renderDocBar();
+    toast(L('已移除教学材料', 'Teaching material removed'));
+  });
+  docBar.querySelector('[data-act="build"]').addEventListener('click', async () => {
+    if (agent.busy || state.coursePipelineBusy) {
+      toast(L('AI 正忙,请稍后再试', 'The AI is busy — try again shortly'));
+      return;
+    }
+    if (state.learnMode) {
+      toast(t('chat.docBuildLearnBlock'));
+      return;
+    }
+    if (!hasLLM()) {
+      toast(L('课程流水线需要在线模型', 'Course pipeline needs an online model'));
+      return;
+    }
+    const live = getUploadedDoc();
+    if (!live?.markdown || !live.jobId) {
+      toast(L('请先上传教学材料', 'Upload teaching material first'));
+      return;
+    }
+    // Always start a clean authoring session bound ONLY to this jobId
+    const docChanged = state.activeDocJobId && state.activeDocJobId !== live.jobId;
+    if (hasExistingCourseWork() || docChanged) {
+      if (!confirm(t('chat.docBuildWipeConfirm'))) return;
+      resetCourseSessionForRebuild({ keepDoc: true });
+      toast(t('chat.docBuildWiped'));
+    } else {
+      // Even on a "fresh" outline, drop any residual chat memory before pipeline
+      agent.history = [];
+      agent.currentSkills = [];
+    }
+    finalizePendingKeep();
+    state.activeDocJobId = live.jobId;
+    const snap = snapshotUploadedDoc(live);
+    const name = snap.filename || L('材料', 'material');
+    addMsg('user', escapeHtml(L(
+      `据此备课「${name}」(job ${snap.jobId}):跑完整流水线(插图标注 → 知识图谱 → 学习大纲 → 分节填充)`,
+      `Build from "${name}" (job ${snap.jobId}): full pipeline (figure tags → knowledge graph → outline → section fill)`
+    )));
+    const typing = addTyping(L('课程流水线运行中…', 'Course pipeline running…'));
+    try {
+      await runCoursePipeline({ ui, doc: snap });
+      renderOutline();
+    } catch (err) {
+      addMsg('ai', `<span style="color:var(--danger)">${escapeHtml(L('流水线失败', 'Pipeline failed'))}: ${escapeHtml(err.message || String(err))}</span>`);
+    } finally {
+      typing.remove();
+      renderDocBar();
+    }
+  });
+}
+
+/** True when rebuilding would destroy prior chapters / KG / filled sections / chat memory. */
+function hasExistingCourseWork() {
+  const kg = getKnowledgeGraph();
+  if (kg?.nodes?.length) return true;
+  if ((agent.history || []).length) return true;
+  const outline = state.outline;
+  if (!outline?.chapters?.length) return false;
+  const sections = outline.chapters.flatMap(c => c.sections || []);
+  if (outline.chapters.length > 1 || sections.length > 1) return true;
+  if (outline.course?.goal) return true;
+  for (const s of sections) {
+    if (s.buildStatus === 'done' || s.buildStatus === 'error' || s.buildStatus === 'running') return true;
+    if (s.reading?.chunks?.some(c => c.html || c.title)) return true;
+    if (s.quiz?.items?.length) return true;
+    if (s.h5?.html) return true;
+    if (s.vr?.scene) return true;
+    if ((s.covers || []).length) return true;
+    if ((s.installsAha || []).length) return true;
+  }
+  return false;
+}
+
+/**
+ * Wipe outline / KG / 3D / agent history / chat.
+ * @param {{ keepDoc?: boolean }} opts  keepDoc=true leaves the current uploaded PDF attached
+ */
+function resetCourseSessionForRebuild({ keepDoc = true } = {}) {
+  sectionFillCard = null;
+  agent.history = [];
+  agent.currentSkills = [];
+  clearKnowledgeGraph();
+  if (!keepDoc) {
+    clearUploadedDoc();
+    state.activeDocJobId = null;
+  }
+  const docName = getUploadedDoc()?.filename?.replace(/\.[^.]+$/, '') || '';
+  setOutline(createDefaultOutline(docName || L('未命名课程', 'Untitled course')));
+  resetVrSceneBinding();
+  resetOrbitCamera(null);
+  clearScene(false);
+  ensureStudentRig();
+  if (chatMessages) chatMessages.innerHTML = '';
+  renderOutline();
+  renderDocBar();
+}
+
+async function handleDocUpload(file) {
+  if (!file) return;
+  if (agent.busy || state.coursePipelineBusy) {
+    toast(L('AI 正忙,请稍后再试', 'The AI is busy — try again shortly'));
+    if (chatDocFile) chatDocFile.value = '';
+    return;
+  }
+  if (state.learnMode) {
+    toast(t('chat.docBuildLearnBlock'));
+    if (chatDocFile) chatDocFile.value = '';
+    return;
+  }
+
+  // Replacing a prior PDF / course → wipe session FIRST so old context cannot leak
+  const replacing = !!(getUploadedDoc() || hasExistingCourseWork() || state.activeDocJobId);
+  if (replacing) {
+    if (!confirm(t('chat.docReplaceConfirm'))) {
+      if (chatDocFile) chatDocFile.value = '';
+      return;
+    }
+    finalizePendingKeep();
+    resetCourseSessionForRebuild({ keepDoc: false });
+  }
+
+  chatAttach.disabled = true;
+  const typing = addTyping(t('chat.docUploading'));
+  try {
+    const doc = await convertDocumentFile(file, {
+      onProgress: msg => typing.setLabel(msg),
+    });
+    // Bind session to THIS parse only; history must stay empty
+    agent.history = [];
+    agent.currentSkills = [];
+    state.activeDocJobId = doc.jobId;
+    typing.setLabel(L('正在生成材料摘要…', 'Writing a material summary…'));
+    renderDocBar();
+
+    const msgEl = addMsg('ai', formatDocSummaryHtml(doc));
+    toast(replacing ? t('chat.docSessionReset') : t('chat.docReady'));
+
+    if (hasLLM()) {
+      try {
+        // Guard: if teacher uploaded again while we summarized, abandon stale summary
+        const narrative = await summarizeDocWithLLM(doc, { model: agent.model });
+        if (narrative && msgEl?.isConnected && getUploadedDoc()?.jobId === doc.jobId) {
+          const body = msgEl.querySelector('.msg-body');
+          if (body) body.innerHTML = formatDocSummaryHtml(getUploadedDoc() || doc, { narrative });
+        }
+      } catch (sumErr) {
+        console.warn('[doc-summary]', sumErr);
+        if (msgEl?.isConnected) {
+          const foot = msgEl.querySelector('.doc-sum-foot');
+          if (foot) {
+            foot.textContent = L(
+              '材料已挂入上下文(智能摘要暂不可用,已显示大纲)。点「据此备课」可开建。',
+              'Attached to context (smart summary unavailable; outline shown). Click “Build from this” to start.'
+            );
+          }
+        }
+      }
+    }
+    typing.remove();
+  } catch (err) {
+    typing.remove();
+    const msg = String(err?.message || err);
+    const needServer = /Failed to fetch|NetworkError|503|not installed|Docling/i.test(msg);
+    addMsg('ai', `<span style="color:var(--danger)">${escapeHtml(t('chat.docFail'))}: ${escapeHtml(msg)}</span>`
+      + (needServer ? `<br><small>${escapeHtml(t('chat.docNeedServer'))}</small>` : ''));
+    toast(t('chat.docFail'));
+  } finally {
+    chatAttach.disabled = false;
+    if (chatDocFile) chatDocFile.value = '';
+  }
+}
+
+chatAttach?.addEventListener('click', () => chatDocFile?.click());
+chatDocFile?.addEventListener('change', () => {
+  const file = chatDocFile.files?.[0];
+  if (file) handleDocUpload(file);
+});
+
+// 摘要卡 → 大弹层浏览全文
+const docSumOverlay = document.getElementById('doc-summary-overlay');
+const docSumBody = document.getElementById('doc-summary-overlay-body');
+function openDocSummaryOverlay() {
+  const doc = getUploadedDoc();
+  if (!doc || !docSumOverlay || !docSumBody) return;
+  docSumBody.innerHTML = formatDocSummaryFullHtml(doc);
+  docSumOverlay.classList.remove('hidden');
+  docSumOverlay.setAttribute('aria-hidden', 'false');
+  docSumBody.scrollTop = 0;
+}
+function closeDocSummaryOverlay() {
+  if (!docSumOverlay) return;
+  docSumOverlay.classList.add('hidden');
+  docSumOverlay.setAttribute('aria-hidden', 'true');
+}
+chatMessages?.addEventListener('click', e => {
+  if (e.target.closest('a.doc-sum-thumb')) return; // 配图仍可单独打开
+  const card = e.target.closest('.doc-summary-card');
+  if (card) openDocSummaryOverlay();
+});
+chatMessages?.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const card = e.target.closest?.('.doc-summary-card');
+  if (!card) return;
+  e.preventDefault();
+  openDocSummaryOverlay();
+});
+document.getElementById('btn-doc-summary-close')?.addEventListener('click', closeDocSummaryOverlay);
+document.getElementById('doc-summary-overlay-backdrop')?.addEventListener('click', closeDocSummaryOverlay);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && docSumOverlay && !docSumOverlay.classList.contains('hidden')) {
+    closeDocSummaryOverlay();
+  }
+});
 
 // ── 发送 ──
 function send() {

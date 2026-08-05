@@ -1,8 +1,14 @@
 // ═══════════════════════════════════════════════════════════════
-//  LLM 客户端:只调用 AStone Learning 国内 Claude 代理
-//  · 密钥文件格式(KEY=VALUE 每行一条):CLAUDE_PROXY_API_KEY=cpx-xxx
-//  · 未配置密钥时自动回退到"离线演示模式"(关键词规则)
-//  · 禁止回退/直连 api.anthropic.com:模型由三个代理端点的路径决定
+//  LLM 客户端:两套路由并存,用 api-keys.txt 的 LLM_PROVIDER 一键切换
+//
+//  · anthropic(试学默认): "Test API:" 的 sk-ant-… → /__llm → api.anthropic.com
+//  · astone(原路径,随时可切回):
+//      CLAUDE_PROXY_API_KEY=cpx-… → /__llm/{sonnet|opus|fable5}
+//      → https://astonelearning.com/api/v1/claude/{endpoint}
+//      (无本地代理时也可直连 AStone)
+//
+//  切回 AStone: api-keys.txt 设 LLM_PROVIDER=astone 后硬刷新即可。
+//  未配置密钥时回退离线演示模式。
 // ═══════════════════════════════════════════════════════════════
 import { L } from '../core/i18n.js';
 
@@ -15,6 +21,12 @@ export const MODELS = [
   { id: 'claude-opus-4-8', label: 'Claude Opus 4.8', provider: 'astone-proxy', endpoint: 'opus', note: '复杂场景编排', price: { in: 15, out: 75 } },
   { id: 'claude-fable-5', label: 'Claude Fable 5', provider: 'astone-proxy', endpoint: 'fable5', note: '最强推理,长任务(自带深度思考,较贵)', deepThinker: true, price: { in: 5, out: 25 } },
 ];
+
+/** Anthropic Messages API does not have Fable; server also aliases this. */
+const ANTHROPIC_MODEL_ALIAS = { 'claude-fable-5': 'claude-opus-5' };
+
+/** Preserved AStone China proxy base (do not remove — used when LLM_PROVIDER=astone). */
+export const ASTONE_PROXY_BASE = 'https://astonelearning.com/api/v1/claude';
 
 // 按 usage 粗估单次调用花费(美元)。缓存写按 1.25×、缓存读按 0.1× 输入价近似
 export function estimateCost(modelId, usage = {}) {
@@ -44,33 +56,169 @@ export const BUDGETS = [
   { id: 'max',  label: L('预算 超大', 'Budget Max'),  mult: 4, note: L('最大输出上限,超长/超复杂任务用', 'Maximum output cap for very long / complex tasks') },
 ];
 
-const keys = {};          // { CLAUDE_PROXY_API_KEY: '...' }
+const keys = {};          // { LLM_PROVIDER, CLAUDE_PROXY_API_KEY, ANTHROPIC_API_KEY, … }
 let keysLoaded = false;
-const PROXY_BASE = 'https://astonelearning.com/api/v1/claude';
-// 试玩内置密钥:api-keys.txt 优先;GitHub Pages 等无密钥文件时使用
+// Same-origin proxy via python server.py — avoids browser CORS "Failed to fetch"
+const LOCAL_LLM_BASE = '/__llm';
+// 无 api-keys.txt 时的 AStone 试玩备用
 const PLAYTEST_PROXY_KEY = 'cpx-786dc8c7fe4ec02f7d9c2d9ea219f9880ecdb5fa226b1d9b';
 // 相对模块路径,不依赖 index.html 在仓库哪一层
 const API_KEYS_URL = new URL('../../api-keys.txt', import.meta.url);
+
+function looksLikeApiKey(s) {
+  return /^(sk-ant-|sk-proj-|sk-|cpx-)/i.test(String(s || '').trim());
+}
+
+/** Parse KEY=VALUE lines plus "Test API:/=" / "GPT API:/=" blocks (key inline or on next line). */
+function parseApiKeysFile(text) {
+  const lines = String(text || '').split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const kv = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(\S+)\s*$/);
+    if (kv && !kv[2].startsWith('在这里') && !kv[2].startsWith('<') && !kv[2].includes('your-')) {
+      keys[kv[1]] = kv[2];
+    }
+    // Labels accept ":" or "=" (users write both), key may be inline or on the next non-comment line
+    const inlineTest = line.match(/^\s*Test\s*API\s*[:=]\s*(\S+)\s*$/i);
+    if (inlineTest && looksLikeApiKey(inlineTest[1])) {
+      keys.ANTHROPIC_API_KEY = inlineTest[1].trim();
+      continue;
+    }
+    if (/^\s*Test\s*API\s*[:=]?\s*$/i.test(line)) {
+      for (let j = i + 1; j < lines.length; j++) {
+        const n = lines[j].trim();
+        if (!n || n.startsWith('#')) continue;
+        if (looksLikeApiKey(n)) keys.ANTHROPIC_API_KEY = n;
+        break;
+      }
+    }
+    const inlineGpt = line.match(/^\s*GPT\s*API\s*[:=]\s*(\S+)\s*$/i);
+    if (inlineGpt && looksLikeApiKey(inlineGpt[1])) {
+      keys.OPENAI_API_KEY = inlineGpt[1].trim();
+      continue;
+    }
+    if (/^\s*GPT\s*API\s*[:=]?\s*$/i.test(line)) {
+      for (let j = i + 1; j < lines.length; j++) {
+        const n = lines[j].trim();
+        if (!n || n.startsWith('#')) continue;
+        if (looksLikeApiKey(n)) keys.OPENAI_API_KEY = n;
+        break;
+      }
+    }
+  }
+  // Safety net: classify orphan bare-key lines by their unambiguous prefixes,
+  // so a key pasted without a label still lands in the right slot.
+  for (const raw of lines) {
+    const s = raw.trim();
+    if (!looksLikeApiKey(s) || /\s/.test(s)) continue;
+    if (/^sk-ant-/i.test(s)) { if (!keys.ANTHROPIC_API_KEY) keys.ANTHROPIC_API_KEY = s; }
+    else if (/^cpx-/i.test(s)) { if (!keys.CLAUDE_PROXY_API_KEY) keys.CLAUDE_PROXY_API_KEY = s; }
+    else if (/^sk-/i.test(s)) { if (!keys.OPENAI_API_KEY) keys.OPENAI_API_KEY = s; }
+  }
+}
+
+/**
+ * Provider switch (api-keys.txt LLM_PROVIDER):
+ *  · anthropic — Test API sk-ant (study default when Test API present)
+ *  · astone    — original AStone cpx path (set this to revert)
+ */
+export function llmProvider() {
+  const p = String(keys.LLM_PROVIDER || '').trim().toLowerCase();
+  if (p === 'astone' || p === 'proxy' || p === 'cpx') return 'astone';
+  if (p === 'anthropic' || p === 'test' || p === 'direct') return 'anthropic';
+  // Auto: prefer Test API when present, else AStone
+  if (keys.ANTHROPIC_API_KEY) return 'anthropic';
+  return 'astone';
+}
+
+/** Active key for the selected provider. */
+export function activeApiKey() {
+  if (llmProvider() === 'astone') {
+    return keys.CLAUDE_PROXY_API_KEY || PLAYTEST_PROXY_KEY || '';
+  }
+  return keys.ANTHROPIC_API_KEY || keys.CLAUDE_PROXY_API_KEY || '';
+}
+
+export function usesAnthropicDirect() {
+  return llmProvider() === 'anthropic' && /^sk-ant-/i.test(activeApiKey());
+}
 
 export async function loadApiKeys() {
   if (keysLoaded) return keys;
   keysLoaded = true;
   try {
     const res = await fetch(API_KEYS_URL, { cache: 'no-store' });
-    if (res.ok) {
-      const text = await res.text();
-      text.split(/\r?\n/).forEach(line => {
-        const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(\S+)\s*$/);
-        if (m && !m[2].startsWith('在这里') && !m[2].startsWith('<')) keys[m[1]] = m[2];
-      });
-    }
+    if (res.ok) parseApiKeysFile(await res.text());
   } catch (e) { /* 文件不存在(GitHub Pages 等) */ }
-  if (!keys.CLAUDE_PROXY_API_KEY && PLAYTEST_PROXY_KEY) keys.CLAUDE_PROXY_API_KEY = PLAYTEST_PROXY_KEY;
+  if (!keys.CLAUDE_PROXY_API_KEY && PLAYTEST_PROXY_KEY) {
+    keys.CLAUDE_PROXY_API_KEY = PLAYTEST_PROXY_KEY;
+  }
   return keys;
 }
 
 export function hasLLM() {
-  return !!keys.CLAUDE_PROXY_API_KEY;
+  return !!activeApiKey();
+}
+
+/** OpenAI key for image generation (GPT API: / OPENAI_API_KEY=). */
+export function openAIApiKey() {
+  return keys.OPENAI_API_KEY || keys.GPT_API_KEY || '';
+}
+
+export function hasOpenAIImages() {
+  return !!openAIApiKey();
+}
+
+/** Default gpt-image-2; override with OPENAI_IMAGE_MODEL= in api-keys.txt */
+export function openAIImageModel() {
+  return keys.OPENAI_IMAGE_MODEL || 'gpt-image-2';
+}
+
+/** Prefer local /__llm proxy (server.py); AStone cpx may fall back to ASTONE_PROXY_BASE direct. */
+async function fetchClaude(endpoint, init) {
+  const localUrl = `${LOCAL_LLM_BASE}/${endpoint}`;
+  try {
+    const res = await fetch(localUrl, init);
+    // Static hosts without server.py return 404 HTML — fall through
+    if (res.status !== 404 && res.status !== 405) return res;
+  } catch (e) {
+    // Local proxy missing / network — try AStone direct only for cpx keys
+  }
+  const key = init?.headers?.['x-api-key'] || activeApiKey();
+  if (/^sk-ant-/i.test(key) || usesAnthropicDirect()) {
+    throw new Error(L(
+      'Test API (sk-ant) 需要经本地 server.py 的 /__llm 转发。请在仓库根目录运行 python server.py 后打开 http://localhost:8000/',
+      'Test API (sk-ant) requires the local /__llm proxy. Run python server.py from the repo root and open http://localhost:8000/'
+    ));
+  }
+  // ── original AStone path (kept for easy revert via LLM_PROVIDER=astone) ──
+  return fetch(`${ASTONE_PROXY_BASE}/${endpoint}`, init);
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/** Upstream capacity / transient gateway failures worth retrying. */
+export function isRetryableLLMError(errOrText, status = 0) {
+  const s = String(errOrText || '');
+  if (status === 429 || status === 502 || status === 503 || status === 529) return true;
+  return /overloaded|rate[_ ]?limit|temporar|timeout|try again|529|503|502/i.test(s);
+}
+
+function formatAPIError(status, body) {
+  const snippet = String(body || '').slice(0, 300);
+  if (isRetryableLLMError(snippet, status) || /overloaded/i.test(snippet)) {
+    return L(
+      `模型服务暂时过载 (HTTP ${status}): ${snippet || 'Overloaded'}。请稍后再点一次「确认」或重发同一条消息。`,
+      `Model service temporarily overloaded (HTTP ${status}): ${snippet || 'Overloaded'}. Wait a moment, then confirm the plan again or resend the same message.`
+    );
+  }
+  if (status === 401 || status === 403) {
+    return L(
+      `API 密钥无效或无权限 (HTTP ${status})。请检查 api-keys.txt 中的 CLAUDE_PROXY_API_KEY。`,
+      `API key invalid or forbidden (HTTP ${status}). Check CLAUDE_PROXY_API_KEY in api-keys.txt.`
+    );
+  }
+  return `API ${status}: ${snippet}`;
 }
 
 // 调用 Anthropic Messages API(支持工具调用 + SSE 流式 + 自适应思考)
@@ -86,24 +234,63 @@ export function hasLLM() {
 export async function callClaude({ model, system, messages, tools = undefined, maxTokens = 8192, onText = null, onThinking = null, effort = 'medium' }) {
   const modelDef = MODELS.find(m => m.id === model);
   if (!modelDef?.endpoint) throw new Error(`不支持的代理模型: ${model}`);
-  if (!keys.CLAUDE_PROXY_API_KEY) throw new Error('未配置 Claude 代理访问密钥');
-  const body = { model, max_tokens: onThinking ? maxTokens + 1024 : maxTokens, system, messages, output_config: { effort } };
+  const apiKey = activeApiKey();
+  if (!apiKey) throw new Error('未配置 Claude / Test API 密钥');
+  const modelId = usesAnthropicDirect() ? (ANTHROPIC_MODEL_ALIAS[model] || model) : model;
+  const body = { model: modelId, max_tokens: onThinking ? maxTokens + 1024 : maxTokens, system, messages, output_config: { effort } };
   if (tools?.length) body.tools = tools;
   if (onText) body.stream = true;
-  const res = await fetch(`${PROXY_BASE}/${modelDef.endpoint}`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': keys.CLAUDE_PROXY_API_KEY,
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`API ${res.status}: ${err.slice(0, 300)}`);
+
+  const maxAttempts = 5;
+  let lastErr;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let res;
+    try {
+      res = await fetchClaude(modelDef.endpoint, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-api-key': apiKey,
+        },
+        body: JSON.stringify(body),
+      });
+    } catch (e) {
+      lastErr = e;
+      if (attempt < maxAttempts && isRetryableLLMError(e.message)) {
+        await sleep(1000 * attempt * attempt);
+        continue;
+      }
+      const tip = L(
+        '网络请求失败(Failed to fetch)。请用仓库根目录 `python server.py` 打开页面(同域 /__llm 代理可绕过浏览器 CORS);并检查能否访问代理服务。',
+        'Network request failed (Failed to fetch). Open the app via `python server.py` from the repo root (same-origin /__llm proxy avoids browser CORS), and check proxy connectivity.'
+      );
+      throw new Error(`${e.message || 'Failed to fetch'}\n${tip}`);
+    }
+
+    if (!res.ok) {
+      const errText = await res.text();
+      lastErr = new Error(formatAPIError(res.status, errText));
+      if (attempt < maxAttempts && isRetryableLLMError(errText, res.status)) {
+        await sleep(1500 * attempt * attempt); // ~1.5s, 6s, 13.5s, 24s
+        continue;
+      }
+      throw lastErr;
+    }
+
+    try {
+      if (!onText) return await res.json();
+      return await parseSSE(res, onText, onThinking);
+    } catch (e) {
+      lastErr = e;
+      // Stream may fail mid-flight with Overloaded; retry whole request
+      if (attempt < maxAttempts && isRetryableLLMError(e.message)) {
+        await sleep(1000 * attempt * attempt);
+        continue;
+      }
+      throw e;
+    }
   }
-  if (!onText) return res.json();  // { content: [...], stop_reason, usage, ... }
-  return parseSSE(res, onText, onThinking);
+  throw lastErr || new Error('LLM request failed');
 }
 
 // 解析 SSE 事件流,重组出与非流式一致的 { content, stop_reason, usage }

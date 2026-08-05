@@ -1,6 +1,6 @@
-# XR EduAgent — AI-assisted VR lesson authoring
+# XR EduAgent — AI-assisted multimodal lesson authoring
 
-A VR classroom builder for **teachers with no coding background**: describe a lesson in natural language and the AI builds an interactive Three.js / WebXR scene.
+Teachers describe a lesson in natural language (and/or upload materials); the AI authors a **Learning Outline** with **VR / reading / H5 / quiz** sections. Started as a pure Three.js / WebXR scene builder — see [xr-edu-agent/EVOLUTION.md](xr-edu-agent/EVOLUTION.md).
 
 ## Quick start
 
@@ -12,7 +12,7 @@ python server.py
 
 **GitHub Pages**: root `index.html` is the entry; app code lives under `xr-edu-agent/`. See [DEPLOY.md](DEPLOY.md).
 
-**Dev docs**: [xr-edu-agent/README.md](xr-edu-agent/README.md) · [xr-edu-agent/AGENTS.md](xr-edu-agent/AGENTS.md)
+**Dev docs**: [xr-edu-agent/README.md](xr-edu-agent/README.md) · [xr-edu-agent/AGENTS.md](xr-edu-agent/AGENTS.md) · [xr-edu-agent/EVOLUTION.md](xr-edu-agent/EVOLUTION.md) · Agent map: open `xr-edu-agent/js/agent/agent-viewer.html`
 
 ## Repo layout
 
@@ -20,10 +20,11 @@ python server.py
 index.html              ← GitHub Pages entry (loads xr-edu-agent/)
 server.py               ← local dev server (serves the whole repo root)
 xr-edu-agent/
+  EVOLUTION.md          ← diffs vs original 3D/VR product
   react-main.js         ← React bootstrap
   main.js               ← Three.js / Agent runtime entry
   style.css
-  js/                   ← core code
+  js/                   ← core code (+ outline, pedagogy assets, Docling client)
   api-keys.txt          ← local secrets (do not commit; see .gitignore)
 ```
 

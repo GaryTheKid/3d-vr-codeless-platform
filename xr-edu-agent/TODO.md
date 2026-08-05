@@ -1,6 +1,22 @@
 # TODO — Future Roadmap
 
 > Reminder list: items below are aligned but **not yet implemented**, ordered by rough priority.
+> Product evolution vs the original pure 3D/VR builder: **[EVOLUTION.md](./EVOLUTION.md)**. Agent map: **v5**.
+
+---
+
+# ★ Near-term: materials → Knowledge Graph → Outline → pattern → fill (aligned 2026-08-04)
+
+> **Background**: After Outline / Docling / reading·h5·quiz workspaces shipped, the remaining gap is **instructional design quality** when converting arbitrary uploaded materials into a full course. Pedagogy static assets landed under `js/agent/pedagogy/` (pattern library + action vocab + reference pipeline). Architecture: insert a **hard Knowledge Graph / MindMap** between md and Outline, then pattern-slot strategy, then parallel section fill with isolated context.
+
+- [x] **KG schema + persist** on `cfg.knowledgeGraph` (nodes/edges/anchor example/level/coverage); inject compact digest into `buildContextMessage` — shipped `js/core/knowledge-graph.js` + project cfg
+- [x] **KG generation step** from Docling md + teacher prompt — `course-pipeline.js` `extractKgAndOutlinePlan`
+- [x] **Outline-from-KG** using outline model; bind `covers: [nodeIds]` — `applyKgAndOutline`
+- [ ] **Pattern lookup engine** (read `pattern_library` + level vocab; Rule C; P00 + `pattern_miss_log`) — v1 uses spatiality heuristics in the KG/outline LLM prompt
+- [x] **Spatiality → section type** remap (`vr` / `h5` / `reading` / `quiz`) — in pipeline prompt + post-check reading+quiz
+- [x] **Fan-out section fillers** (reading/h5/quiz/vr sub-agents; progress rings) — `runCoursePipeline` + Outline `sec-build-ring`
+- [ ] **Critic vs KG** (used-but-never-taught / fact drift / load)
+- [ ] Sync agent-map + EVOLUTION.md when each milestone ships — partial (code shipped; map can lag)
 
 ---
 

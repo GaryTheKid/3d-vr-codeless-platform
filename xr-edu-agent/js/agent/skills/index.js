@@ -25,6 +25,11 @@ import './xr-design.js';
 import './view-navigation.js';
 import './room-design.js';
 import './debugging.js';
+import './course-outline.js';
+import './course-reading.js';
+import './course-h5.js';
+import './course-quiz.js';
+import './course-pipeline.js';
 import { isEN } from '../../core/i18n.js';
 
 export const AGENT_SKILLS = globalThis.XR_AGENT_SKILLS ?? [];

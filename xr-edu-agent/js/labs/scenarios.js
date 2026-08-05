@@ -29,7 +29,7 @@ export const SCENARIOS = [
       clearScene();
       const sun = addAsset('sun', { x: 0, z: 0 }, true);
       sun.userData.displayName = L('太阳', 'Sun');
-      attachLabel(sun, { width: 1.3, gap: 0.4, accent: '#f0a848', lines: [L('☀️ 太阳 · 恒星', '☀️ Sun · Star')] });
+      attachLabel(sun, { width: 1.7, gap: 0.45, accent: '#f0a848', lines: [L('☀️ 太阳 · 恒星', '☀️ Sun · Star')] });
       const planets = [
         { id: 'earth', name: L('水星', 'Mercury'), r: 3, speed: 1.4, scale: 0.35, color: 0x9aa3af, fact: L('公转 88 天', 'Orbit: 88 days') },
         { id: 'earth', name: L('金星', 'Venus'), r: 4.4, speed: 1.0, scale: 0.55, color: 0xd8a850, fact: L('公转 225 天', 'Orbit: 225 days') },
@@ -43,11 +43,11 @@ export const SCENARIOS = [
         obj.scale.setScalar(p.scale);
         if (p.color) setMainColor(obj, p.color);
         obj.userData.anim = { type: 'orbit', cx: 0, cz: 0, radius: p.r, speed: p.speed, angle: Math.random() * Math.PI * 2 };
-        attachLabel(obj, { width: 1.25, gap: 0.3, accent: '#7fc4ff', lines: [`${p.name} · ${p.fact}`] });
+        attachLabel(obj, { width: 1.65, gap: 0.35, accent: '#7fc4ff', lines: [`${p.name} · ${p.fact}`] });
       });
       addFreePanel({
         name: L('知识板 · 公转与自转', 'Knowledge · Revolution vs Rotation'),
-        title: L('🌌 公转 vs 自转', '🌌 Revolution vs Rotation'), accent: '#a878f0', width: 2.5,
+        title: L('🌌 公转 vs 自转', '🌌 Revolution vs Rotation'), accent: '#a878f0', width: 3.2,
         lines: L(
           ['公转: 绕太阳转一圈', '自转: 自己原地转一圈', '', '离太阳越远 → 公转越慢', '看看标签, 谁跑得最快?'],
           ['Revolution: one lap around the sun', 'Rotation: spinning in place', '', 'Farther from the sun → slower orbit', 'Check the labels: who is fastest?']),

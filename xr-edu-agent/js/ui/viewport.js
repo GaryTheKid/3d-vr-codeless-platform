@@ -16,6 +16,7 @@ import { t } from '../core/i18n.js';
 import { animDesc, ACTION_DESC } from './hierarchy.js';
 import { updatePanelContent } from '../panels/panel3d.js';
 import { getViewCamera } from '../core/loop.js';
+import { studyFlag } from '../core/study-test-flags.js';
 
 // ── 点选 / PC Interactor(鼠标 → 语义交互事件)──
 // 运行模式(▶):单击可交互对象 = 触发交互;按住拖动带 onGrab 的对象 = grab/drag/release;Alt+单击 = 强制选中
@@ -187,7 +188,8 @@ on('play-mode-changed', v => {
 // 运行模式底部提示条:可走动课显示 WASD 驾驶说明
 const playHint = document.getElementById('play-hint');
 function syncPlayHint() {
-  const show = state.playMode && locomotion.mode !== 'static';
+  // Study TEMP: no WASD player-drive hint when VR player controller is off
+  const show = state.playMode && locomotion.mode !== 'static' && !studyFlag('disableVrPlayerController');
   playHint.classList.toggle('hidden', !show);
   if (show) playHint.textContent = t('vp.driveHint');
 }

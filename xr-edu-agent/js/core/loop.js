@@ -18,6 +18,7 @@ import { updateLocomotion, updatePCWalk, resetLocomotionPose, locomotion } from 
 import { getStudentSpawn, getStudentEye, getStudentRig, updateRigDrive, rigDriveActive } from '../scene/student-rig.js';
 import { isRouteHiddenForStudent } from './play-visibility.js';
 import { updateRoomUIVisibility } from './room-ui-visibility.js';
+import { studyFlag } from './study-test-flags.js';
 
 const _camQuat = new THREE.Quaternion();
 const _parentQuat = new THREE.Quaternion();
@@ -118,7 +119,9 @@ function syncVrButton() {
   btn.classList.toggle('primary', !state.vrPreview);
 }
 
-export function enterVrPreview() {
+export function enterVrPreview({ toastMsg = true } = {}) {
+  // Study TEMP: keep normal orbit 3D play (see STUDY_TEST_FLAGS.md)
+  if (studyFlag('disableVrPlayerController')) return;
   if (state.vrPreview) return;
   state.vrPreview = true;
   if (!state.playMode) setPlayMode(true);
@@ -126,7 +129,7 @@ export function enterVrPreview() {
   orbit.enabled = false;
   deselect();
   syncVrButton();
-  toast(t('top.vrOn'));
+  if (toastMsg) toast(t('top.vrOn'));
 }
 
 export function exitVrPreview({ toastMsg = true } = {}) {
@@ -199,14 +202,13 @@ export function startLoop() {
     const dt = clock.getDelta();
     const t = clock.elapsedTime;
 
-    // 3D 面板:始终面向"观看者"+ 实时数据重绘(~7fps 足够)
-    // 编辑模式 → 面向编辑相机;运行模式(PC)→ 面向学生相机(这才是学生真实所见,
-    // PiP 里的面板因此也是正的);XR 会话 → camera 本身就是头显位姿
+    // 3D 面板:始终面向「当前主视口观看者」+ 实时数据重绘(~7fps 足够)
+    // 桌面 VR 预览 → 学生眼;真 XR → 头显(camera);其余(含编辑/仅运行)→ 编辑相机
     panelRedrawTimer += dt;
     const doRedraw = panelRedrawTimer > 0.15;
     if (doRedraw) panelRedrawTimer = 0;
-    const useStudentView = (state.playMode || state.vrPreview) && !renderer.xr.isPresenting && syncStudentCam();
-    (useStudentView ? studentCam : camera).getWorldQuaternion(_camQuat);
+    const faceStudent = state.vrPreview && !renderer.xr.isPresenting && syncStudentCam();
+    (faceStudent ? studentCam : camera).getWorldQuaternion(_camQuat);
     sceneRoot.traverse(o => {
       if (o.userData.isBillboard) {
         o.parent.getWorldQuaternion(_parentQuat);
@@ -344,10 +346,16 @@ export function setupXR() {
   // 隐藏 three.js 默认 VRButton;顶栏按钮改为桌面第一人称预览
   const vrButton = VRButton.createButton(renderer);
   vrButton.style.display = 'none';
+  vrButton.classList.add('xr-force-hidden');
   document.body.appendChild(vrButton);
+  // three.js may flip display later — keep a MutationObserver-lite poll via CSS !important
 
   const btn = document.getElementById('btn-vr');
   btn?.addEventListener('click', e => {
+    if (studyFlag('disableVrPlayerController')) {
+      toast(L('试学模式:当前为普通 3D 场景(VR 玩家已暂时关闭)', 'Study mode: normal 3D scene (VR player temporarily off)'));
+      return;
+    }
     // 普通点击 = 桌面学生第一人称预览;Shift+点击 = 真 immersive 头显会话(若设备支持)
     if (e.shiftKey) {
       if (!navigator.xr) {
@@ -365,6 +373,17 @@ export function setupXR() {
   });
 
   syncVrButton();
-  // 停止运行 → 同步退出 VR 预览,回到编辑视角
-  on('play-mode-changed', v => { if (!v) exitVrPreview({ toastMsg: false }); });
+  // ▶ 运行 → 桌面学生第一人称(试学 TEMP 关闭:见 study-test-flags.disableVrPlayerController)
+  on('play-mode-changed', v => {
+    if (!v) exitVrPreview({ toastMsg: false });
+    else if (!renderer.xr.isPresenting && !studyFlag('disableVrPlayerController')) {
+      enterVrPreview({ toastMsg: false });
+    }
+  });
+
+  // Study TEMP: hide Enter VR chrome (restore by flipping the flag)
+  if (studyFlag('disableVrPlayerController') && btn) {
+    btn.classList.add('study-hide-vr');
+    btn.style.display = 'none';
+  }
 }

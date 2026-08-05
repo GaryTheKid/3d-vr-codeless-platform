@@ -196,66 +196,113 @@ function bond(p1, p2, radius, color) {
 }
 function at(obj, y) { obj.position.y = y; return obj; }
 const PANEL_FONT = '"Segoe UI", "Microsoft YaHei", sans-serif';
+const PANEL_CANVAS_W_MIN = 768, PANEL_CANVAS_W_MAX = 1600, PANEL_LINE_H = 76, PANEL_TITLE_BLOCK = 104, PANEL_BASE_H = 72;
+const PANEL_TITLE_PX = 56, PANEL_BODY_PX = 46, PANEL_VALUE_PX = 48, PANEL_PAD_X = 40, PANEL_KV_GAP = 56;
+function _panelMeasureCtx() {
+  if (!_panelMeasureCtx.c) _panelMeasureCtx.c = document.createElement('canvas').getContext('2d');
+  return _panelMeasureCtx.c;
+}
+function computePanelCanvasWidth(title, lines) {
+  const ctx = _panelMeasureCtx();
+  let need = PANEL_CANVAS_W_MIN;
+  if (title) {
+    ctx.font = 'bold ' + PANEL_TITLE_PX + 'px ' + PANEL_FONT;
+    need = Math.max(need, ctx.measureText(String(title)).width + PANEL_PAD_X * 2 + 24);
+  }
+  (lines || []).forEach(function (line) {
+    if (typeof line === 'string') {
+      ctx.font = PANEL_BODY_PX + 'px ' + PANEL_FONT;
+      need = Math.max(need, ctx.measureText(line).width + PANEL_PAD_X * 2);
+    } else {
+      ctx.font = PANEL_BODY_PX + 'px ' + PANEL_FONT;
+      var kw = ctx.measureText(String(line.k || '')).width;
+      ctx.font = 'bold ' + PANEL_VALUE_PX + 'px Consolas, "Microsoft YaHei", monospace';
+      var vw = ctx.measureText(String(line.v || '')).width;
+      need = Math.max(need, kw + PANEL_KV_GAP + vw + PANEL_PAD_X * 2);
+    }
+  });
+  return Math.min(PANEL_CANVAS_W_MAX, Math.ceil(need / 32) * 32);
+}
+function fitPanelWorldWidth(requested, canvasW) {
+  var base = Math.max(requested || 4.2, 1.2);
+  var scale = canvasW / PANEL_CANVAS_W_MIN;
+  var grown = scale > 1.05 ? base * Math.min(scale, 1.85) : base;
+  return Math.min(7.5, Math.round(grown * 20) / 20);
+}
 function drawPanel(pd) {
   const canvas = pd.canvas, ctx = pd.ctx, w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
   ctx.beginPath();
-  ctx.roundRect(6, 6, w - 12, h - 12, 28);
+  ctx.roundRect(8, 8, w - 16, h - 16, 32);
   ctx.fillStyle = 'rgba(14, 17, 23, 0.92)';
   ctx.fill();
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 5;
   ctx.strokeStyle = pd.accent;
   ctx.stroke();
-  let y = 28;
+  let y = 36;
   if (pd.title) {
     ctx.fillStyle = pd.accent;
-    ctx.font = 'bold 42px ' + PANEL_FONT;
+    ctx.font = 'bold ' + PANEL_TITLE_PX + 'px ' + PANEL_FONT;
     ctx.textAlign = 'left';
-    ctx.fillText(pd.title, 36, y + 42);
-    y += 72;
+    ctx.fillText(pd.title, PANEL_PAD_X, y + PANEL_TITLE_PX);
+    y += 92;
     ctx.strokeStyle = 'rgba(255,255,255,0.14)';
     ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(30, y); ctx.lineTo(w - 30, y); ctx.stroke();
-    y += 8;
+    ctx.beginPath(); ctx.moveTo(34, y); ctx.lineTo(w - 34, y); ctx.stroke();
+    y += 10;
   }
   const lines = pd.live ? pd.live() : pd.lines;
   const centered = !pd.title && lines.length === 1;
   lines.forEach(line => {
     if (typeof line === 'string') {
       ctx.fillStyle = '#c8cfd8';
-      ctx.font = '33px ' + PANEL_FONT;
+      ctx.font = PANEL_BODY_PX + 'px ' + PANEL_FONT;
       ctx.textAlign = centered ? 'center' : 'left';
-      ctx.fillText(line, centered ? w / 2 : 36, y + 44);
+      ctx.fillText(line, centered ? w / 2 : PANEL_PAD_X, y + 56);
     } else {
-      ctx.fillStyle = '#8a93a0';
-      ctx.font = '33px ' + PANEL_FONT;
-      ctx.textAlign = 'left';
-      ctx.fillText(line.k, 36, y + 44);
-      ctx.fillStyle = line.c || '#ffffff';
-      ctx.font = 'bold 35px Consolas, "Microsoft YaHei", monospace';
-      ctx.textAlign = 'right';
-      ctx.fillText(line.v, w - 36, y + 44);
+      var key = String(line.k || ''), val = String(line.v || '');
+      ctx.font = PANEL_BODY_PX + 'px ' + PANEL_FONT;
+      var kw = ctx.measureText(key).width;
+      ctx.font = 'bold ' + PANEL_VALUE_PX + 'px Consolas, "Microsoft YaHei", monospace';
+      var vw = ctx.measureText(val).width;
+      if (PANEL_PAD_X + kw + PANEL_KV_GAP + vw + PANEL_PAD_X > w) {
+        ctx.fillStyle = line.c || '#ffffff';
+        ctx.font = PANEL_BODY_PX + 'px ' + PANEL_FONT;
+        ctx.textAlign = 'left';
+        ctx.fillText(key + ': ' + val, PANEL_PAD_X, y + 56);
+      } else {
+        ctx.fillStyle = '#8a93a0';
+        ctx.font = PANEL_BODY_PX + 'px ' + PANEL_FONT;
+        ctx.textAlign = 'left';
+        ctx.fillText(key, PANEL_PAD_X, y + 56);
+        ctx.fillStyle = line.c || '#ffffff';
+        ctx.font = 'bold ' + PANEL_VALUE_PX + 'px Consolas, "Microsoft YaHei", monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(val, w - PANEL_PAD_X, y + 56);
+      }
     }
-    y += 58;
+    y += PANEL_LINE_H;
   });
   pd.tex.needsUpdate = true;
 }
 function makePanel(opts) {
   opts = opts || {};
-  const title = opts.title || '', lines = opts.lines || [], width = opts.width || 2;
+  const title = opts.title || '', lines = opts.lines || [], width = opts.width || 4.2;
   const accent = opts.accent || '#4a9eff', live = opts.live || null;
+  const resolved = live ? live() : lines;
   const canvas = document.createElement('canvas');
-  const lineCount = Math.max((live ? live() : lines).length, 1);
-  canvas.width = 640;
-  canvas.height = 56 + (title ? 80 : 0) + lineCount * 58;
+  const lineCount = Math.max(resolved.length, 1);
+  canvas.width = computePanelCanvasWidth(title, resolved);
+  canvas.height = PANEL_BASE_H + (title ? PANEL_TITLE_BLOCK : 0) + lineCount * PANEL_LINE_H;
   const ctx = canvas.getContext('2d');
   const tex = new THREE.CanvasTexture(canvas);
   tex.anisotropy = 4;
   const pd = { canvas, ctx, tex, title, lines, accent, live };
   drawPanel(pd);
-  const panelH = width * canvas.height / canvas.width;
+  const worldW = fitPanelWorldWidth(width, canvas.width);
+  const panelH = worldW * canvas.height / canvas.width;
   const m = new THREE.Mesh(
-    new THREE.PlaneGeometry(width, panelH),
+    new THREE.PlaneGeometry(worldW, panelH),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide, depthWrite: false })
   );
   m.renderOrder = 10;
@@ -266,7 +313,7 @@ function makePanel(opts) {
 }
 function attachLabel(obj, opts) {
   const s = obj.scale.x || 1;
-  const panel = makePanel(opts);
+  const panel = makePanel(Object.assign({ width: 3.2 }, opts || {}));
   const box = new THREE.Box3().setFromObject(obj);
   const topWorld = box.max.y - obj.position.y;
   panel.position.y = (topWorld + (opts.gap === undefined ? 0.5 : opts.gap) + panel.userData.panelH / 2) / s;

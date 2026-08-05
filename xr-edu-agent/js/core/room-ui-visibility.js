@@ -24,7 +24,7 @@ const touched = new Map();
 
 function viewerPos(out) {
   if (renderer.xr.isPresenting) return camera.getWorldPosition(out);
-  if (state.playMode) {
+  if (state.vrPreview || state.playMode) {
     const eye = getStudentEye();
     if (eye) return out.set(eye.x, eye.y, eye.z);
   }

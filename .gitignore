@@ -3,6 +3,7 @@ api-keys.txt
 xr-edu-agent/api-keys.txt
 logs/
 download/
+uploads/
 xr-edu-agent/logs/
 xr-edu-agent/download/
 .venv/

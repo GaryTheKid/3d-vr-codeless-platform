@@ -16,7 +16,10 @@ export default [
     input_schema: { type: 'object', properties: {} },
     exec() {
       if (sceneRoot.children.length <= FULL_JSON_MAX) return ok(JSON.stringify(sceneToJSON()));
-      return ok(`共 ${sceneRoot.children.length} 个对象(大场景模式,以下为摘要索引):\n${sceneSummary()}`);
+      return ok(L(
+        `共 ${sceneRoot.children.length} 个对象(大场景模式,以下为摘要索引):\n${sceneSummary()}`,
+        `${sceneRoot.children.length} objects (large-scene mode; summary index below):\n${sceneSummary()}`
+      ));
     },
   },
   {
@@ -40,7 +43,10 @@ export default [
         opts.radius = inp.radius;
       }
       const found = searchObjects(inp.query || '', opts);
-      if (!found.length) return ok('没有匹配的对象。可以换关键词重试,或用 get_scene 看全景摘要');
+      if (!found.length) return ok(L(
+        '没有匹配的对象。可以换关键词重试,或用 get_scene 看全景摘要',
+        'No matching objects. Try different keywords, or use get_scene for the full summary'
+      ));
       return ok(JSON.stringify(found.map(o => objectToJSON(o, true))));
     },
   },
@@ -51,7 +57,7 @@ export default [
     input_schema: { type: 'object', properties: { ref: { type: 'string', description: '对象 oid 或显示名' } }, required: ['ref'] },
     exec(inp) {
       const obj = findObject(inp.ref);
-      if (!obj) return fail(`找不到对象 ${inp.ref}`);
+      if (!obj) return fail(L(`找不到对象 ${inp.ref}`, `Object not found: ${inp.ref}`));
       return ok(JSON.stringify(objectToJSON(obj, true)));
     },
   },

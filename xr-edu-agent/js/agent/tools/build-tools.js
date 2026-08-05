@@ -37,7 +37,7 @@ export default [
     },
     exec(inp) {
       const obj = addAsset(inp.asset_id, { x: inp.x ?? 0, z: inp.z ?? 0 }, true);
-      if (!obj) return fail(`资源 ${inp.asset_id} 不存在`);
+      if (!obj) return fail(L(`资源 ${inp.asset_id} 不存在`, `Asset ${inp.asset_id} not found`));
       if (inp.y !== undefined) obj.position.y = inp.y;
       if (inp.name) obj.userData.displayName = inp.name;
       if (inp.scale) obj.scale.setScalar(inp.scale);
@@ -45,7 +45,10 @@ export default [
       if (inp.anim) obj.userData.anim = { angle: Math.random() * 6.28, ...inp.anim };
       markTouched(obj);
       emit('hierarchy-changed');
-      return ok(`已添加 ${obj.userData.displayName}(oid=${obj.userData.oid})`);
+      return ok(L(
+        `已添加 ${obj.userData.displayName}(oid=${obj.userData.oid})`,
+        `Added ${obj.userData.displayName} (oid=${obj.userData.oid})`
+      ));
     },
   },
   {
@@ -80,7 +83,10 @@ export default [
     exec(inp) {
       let obj;
       try { obj = runBuilderCode(inp.code); }
-      catch (e) { return fail(`构建代码执行失败:${e.message}。请修正代码后重新调用`); }
+      catch (e) {
+        return fail(L(`构建代码执行失败:${e.message}。请修正代码后重新调用`,
+          `Builder code failed: ${e.message}. Fix and retry`));
+      }
       assignOid(obj);
       obj.userData.custom = true;
       obj.userData.icon = inp.icon || '🧩';
@@ -95,9 +101,12 @@ export default [
       markTouched(obj);
       emit('hierarchy-changed');
       const feats = [];
-      if (obj.userData.customUpdate) feats.push('每帧动画');
-      if (obj.userData.customClick) feats.push('点击交互');
-      return ok(`已生成自定义对象 ${inp.name}(oid=${obj.userData.oid}${feats.length ? ',含' + feats.join('+') : ''})`);
+      if (obj.userData.customUpdate) feats.push(L('每帧动画', 'per-frame animation'));
+      if (obj.userData.customClick) feats.push(L('点击交互', 'click interaction'));
+      return ok(L(
+        `已生成自定义对象 ${inp.name}(oid=${obj.userData.oid}${feats.length ? ',含' + feats.join('+') : ''})`,
+        `Created custom object ${inp.name} (oid=${obj.userData.oid}${feats.length ? ', with ' + feats.join(' + ') : ''})`
+      ));
     },
   },
   {
@@ -129,7 +138,7 @@ export default [
     },
     exec(inp) {
       const obj = findObject(inp.ref);
-      if (!obj) return fail(`找不到对象 ${inp.ref}`);
+      if (!obj) return fail(L(`找不到对象 ${inp.ref}`, `Object not found: ${inp.ref}`));
       const ud = obj.userData;
       if (inp.remove) {
         delete ud.customUpdate; delete ud.customClick; delete ud.savedCustomUpdate; delete ud.savedCustomClick;
@@ -137,7 +146,10 @@ export default [
         delete ud.behaviorDesc; delete ud.updateCode; delete ud.clickCode;
         delete ud.grabCode; delete ud.dragCode; delete ud.releaseCode;
         emit('hierarchy-changed');
-        return ok(`已清除 ${ud.displayName} 的自定义行为`);
+        return ok(L(
+          `已清除 ${ud.displayName} 的自定义行为`,
+          `Cleared custom behavior on ${ud.displayName}`
+        ));
       }
       try {
         if (inp.update_code) { ud.customUpdate = compileUpdate(inp.update_code); ud.updateCode = inp.update_code; delete ud.savedCustomUpdate; }
@@ -145,12 +157,19 @@ export default [
         if (inp.grab_code) { ud.onGrab = compileHandler(inp.grab_code); ud.grabCode = inp.grab_code; }
         if (inp.drag_code) { ud.onDrag = compileHandler(inp.drag_code); ud.dragCode = inp.drag_code; }
         if (inp.release_code) { ud.onRelease = compileHandler(inp.release_code); ud.releaseCode = inp.release_code; }
-      } catch (e) { return fail(`行为代码编译失败:${e.message}。请修正后重试`); }
+      } catch (e) { return fail(L(
+        `行为代码编译失败:${e.message}。请修正后重试`,
+        `Behavior code compile failed: ${e.message}. Fix and retry`
+      )); }
       if (inp.description) ud.behaviorDesc = inp.description;
       markTouched(obj);
       emit('hierarchy-changed');
-      const set = [inp.update_code && '每帧行为', inp.click_code && '点击交互', (inp.grab_code || inp.drag_code) && '抓取交互'].filter(Boolean);
-      return ok(`已为 ${ud.displayName} 设置${set.join('和') || '行为'}`);
+      const setZh = [inp.update_code && '每帧行为', inp.click_code && '点击交互', (inp.grab_code || inp.drag_code) && '抓取交互'].filter(Boolean);
+      const setEn = [inp.update_code && 'per-frame behavior', inp.click_code && 'click interaction', (inp.grab_code || inp.drag_code) && 'grab interaction'].filter(Boolean);
+      return ok(L(
+        `已为 ${ud.displayName} 设置${setZh.join('和') || '行为'}`,
+        `Set ${setEn.join(' and ') || 'behavior'} for ${ud.displayName}`
+      ));
     },
   },
   {
@@ -160,9 +179,13 @@ export default [
     input_schema: { type: 'object', properties: { template_id: { type: 'string' } }, required: ['template_id'] },
     exec(inp) {
       const s = findScenario(inp.template_id);
-      if (!s) return fail(`模板 ${inp.template_id} 不存在`);
+      if (!s) return fail(L(`模板 ${inp.template_id} 不存在`, `Template ${inp.template_id} not found`));
       s.run();
-      return ok(`已生成模板「${s.name}」。当前场景:${JSON.stringify(sceneToJSON().objects.map(o => o.oid + ':' + o.name))}`);
+      const sceneList = JSON.stringify(sceneToJSON().objects.map(o => o.oid + ':' + o.name));
+      return ok(L(
+        `已生成模板「${s.name}」。当前场景:${sceneList}`,
+        `Built template "${s.name}". Current scene: ${sceneList}`
+      ));
     },
   },
   {
@@ -170,6 +193,6 @@ export default [
     label: () => L('清空场景', 'Clear the scene'),
     description: '清空场景中的所有对象。',
     input_schema: { type: 'object', properties: {} },
-    exec() { clearScene(); return ok('场景已清空'); },
+    exec() { clearScene(); return ok(L('场景已清空', 'Scene cleared')); },
   },
 ];

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Projectile Motion Quiz</title><style>
+:root { --bg:#f5f7fb; --card:#ffffff; --text:#172033; --muted:#64748b; --accent:#2563eb; --border:#dbe3ef; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+header { background:linear-gradient(135deg,#172554,#2563eb); color:white; padding:44px 20px; }
+header .wrap, main { max-width:960px; margin:auto; }
+h1 { margin:0 0 8px; font-size:2.2rem; }
+.subtitle { opacity:.9; }
+.meta { margin-top:14px; font-size:.95rem; opacity:.85; }
+main { padding:28px 20px 60px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:0 6px 20px rgba(15,23,42,.05); }
+.question-title { font-weight:700; margin-bottom:12px; }
+.option { display:block; margin:9px 0; padding:10px 12px; border:1px solid var(--border); border-radius:10px; cursor:pointer; }
+.option:hover { background:#eff6ff; }
+textarea { width:100%; min-height:130px; resize:vertical; border:1px solid var(--border); border-radius:10px; padding:12px; font:inherit; }
+input[type=text] { width:100%; padding:11px; border:1px solid var(--border); border-radius:10px; font:inherit; }
+button { border:0; border-radius:10px; padding:12px 18px; font-weight:700; cursor:pointer; }
+.primary { background:var(--accent); color:white; }
+.secondary { background:#e2e8f0; color:#172033; margin-left:8px; }
+.actions { position:sticky; bottom:0; background:rgba(245,247,251,.95); backdrop-filter:blur(8px); padding:14px 0; border-top:1px solid var(--border); }
+.small { color:var(--muted); font-size:.92rem; }
+@media print { .actions { display:none; } body { background:white; } .card { box-shadow:none; break-inside:avoid; } }
+</style></head>
+<body>
+<header><div class="wrap"><h1>Projectile Motion Quiz</h1><div class="subtitle">Independent Horizontal and Vertical Motion</div>
+<div class="meta">15 multiple-choice questions · 5 short-answer questions</div></div></header>
+<main>
+<section class="card"><label class="question-title" for="studentName">Student name</label><input id="studentName" type="text" placeholder="Enter your name"></section>
+<h2>Part I: Multiple Choice</h2>
+<p class="small">Choose one answer for each question.</p>
+<section class="card"><div class="question-title">1. A projectile is an object that is:</div><label class="option"><input type="radio" name="mcq1" value="A"> A. Moving only vertically</label>
+<label class="option"><input type="radio" name="mcq1" value="B"> B. Launched and then moves under gravity</label>
+<label class="option"><input type="radio" name="mcq1" value="C"> C. Always traveling in a circle</label>
+<label class="option"><input type="radio" name="mcq1" value="D"> D. At rest</label></section><section class="card"><div class="question-title">2. Ignoring air resistance, what is the horizontal acceleration of a projectile?</div><label class="option"><input type="radio" name="mcq2" value="A"> A. 0</label>
+<label class="option"><input type="radio" name="mcq2" value="B"> B. g</label>
+<label class="option"><input type="radio" name="mcq2" value="C"> C. -g</label>
+<label class="option"><input type="radio" name="mcq2" value="D"> D. It increases with time</label></section><section class="card"><div class="question-title">3. Ignoring air resistance, what is the vertical acceleration of a projectile?</div><label class="option"><input type="radio" name="mcq3" value="A"> A. 0</label>
+<label class="option"><input type="radio" name="mcq3" value="B"> B. +g</label>
+<label class="option"><input type="radio" name="mcq3" value="C"> C. -g</label>
+<label class="option"><input type="radio" name="mcq3" value="D"> D. It depends on horizontal speed</label></section><section class="card"><div class="question-title">4. The initial horizontal velocity component is:</div><label class="option"><input type="radio" name="mcq4" value="A"> A. v0 sin θ</label>
+<label class="option"><input type="radio" name="mcq4" value="B"> B. v0 cos θ</label>
+<label class="option"><input type="radio" name="mcq4" value="C"> C. gt</label>
+<label class="option"><input type="radio" name="mcq4" value="D"> D. v0 + gt</label></section><section class="card"><div class="question-title">5. The initial vertical velocity component is:</div><label class="option"><input type="radio" name="mcq5" value="A"> A. v0 sin θ</label>
+<label class="option"><input type="radio" name="mcq5" value="B"> B. v0 cos θ</label>
+<label class="option"><input type="radio" name="mcq5" value="C"> C. v0/t</label>
+<label class="option"><input type="radio" name="mcq5" value="D"> D. g cos θ</label></section><section class="card"><div class="question-title">6. During ideal projectile motion, the horizontal velocity:</div><label class="option"><input type="radio" name="mcq6" value="A"> A. Increases steadily</label>
+<label class="option"><input type="radio" name="mcq6" value="B"> B. Decreases steadily</label>
+<label class="option"><input type="radio" name="mcq6" value="C"> C. Remains constant</label>
+<label class="option"><input type="radio" name="mcq6" value="D"> D. Becomes zero at the top</label></section><section class="card"><div class="question-title">7. At the highest point of the trajectory, the vertical velocity is:</div><label class="option"><input type="radio" name="mcq7" value="A"> A. Maximum upward</label>
+<label class="option"><input type="radio" name="mcq7" value="B"> B. Zero</label>
+<label class="option"><input type="radio" name="mcq7" value="C"> C. Equal to the horizontal velocity</label>
+<label class="option"><input type="radio" name="mcq7" value="D"> D. -g</label></section><section class="card"><div class="question-title">8. At the highest point, the projectile’s acceleration is:</div><label class="option"><input type="radio" name="mcq8" value="A"> A. Zero</label>
+<label class="option"><input type="radio" name="mcq8" value="B"> B. Horizontal</label>
+<label class="option"><input type="radio" name="mcq8" value="C"> C. Still downward with magnitude g</label>
+<label class="option"><input type="radio" name="mcq8" value="D"> D. Upward</label></section><section class="card"><div class="question-title">9. Horizontal and vertical motions are treated as:</div><label class="option"><input type="radio" name="mcq9" value="A"> A. Dependent in every way</label>
+<label class="option"><input type="radio" name="mcq9" value="B"> B. Independent components</label>
+<label class="option"><input type="radio" name="mcq9" value="C"> C. Identical motions</label>
+<label class="option"><input type="radio" name="mcq9" value="D"> D. Circular components</label></section><section class="card"><div class="question-title">10. In the demonstration with one ball launched horizontally and one dropped, they land:</div><label class="option"><input type="radio" name="mcq10" value="A"> A. The launched ball first</label>
+<label class="option"><input type="radio" name="mcq10" value="B"> B. The dropped ball first</label>
+<label class="option"><input type="radio" name="mcq10" value="C"> C. At the same time</label>
+<label class="option"><input type="radio" name="mcq10" value="D"> D. Only if their masses are equal</label></section><section class="card"><div class="question-title">11. Why does a ball tossed straight up by a person moving at constant horizontal speed return to the person?</div><label class="option"><input type="radio" name="mcq11" value="A"> A. The ball stops moving horizontally</label>
+<label class="option"><input type="radio" name="mcq11" value="B"> B. The ball keeps the same horizontal velocity as the person</label>
+<label class="option"><input type="radio" name="mcq11" value="C"> C. Gravity pulls it forward</label>
+<label class="option"><input type="radio" name="mcq11" value="D"> D. Air resistance pushes it back</label></section><section class="card"><div class="question-title">12. Which force acts on an ideal projectile after release?</div><label class="option"><input type="radio" name="mcq12" value="A"> A. Gravity only</label>
+<label class="option"><input type="radio" name="mcq12" value="B"> B. A constant forward force</label>
+<label class="option"><input type="radio" name="mcq12" value="C"> C. Normal force only</label>
+<label class="option"><input type="radio" name="mcq12" value="D"> D. Tension only</label></section><section class="card"><div class="question-title">13. For equal launch and landing heights with fixed speed, the maximum range occurs at:</div><label class="option"><input type="radio" name="mcq13" value="A"> A. 30°</label>
+<label class="option"><input type="radio" name="mcq13" value="B"> B. 45°</label>
+<label class="option"><input type="radio" name="mcq13" value="C"> C. 60°</label>
+<label class="option"><input type="radio" name="mcq13" value="D"> D. 90°</label></section><section class="card"><div class="question-title">14. Which equations are used to find how long a projectile is in flight?</div><label class="option"><input type="radio" name="mcq14" value="A"> A. Horizontal equations only</label>
+<label class="option"><input type="radio" name="mcq14" value="B"> B. Vertical-motion equations</label>
+<label class="option"><input type="radio" name="mcq14" value="C"> C. Gear-ratio equations</label>
+<label class="option"><input type="radio" name="mcq14" value="D"> D. Density equations</label></section><section class="card"><div class="question-title">15. Once flight time is known, horizontal distance is found using:</div><label class="option"><input type="radio" name="mcq15" value="A"> A. Constant horizontal velocity multiplied by time</label>
+<label class="option"><input type="radio" name="mcq15" value="B"> B. Vertical acceleration multiplied by mass</label>
+<label class="option"><input type="radio" name="mcq15" value="C"> C. The maximum height only</label>
+<label class="option"><input type="radio" name="mcq15" value="D"> D. The projectile’s weight divided by time</label></section>
+<h2>Part II: Short Answer</h2>
+<p class="small">Answer in complete sentences and include relevant concepts from the learning material.</p>
+<section class="card"><div class="question-title">Short Answer 1. Explain what it means to say that horizontal and vertical projectile motions are independent.</div><textarea id="short1" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 2. Describe what happens to the horizontal and vertical velocity components as a projectile rises and falls.</div><textarea id="short2" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 3. Explain why a horizontally launched ball and a simultaneously dropped ball reach the ground at the same time.</div><textarea id="short3" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 4. Describe the velocity and acceleration of a projectile at the highest point of its path.</div><textarea id="short4" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 5. Outline how you would calculate the horizontal range of a projectile using x- and y-motion equations.</div><textarea id="short5" placeholder="Type your answer here..."></textarea></section>
+<div class="actions">
+<button class="primary" onclick="downloadAnswers()">Download Answer Sheet (.txt)</button>
+<button class="secondary" onclick="window.print()">Print / Save as PDF</button>
+</div>
+</main>
+<script>
+const quiz = {"title": "Projectile Motion Quiz", "mcq": [{"q": "A projectile is an object that is:", "opts": ["Moving only vertically", "Launched and then moves under gravity", "Always traveling in a circle", "At rest"]}, {"q": "Ignoring air resistance, what is the horizontal acceleration of a projectile?", "opts": ["0", "g", "-g", "It increases with time"]}, {"q": "Ignoring air resistance, what is the vertical acceleration of a projectile?", "opts": ["0", "+g", "-g", "It depends on horizontal speed"]}, {"q": "The initial horizontal velocity component is:", "opts": ["v0 sin \u03b8", "v0 cos \u03b8", "gt", "v0 + gt"]}, {"q": "The initial vertical velocity component is:", "opts": ["v0 sin \u03b8", "v0 cos \u03b8", "v0/t", "g cos \u03b8"]}, {"q": "During ideal projectile motion, the horizontal velocity:", "opts": ["Increases steadily", "Decreases steadily", "Remains constant", "Becomes zero at the top"]}, {"q": "At the highest point of the trajectory, the vertical velocity is:", "opts": ["Maximum upward", "Zero", "Equal to the horizontal velocity", "-g"]}, {"q": "At the highest point, the projectile\u2019s acceleration is:", "opts": ["Zero", "Horizontal", "Still downward with magnitude g", "Upward"]}, {"q": "Horizontal and vertical motions are treated as:", "opts": ["Dependent in every way", "Independent components", "Identical motions", "Circular components"]}, {"q": "In the demonstration with one ball launched horizontally and one dropped, they land:", "opts": ["The launched ball first", "The dropped ball first", "At the same time", "Only if their masses are equal"]}, {"q": "Why does a ball tossed straight up by a person moving at constant horizontal speed return to the person?", "opts": ["The ball stops moving horizontally", "The ball keeps the same horizontal velocity as the person", "Gravity pulls it forward", "Air resistance pushes it back"]}, {"q": "Which force acts on an ideal projectile after release?", "opts": ["Gravity only", "A constant forward force", "Normal force only", "Tension only"]}, {"q": "For equal launch and landing heights with fixed speed, the maximum range occurs at:", "opts": ["30\u00b0", "45\u00b0", "60\u00b0", "90\u00b0"]}, {"q": "Which equations are used to find how long a projectile is in flight?", "opts": ["Horizontal equations only", "Vertical-motion equations", "Gear-ratio equations", "Density equations"]}, {"q": "Once flight time is known, horizontal distance is found using:", "opts": ["Constant horizontal velocity multiplied by time", "Vertical acceleration multiplied by mass", "The maximum height only", "The projectile\u2019s weight divided by time"]}], "short": ["Explain what it means to say that horizontal and vertical projectile motions are independent.", "Describe what happens to the horizontal and vertical velocity components as a projectile rises and falls.", "Explain why a horizontally launched ball and a simultaneously dropped ball reach the ground at the same time.", "Describe the velocity and acceleration of a projectile at the highest point of its path.", "Outline how you would calculate the horizontal range of a projectile using x- and y-motion equations."]};
+function downloadAnswers() {
+  const name = document.getElementById('studentName').value.trim() || 'Unnamed Student';
+  let lines = [];
+  lines.push(quiz.title);
+  lines.push('Student: ' + name);
+  lines.push('Generated: ' + new Date().toLocaleString());
+  lines.push('');
+  lines.push('PART I: MULTIPLE CHOICE');
+  quiz.mcq.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="mcq${idx+1}"]:checked`);
+    lines.push(`${idx+1}. ${item.q}`);
+    item.opts.forEach((opt,j) => lines.push(`   ${String.fromCharCode(65+j)}. ${opt}`));
+    lines.push('   Student answer: ' + (selected ? selected.value : '[blank]'));
+    lines.push('');
+  });
+  lines.push('PART II: SHORT ANSWER');
+  quiz.short.forEach((q, idx) => {
+    const answer = document.getElementById(`short${idx+1}`).value.trim();
+    lines.push(`Short Answer ${idx+1}. ${q}`);
+    lines.push('Student answer: ' + (answer || '[blank]'));
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const safe = quiz.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  a.download = safe + '-' + name.replace(/[^a-z0-9]+/gi,'_') + '-answers.txt';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+</script></body></html>

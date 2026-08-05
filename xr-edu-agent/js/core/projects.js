@@ -10,7 +10,7 @@
 //  · 导入校验门:文件大小上限 / 魔数+版本 / 结构形状校验 / 用户确认(含代码风险提示)
 // ═══════════════════════════════════════════════════════════════
 import * as THREE from 'three';
-import { sceneRoot } from './three-setup.js';
+import { sceneRoot, resetOrbitCamera } from './three-setup.js';
 import { state } from './state.js';
 import { emit } from './events.js';
 import { toast } from './utils.js';
@@ -21,9 +21,14 @@ import { runBuilderCode, compileUpdate, compileClick, compileHandler } from '../
 import { locomotion, configureLocomotion } from './locomotion.js';
 import { ensureStudentRig } from '../scene/student-rig.js';
 import * as projectFs from './project-fs.js';
+import { getOutline, setOutline, normalizeOutline } from './outline.js';
+import { setKnowledgeGraph, clearKnowledgeGraph } from './knowledge-graph.js';
+import { resetVrSceneBinding, getLiveVrSectionId, saveLiveSceneToSection } from './section-scene.js';
 
 export const SCENE_MAGIC = 'XR-EDU-SCENE';
 export const SCENE_VERSION = 1;
+/** Auto-stash slot for the course that would otherwise be wiped by open/new/import. */
+export const WORKING_DRAFT_ID = '__working_draft__';
 const LS_KEY = 'xr-projects';
 const LS_CURRENT = 'xr-current-project';
 const MAX_IMPORT_BYTES = 25 * 1024 * 1024;
@@ -118,7 +123,11 @@ export function serializeScene(name) {
     version: SCENE_VERSION,
     name,
     scene,
-    cfg: { locomotion: { mode: locomotion.mode, allowedRadius: locomotion.allowedRadius, turnMode: locomotion.turnMode } },
+    cfg: {
+      locomotion: { mode: locomotion.mode, allowedRadius: locomotion.allowedRadius, turnMode: locomotion.turnMode },
+      outline: getOutline(),
+      knowledgeGraph: state.knowledgeGraph || null,
+    },
   };
 }
 
@@ -154,6 +163,8 @@ function reviveObject(old, root) {
 }
 
 export function loadSceneData(data) {
+  resetVrSceneBinding();
+  resetOrbitCamera(null);
   const parsed = new THREE.ObjectLoader().parse(data.scene);
   clearScene(false);   // 载入项目 = 整体替换,系统对象也由项目数据接管
   let hadLive = false;
@@ -177,6 +188,9 @@ export function loadSceneData(data) {
   });
   state.objCounter = Math.max(state.objCounter, maxOid);
   if (data.cfg?.locomotion) configureLocomotion(data.cfg.locomotion, true);
+  setOutline(normalizeOutline(data.cfg?.outline, data.name || ''), { silent: false });
+  if (data.cfg?.knowledgeGraph) setKnowledgeGraph(data.cfg.knowledgeGraph, { silent: true });
+  else clearKnowledgeGraph();
   emit('hierarchy-changed');
   if (hadLive) toast(t('proj.liveDegrade'));
 }
@@ -221,6 +235,27 @@ export async function saveToProject(id, name) {
   try { writeProjects(list); }
   catch (e) { toast(t('proj.saveFailed', { err: e.message })); return null; }
   setCurrentProject(proj.id);
+  return proj;
+}
+
+/** True if this id is the auto-stash working draft. */
+export function isWorkingDraft(id) {
+  return id === WORKING_DRAFT_ID;
+}
+
+/**
+ * Snapshot the current course into the fixed working-draft slot so open/new/import
+ * cannot wipe in-progress generation. Skipped when the target is the draft itself.
+ */
+export async function stashWorkingDraft({ skipIfTargetId } = {}) {
+  if (skipIfTargetId && skipIfTargetId === WORKING_DRAFT_ID) return null;
+  const liveId = getLiveVrSectionId();
+  if (liveId) saveLiveSceneToSection(liveId);
+  const name = t('proj.workingDraftName');
+  const prevCurrent = currentProjectId();
+  const proj = await saveToProject(WORKING_DRAFT_ID, name);
+  // Keep "current" pointing at whatever the user was editing until open/new finishes
+  if (prevCurrent && prevCurrent !== WORKING_DRAFT_ID) setCurrentProject(prevCurrent);
   return proj;
 }
 

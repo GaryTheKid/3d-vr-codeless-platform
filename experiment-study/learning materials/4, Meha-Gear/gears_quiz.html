@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gears and Gear Ratios Quiz</title><style>
+:root { --bg:#f5f7fb; --card:#ffffff; --text:#172033; --muted:#64748b; --accent:#2563eb; --border:#dbe3ef; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+header { background:linear-gradient(135deg,#172554,#2563eb); color:white; padding:44px 20px; }
+header .wrap, main { max-width:960px; margin:auto; }
+h1 { margin:0 0 8px; font-size:2.2rem; }
+.subtitle { opacity:.9; }
+.meta { margin-top:14px; font-size:.95rem; opacity:.85; }
+main { padding:28px 20px 60px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:0 6px 20px rgba(15,23,42,.05); }
+.question-title { font-weight:700; margin-bottom:12px; }
+.option { display:block; margin:9px 0; padding:10px 12px; border:1px solid var(--border); border-radius:10px; cursor:pointer; }
+.option:hover { background:#eff6ff; }
+textarea { width:100%; min-height:130px; resize:vertical; border:1px solid var(--border); border-radius:10px; padding:12px; font:inherit; }
+input[type=text] { width:100%; padding:11px; border:1px solid var(--border); border-radius:10px; font:inherit; }
+button { border:0; border-radius:10px; padding:12px 18px; font-weight:700; cursor:pointer; }
+.primary { background:var(--accent); color:white; }
+.secondary { background:#e2e8f0; color:#172033; margin-left:8px; }
+.actions { position:sticky; bottom:0; background:rgba(245,247,251,.95); backdrop-filter:blur(8px); padding:14px 0; border-top:1px solid var(--border); }
+.small { color:var(--muted); font-size:.92rem; }
+@media print { .actions { display:none; } body { background:white; } .card { box-shadow:none; break-inside:avoid; } }
+</style></head>
+<body>
+<header><div class="wrap"><h1>Gears and Gear Ratios Quiz</h1><div class="subtitle">Direction, Speed, and Compound Gear Trains</div>
+<div class="meta">15 multiple-choice questions · 5 short-answer questions</div></div></header>
+<main>
+<section class="card"><label class="question-title" for="studentName">Student name</label><input id="studentName" type="text" placeholder="Enter your name"></section>
+<h2>Part I: Multiple Choice</h2>
+<p class="small">Choose one answer for each question.</p>
+<section class="card"><div class="question-title">1. The gear that supplies the input motion is called the:</div><label class="option"><input type="radio" name="mcq1" value="A"> A. Driven gear</label>
+<label class="option"><input type="radio" name="mcq1" value="B"> B. Driver gear</label>
+<label class="option"><input type="radio" name="mcq1" value="C"> C. Rack gear</label>
+<label class="option"><input type="radio" name="mcq1" value="D"> D. Idler gear</label></section><section class="card"><div class="question-title">2. The output gear is called the:</div><label class="option"><input type="radio" name="mcq2" value="A"> A. Driver gear</label>
+<label class="option"><input type="radio" name="mcq2" value="B"> B. Driven gear</label>
+<label class="option"><input type="radio" name="mcq2" value="C"> C. Pinion only</label>
+<label class="option"><input type="radio" name="mcq2" value="D"> D. Axle gear</label></section><section class="card"><div class="question-title">3. Two meshing spur gears rotate in:</div><label class="option"><input type="radio" name="mcq3" value="A"> A. The same direction</label>
+<label class="option"><input type="radio" name="mcq3" value="B"> B. Opposite directions</label>
+<label class="option"><input type="radio" name="mcq3" value="C"> C. No fixed relationship</label>
+<label class="option"><input type="radio" name="mcq3" value="D"> D. Only clockwise</label></section><section class="card"><div class="question-title">4. A gear ratio in the handout is calculated as:</div><label class="option"><input type="radio" name="mcq4" value="A"> A. Driver teeth ÷ driven teeth</label>
+<label class="option"><input type="radio" name="mcq4" value="B"> B. Driven teeth ÷ driver teeth</label>
+<label class="option"><input type="radio" name="mcq4" value="C"> C. Sum of all teeth</label>
+<label class="option"><input type="radio" name="mcq4" value="D"> D. Difference in diameters</label></section><section class="card"><div class="question-title">5. A small driver turning a larger driven gear generally causes the driven gear to rotate:</div><label class="option"><input type="radio" name="mcq5" value="A"> A. Faster</label>
+<label class="option"><input type="radio" name="mcq5" value="B"> B. Slower</label>
+<label class="option"><input type="radio" name="mcq5" value="C"> C. At the same speed</label>
+<label class="option"><input type="radio" name="mcq5" value="D"> D. Randomly</label></section><section class="card"><div class="question-title">6. An idler gear placed between driver and driven gears mainly changes:</div><label class="option"><input type="radio" name="mcq6" value="A"> A. The overall ratio only</label>
+<label class="option"><input type="radio" name="mcq6" value="B"> B. The direction of rotation</label>
+<label class="option"><input type="radio" name="mcq6" value="C"> C. The material of the gears</label>
+<label class="option"><input type="radio" name="mcq6" value="D"> D. The number of teeth on the driver</label></section><section class="card"><div class="question-title">7. Adding ordinary idler gears between the first and last gears changes the overall ratio:</div><label class="option"><input type="radio" name="mcq7" value="A"> A. Always</label>
+<label class="option"><input type="radio" name="mcq7" value="B"> B. Usually not</label>
+<label class="option"><input type="radio" name="mcq7" value="C"> C. Only when there are two idlers</label>
+<label class="option"><input type="radio" name="mcq7" value="D"> D. Only with bevel gears</label></section><section class="card"><div class="question-title">8. A compound gear consists of:</div><label class="option"><input type="radio" name="mcq8" value="A"> A. One gear with no teeth</label>
+<label class="option"><input type="radio" name="mcq8" value="B"> B. Two or more gears on the same shaft or connected as one piece</label>
+<label class="option"><input type="radio" name="mcq8" value="C"> C. A rack and spring</label>
+<label class="option"><input type="radio" name="mcq8" value="D"> D. Two gears that never touch</label></section><section class="card"><div class="question-title">9. For compound gear trains, the overall ratio is found by:</div><label class="option"><input type="radio" name="mcq9" value="A"> A. Adding the stage ratios</label>
+<label class="option"><input type="radio" name="mcq9" value="B"> B. Multiplying the stage ratios</label>
+<label class="option"><input type="radio" name="mcq9" value="C"> C. Subtracting tooth counts</label>
+<label class="option"><input type="radio" name="mcq9" value="D"> D. Using only the largest gear</label></section><section class="card"><div class="question-title">10. Which gear converts rotational motion into linear motion?</div><label class="option"><input type="radio" name="mcq10" value="A"> A. Rack and pinion</label>
+<label class="option"><input type="radio" name="mcq10" value="B"> B. Worm gear only</label>
+<label class="option"><input type="radio" name="mcq10" value="C"> C. Bevel gear</label>
+<label class="option"><input type="radio" name="mcq10" value="D"> D. Compound gear</label></section><section class="card"><div class="question-title">11. Which gear is commonly used to change the direction of rotating shafts, often by 90°?</div><label class="option"><input type="radio" name="mcq11" value="A"> A. Spur gear</label>
+<label class="option"><input type="radio" name="mcq11" value="B"> B. Rack gear</label>
+<label class="option"><input type="radio" name="mcq11" value="C"> C. Bevel gear</label>
+<label class="option"><input type="radio" name="mcq11" value="D"> D. Pinion gear</label></section><section class="card"><div class="question-title">12. Which gear has a locking quality that can help hold robot arms in position?</div><label class="option"><input type="radio" name="mcq12" value="A"> A. Worm gear</label>
+<label class="option"><input type="radio" name="mcq12" value="B"> B. Rack gear</label>
+<label class="option"><input type="radio" name="mcq12" value="C"> C. Spur gear</label>
+<label class="option"><input type="radio" name="mcq12" value="D"> D. Idler gear</label></section><section class="card"><div class="question-title">13. A pinion gear is usually:</div><label class="option"><input type="radio" name="mcq13" value="A"> A. A large driven gear</label>
+<label class="option"><input type="radio" name="mcq13" value="B"> B. A small driver gear</label>
+<label class="option"><input type="radio" name="mcq13" value="C"> C. A straight rack</label>
+<label class="option"><input type="radio" name="mcq13" value="D"> D. A gear with no axle</label></section><section class="card"><div class="question-title">14. The handout challenge asks for a compound gear train with at least what ratio?</div><label class="option"><input type="radio" name="mcq14" value="A"> A. 2:1</label>
+<label class="option"><input type="radio" name="mcq14" value="B"> B. 4:1</label>
+<label class="option"><input type="radio" name="mcq14" value="C"> C. 8:1</label>
+<label class="option"><input type="radio" name="mcq14" value="D"> D. 20:1</label></section><section class="card"><div class="question-title">15. One practical limitation of extremely high or low gear ratios is that:</div><label class="option"><input type="radio" name="mcq15" value="A"> A. Gears may need to be impractically large or small</label>
+<label class="option"><input type="radio" name="mcq15" value="B"> B. All gears rotate in the same direction</label>
+<label class="option"><input type="radio" name="mcq15" value="C"> C. Teeth disappear</label>
+<label class="option"><input type="radio" name="mcq15" value="D"> D. Ratios stop being measurable</label></section>
+<h2>Part II: Short Answer</h2>
+<p class="small">Answer in complete sentences and include relevant concepts from the learning material.</p>
+<section class="card"><div class="question-title">Short Answer 1. Explain how the number of teeth on driver and driven gears affects speed.</div><textarea id="short1" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 2. Describe the role of an idler gear and what it does and does not change.</div><textarea id="short2" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 3. Explain what a compound gear is and why compound gear trains are useful.</div><textarea id="short3" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 4. Describe how to calculate the overall ratio of a two-stage compound gear train.</div><textarea id="short4" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 5. Compare a rack-and-pinion, worm gear, and bevel gear in terms of the motion or function each provides.</div><textarea id="short5" placeholder="Type your answer here..."></textarea></section>
+<div class="actions">
+<button class="primary" onclick="downloadAnswers()">Download Answer Sheet (.txt)</button>
+<button class="secondary" onclick="window.print()">Print / Save as PDF</button>
+</div>
+</main>
+<script>
+const quiz = {"title": "Gears and Gear Ratios Quiz", "mcq": [{"q": "The gear that supplies the input motion is called the:", "opts": ["Driven gear", "Driver gear", "Rack gear", "Idler gear"]}, {"q": "The output gear is called the:", "opts": ["Driver gear", "Driven gear", "Pinion only", "Axle gear"]}, {"q": "Two meshing spur gears rotate in:", "opts": ["The same direction", "Opposite directions", "No fixed relationship", "Only clockwise"]}, {"q": "A gear ratio in the handout is calculated as:", "opts": ["Driver teeth \u00f7 driven teeth", "Driven teeth \u00f7 driver teeth", "Sum of all teeth", "Difference in diameters"]}, {"q": "A small driver turning a larger driven gear generally causes the driven gear to rotate:", "opts": ["Faster", "Slower", "At the same speed", "Randomly"]}, {"q": "An idler gear placed between driver and driven gears mainly changes:", "opts": ["The overall ratio only", "The direction of rotation", "The material of the gears", "The number of teeth on the driver"]}, {"q": "Adding ordinary idler gears between the first and last gears changes the overall ratio:", "opts": ["Always", "Usually not", "Only when there are two idlers", "Only with bevel gears"]}, {"q": "A compound gear consists of:", "opts": ["One gear with no teeth", "Two or more gears on the same shaft or connected as one piece", "A rack and spring", "Two gears that never touch"]}, {"q": "For compound gear trains, the overall ratio is found by:", "opts": ["Adding the stage ratios", "Multiplying the stage ratios", "Subtracting tooth counts", "Using only the largest gear"]}, {"q": "Which gear converts rotational motion into linear motion?", "opts": ["Rack and pinion", "Worm gear only", "Bevel gear", "Compound gear"]}, {"q": "Which gear is commonly used to change the direction of rotating shafts, often by 90\u00b0?", "opts": ["Spur gear", "Rack gear", "Bevel gear", "Pinion gear"]}, {"q": "Which gear has a locking quality that can help hold robot arms in position?", "opts": ["Worm gear", "Rack gear", "Spur gear", "Idler gear"]}, {"q": "A pinion gear is usually:", "opts": ["A large driven gear", "A small driver gear", "A straight rack", "A gear with no axle"]}, {"q": "The handout challenge asks for a compound gear train with at least what ratio?", "opts": ["2:1", "4:1", "8:1", "20:1"]}, {"q": "One practical limitation of extremely high or low gear ratios is that:", "opts": ["Gears may need to be impractically large or small", "All gears rotate in the same direction", "Teeth disappear", "Ratios stop being measurable"]}], "short": ["Explain how the number of teeth on driver and driven gears affects speed.", "Describe the role of an idler gear and what it does and does not change.", "Explain what a compound gear is and why compound gear trains are useful.", "Describe how to calculate the overall ratio of a two-stage compound gear train.", "Compare a rack-and-pinion, worm gear, and bevel gear in terms of the motion or function each provides."]};
+function downloadAnswers() {
+  const name = document.getElementById('studentName').value.trim() || 'Unnamed Student';
+  let lines = [];
+  lines.push(quiz.title);
+  lines.push('Student: ' + name);
+  lines.push('Generated: ' + new Date().toLocaleString());
+  lines.push('');
+  lines.push('PART I: MULTIPLE CHOICE');
+  quiz.mcq.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="mcq${idx+1}"]:checked`);
+    lines.push(`${idx+1}. ${item.q}`);
+    item.opts.forEach((opt,j) => lines.push(`   ${String.fromCharCode(65+j)}. ${opt}`));
+    lines.push('   Student answer: ' + (selected ? selected.value : '[blank]'));
+    lines.push('');
+  });
+  lines.push('PART II: SHORT ANSWER');
+  quiz.short.forEach((q, idx) => {
+    const answer = document.getElementById(`short${idx+1}`).value.trim();
+    lines.push(`Short Answer ${idx+1}. ${q}`);
+    lines.push('Student answer: ' + (answer || '[blank]'));
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const safe = quiz.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  a.download = safe + '-' + name.replace(/[^a-z0-9]+/gi,'_') + '-answers.txt';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+</script></body></html>

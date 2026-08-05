@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>XR EduAgent — Feedback Questionnaire</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --line:#e2e5ea; --ink:#1f2430; --muted:#6b7280;
+    --accent:#4a63e7; --accent-soft:#eef1fe; --ok:#2e9e5b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto;padding:28px 16px 120px}
+  header.card{border-top:8px solid var(--accent)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:22px 24px;margin:16px 0;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  h1{font-size:24px;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  h2{font-size:17px;margin:0 0 4px}
+  .sec-note{color:var(--muted);font-size:13px;margin:0 0 14px}
+  .q{padding:14px 0;border-top:1px solid var(--line)}
+  .q:first-of-type{border-top:none}
+  .q label.qt{display:block;font-weight:600;margin-bottom:8px;font-size:15px}
+  .q .req{color:#d23; font-weight:700}
+  input[type=text],input[type=number],textarea,select{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;
+    font:inherit;color:var(--ink);background:#fff}
+  textarea{min-height:64px;resize:vertical}
+  .opts{display:flex;flex-direction:column;gap:6px}
+  .opt{display:flex;align-items:center;gap:9px;padding:7px 10px;border:1px solid var(--line);
+    border-radius:8px;cursor:pointer}
+  .opt:hover{background:var(--accent-soft)}
+  .opt input{accent-color:var(--accent);width:17px;height:17px}
+  .likert{display:grid;grid-template-columns:1fr;gap:8px}
+  .likert .scale{display:flex;gap:6px;flex-wrap:wrap}
+  .likert .scale label{flex:1;min-width:70px;text-align:center;border:1px solid var(--line);
+    border-radius:8px;padding:8px 4px;cursor:pointer;font-size:13px}
+  .likert .scale label:hover{background:var(--accent-soft)}
+  .likert .scale input{display:block;margin:0 auto 4px;accent-color:var(--accent)}
+  .ends{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:4px}
+  .slider-row{display:flex;align-items:center;gap:14px}
+  .slider-row input[type=range]{flex:1;accent-color:var(--accent)}
+  .slider-val{width:44px;text-align:center;font-weight:700;color:var(--accent)}
+  .hint{color:var(--muted);font-size:12.5px;margin:2px 0 0}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+    padding:12px 16px;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
+  button{font:inherit;font-weight:600;border:none;border-radius:9px;padding:11px 18px;cursor:pointer}
+  .primary{background:var(--accent);color:#fff}
+  .ghost{background:#eef0f4;color:var(--ink)}
+  .done{color:var(--ok);font-size:13px}
+  .scale-head{color:var(--muted);font-size:12.5px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="card">
+    <h1>XR EduAgent — Feedback Questionnaire</h1>
+    <p class="sub">Please answer honestly — there are no right or wrong answers. It takes about 5 minutes.
+    When finished, click <b>“Download my answers”</b> at the bottom and send the file back to the person who shared this with you.</p>
+  </header>
+
+  <!-- ID -->
+  <section class="card">
+    <div class="q">
+      <label class="qt">Participant code <span class="req">*</span> <span class="hint">(the RA gives you this, e.g. P03)</span></label>
+      <input type="text" data-key="participant_code" placeholder="P0_" />
+    </div>
+    <div class="q">
+      <label class="qt">Which learning material (PDF) did you use?</label>
+      <input type="text" data-key="material" placeholder="e.g. Material 2 / the topic name" />
+    </div>
+  </section>
+
+  <!-- 1. Background -->
+  <section class="card">
+    <h2>1. A little about you</h2>
+    <p class="sec-note">Just for describing the group in the report.</p>
+
+    <div class="q">
+      <label class="qt">Age</label>
+      <input type="number" data-key="age" min="0" placeholder="e.g. 22" />
+    </div>
+
+    <div class="q">
+      <label class="qt">You are currently a…</label>
+      <div class="opts" data-radio="role">
+        <label class="opt"><input type="radio" name="role" value="Undergrad student"><span>Undergrad student</span></label>
+        <label class="opt"><input type="radio" name="role" value="Grad student"><span>Grad student</span></label>
+        <label class="opt"><input type="radio" name="role" value="Working / other"><span>Working / other</span></label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="qt">Field / major</label>
+      <input type="text" data-key="field" placeholder="e.g. Computer Science" />
+    </div>
+
+    <div class="q">
+      <label class="qt">How often do you use AI chat tools (ChatGPT etc.)?</label>
+      <div class="opts" data-radio="ai_use">
+        <label class="opt"><input type="radio" name="ai_use" value="Never"><span>Never</span></label>
+        <label class="opt"><input type="radio" name="ai_use" value="Sometimes"><span>Sometimes</span></label>
+        <label class="opt"><input type="radio" name="ai_use" value="Weekly or more"><span>Weekly or more</span></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Workload (TLX) -->
+  <section class="card">
+    <h2>2. How the experience felt (effort &amp; load)</h2>
+    <p class="sec-note">Drag each slider from 0 (very low) to 100 (very high), thinking about the whole experience of generating and learning the course.</p>
+    <div id="tlx"></div>
+  </section>
+
+  <!-- 3. Satisfaction Likert -->
+  <section class="card">
+    <h2>3. Your opinion of the tool</h2>
+    <p class="scale-head">1 = Strongly disagree · 4 = Neutral · 7 = Strongly agree</p>
+    <div id="likert"></div>
+  </section>
+
+  <!-- 4. Open -->
+  <section class="card">
+    <h2>4. Two quick comments</h2>
+    <div class="q">
+      <label class="qt">Best part?</label>
+      <textarea data-key="best"></textarea>
+    </div>
+    <div class="q">
+      <label class="qt">Most frustrating part?</label>
+      <textarea data-key="worst"></textarea>
+    </div>
+  </section>
+
+</div>
+
+<div class="bar">
+  <button class="primary" id="download">⬇ Download my answers</button>
+  <button class="ghost" id="copy">Copy answers</button>
+  <span class="done" id="status"></span>
+</div>
+
+<script>
+  // ---- TLX sliders ----
+  const TLX = [
+    ["tlx_mental","Mental demand — how much thinking / deciding?"],
+    ["tlx_physical","Physical demand — mouse, sitting, etc."],
+    ["tlx_temporal","Time pressure — how rushed did you feel?"],
+    ["tlx_performance","Performance — 0 = did great, 100 = did poorly"],
+    ["tlx_effort","Effort — how hard did you have to work?"],
+    ["tlx_frustration","Frustration — how annoyed / discouraged?"],
+  ];
+  const tlxHost = document.getElementById('tlx');
+  TLX.forEach(([key,label])=>{
+    const q=document.createElement('div'); q.className='q';
+    q.innerHTML = `<label class="qt">${label}</label>
+      <div class="slider-row">
+        <span class="hint">0</span>
+        <input type="range" min="0" max="100" value="50" step="5" data-key="${key}">
+        <span class="hint">100</span>
+        <span class="slider-val">50</span>
+      </div>`;
+    const range=q.querySelector('input'); const val=q.querySelector('.slider-val');
+    range.addEventListener('input',()=>val.textContent=range.value);
+    tlxHost.appendChild(q);
+  });
+
+  // ---- Satisfaction Likert 1-7 ----
+  const ITEMS = [
+    ["s1","Overall, I am satisfied with this tool."],
+    ["s2","I would use it again to prepare or learn a short topic."],
+    ["s3","I would recommend it to a classmate."],
+    ["a1","Uploading the PDF and starting was easy."],
+    ["a2","The waiting time for the course to build felt acceptable."],
+    ["a3","The generated outline made sense for the topic."],
+    ["a4","I trusted the content enough to learn from it."],
+    ["l1","The reading parts helped me understand."],
+    ["l2","The quizzes helped me check my understanding."],
+    ["l3","The interactive / 3D parts (if any) helped me learn."],
+    ["l4","Moving through the course felt clear and organized."],
+  ];
+  const likHost=document.getElementById('likert');
+  ITEMS.forEach(([key,label])=>{
+    const q=document.createElement('div'); q.className='q likert';
+    let scale='<div class="scale">';
+    for(let i=1;i<=7;i++){
+      scale+=`<label><input type="radio" name="${key}" value="${i}">${i}</label>`;
+    }
+    scale+='</div><div class="ends"><span>Strongly disagree</span><span>Strongly agree</span></div>';
+    q.innerHTML=`<label class="qt">${label}</label>${scale}`;
+    likHost.appendChild(q);
+  });
+
+  // ---- Collect + export ----
+  function collect(){
+    const out={};
+    document.querySelectorAll('[data-key]').forEach(el=>{
+      out[el.dataset.key]= el.value;
+    });
+    document.querySelectorAll('[data-radio]').forEach(g=>{
+      const name=g.dataset.radio;
+      const sel=g.querySelector('input:checked');
+      out[name]= sel? sel.value : "";
+    });
+    ITEMS.forEach(([key])=>{
+      const sel=document.querySelector(`input[name="${key}"]:checked`);
+      out[key]= sel? sel.value : "";
+    });
+    return out;
+  }
+  function toText(o){
+    const lines=["XR EduAgent — Questionnaire responses",""];
+    for(const k in o){ lines.push(`${k}: ${o[k]}`); }
+    return lines.join("\n");
+  }
+  function fileName(o){
+    const p=(o.participant_code||"Pxx").replace(/[^A-Za-z0-9_-]/g,"");
+    return `xreduagent_${p||"Pxx"}.txt`;
+  }
+  document.getElementById('download').addEventListener('click',()=>{
+    const o=collect();
+    const blob=new Blob([toText(o)],{type:'text/plain'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download=fileName(o); a.click();
+    document.getElementById('status').textContent="Saved — please send the downloaded file back. Thank you!";
+  });
+  document.getElementById('copy').addEventListener('click',async()=>{
+    try{ await navigator.clipboard.writeText(toText(collect()));
+      document.getElementById('status').textContent="Copied — you can paste it in chat/email.";
+    }catch(e){ document.getElementById('status').textContent="Copy failed — use Download instead."; }
+  });
+</script>
+</body>
+</html>

@@ -19,6 +19,9 @@ import { chemLab } from '../labs/chem-oxygen.js';
 import { engLab } from '../labs/english-cafe.js';
 import { locomotion } from '../core/locomotion.js';
 import { getStudentSpawn } from '../scene/student-rig.js';
+import { uploadedDocContextBlock } from './doc-context.js';
+import { outlineContextBlock, outlineGlobalForAgent, outlineActiveForAgent, ensureOutline } from '../core/outline.js';
+import { knowledgeGraphDigest, getKnowledgeGraph } from '../core/knowledge-graph.js';
 
 export const FULL_JSON_MAX = 20;   // 对象数 ≤ 此值 → 发完整场景 JSON(小场景零回归)
 const PREFETCH_MAX = 8;            // 大场景模式下自动预取的高相关对象上限
@@ -64,8 +67,9 @@ export function objectToJSON(obj, detailed = false) {
   return o;
 }
 
-// 全局状态(选中/动画/移动方式/活跃实验),摘要与完整 JSON 共用
+// 全局状态(选中/动画/移动方式/活跃实验/学习大纲),摘要与完整 JSON 共用
 function globalState() {
+  ensureOutline();
   const g = {
     selected: state.selected?.userData.oid || null,
     playMode: state.playMode,   // false=编辑模式(全静态,点击=选中) true=运行模式(动画+学生交互生效)
@@ -172,9 +176,16 @@ export function pinnedContextBlock() {
 
 // ── 每轮注入的上下文消息(userText 用于预取打分)──
 export function buildContextMessage(userText = '') {
+  const docBlock = uploadedDocContextBlock();
+  const outlineBlock = outlineContextBlock();
+  const kgBlock = knowledgeGraphDigest(getKnowledgeGraph());
+  const kgPart = kgBlock ? `\n\n${kgBlock}` : '';
   const objs = sceneRoot.children;
   if (objs.length <= FULL_JSON_MAX) {
-    return `[当前场景状态 JSON]\n${JSON.stringify(sceneToJSON(), null, 1)}${pinnedContextBlock()}`;
+    return `${outlineBlock}${kgPart}
+
+[当前场景状态 JSON]
+${JSON.stringify(sceneToJSON(), null, 1)}${pinnedContextBlock()}${docBlock}`;
   }
   // 大场景模式:摘要索引 + 高相关对象预取。
   // 预取给"全参数但不含行为代码"(代码可能每个几 KB,需要改代码时用 get_object_detail 拉)
@@ -189,8 +200,94 @@ export function buildContextMessage(userText = '') {
   const prefetchBlock = prefetched.length
     ? `\n\n[与本次请求最相关的对象(自动预取,含完整参数;行为代码需要时用 get_object_detail 取)]\n${JSON.stringify(prefetched, null, 1)}`
     : '';
-  return `[当前场景摘要(共 ${objs.length} 个对象,大场景模式)]
+  return `${outlineBlock}${kgPart}
+
+[当前场景摘要(共 ${objs.length} 个对象,大场景模式)]
 ${sceneSummary()}
 
-说明:以上是对象索引,不含完整参数。修改某对象前如需其完整参数/行为代码,用 find_objects(关键词/空间检索)或 get_object_detail(oid) 工具获取,不要凭索引猜。${prefetchBlock}${pinnedContextBlock()}`;
+说明:以上是对象索引,不含完整参数。修改某对象前如需其完整参数/行为代码,用 find_objects(关键词/空间检索)或 get_object_detail(oid) 工具获取,不要凭索引猜。${prefetchBlock}${pinnedContextBlock()}${docBlock}`;
+}
+
+// ── 学习模式:学生视角上下文(禁止工程实现细节)──
+function formatPanelLines(lines) {
+  return (lines || []).map(l => (typeof l === 'string' ? l : `${l.k}: ${l.v}`));
+}
+
+function studentInteractHint(ud) {
+  const hints = [];
+  if (ud.expAction || ud.customClick || ud.onActivate) hints.push('click / activate');
+  if (ud.onGrab || ud.onDrag) hints.push('grab / drag');
+  if (ud.anim?.type === 'orbit') hints.push('watch it orbit');
+  else if (ud.anim?.type === 'spin') hints.push('watch it spin');
+  else if (ud.anim) hints.push('watch the motion');
+  return hints;
+}
+
+/** Pedagogue-safe exhibit card: names, readable labels, how to play — no speeds/oids/code. */
+function studentFacingExhibit(obj) {
+  const ud = obj.userData || {};
+  if (ud.editorOnly || ud.studentRig || ud.isRoute) return null;
+  const name = ud.displayName || ud.assetId || 'object';
+  const labels = [];
+  obj.traverse(c => {
+    const pd = c.userData?.panelData;
+    if (!pd) return;
+    const lines = pd.live ? (typeof pd.live === 'function' ? pd.live() : []) : pd.lines;
+    labels.push({
+      title: pd.title || undefined,
+      text: formatPanelLines(lines),
+    });
+  });
+  const exhibit = { name };
+  if (ud.icon === '📋' || ud.assetId === 'panel' || (!ud.assetId && labels.length && obj.children?.length === 1)) {
+    exhibit.kind = 'info panel';
+  } else if (ud.assetId) {
+    exhibit.kind = 'scene object';
+  }
+  if (labels.length) exhibit.readableLabels = labels;
+  const interact = studentInteractHint(ud);
+  if (interact.length) exhibit.howToPlay = interact;
+  return exhibit;
+}
+
+/** Outline block for learners — drop authoring-only VR engine notes. */
+function learningOutlineBlock() {
+  const outline = ensureOutline();
+  const global = outlineGlobalForAgent(outline);
+  const active = outlineActiveForAgent(outline);
+  if (active?.section?.vr) {
+    active.section.vr = {
+      experience: 'Interactive 3D / VR lesson scene — observe, click, and explore as instructed by on-scene labels and the learning companion.',
+    };
+  }
+  return `
+
+[Lesson — what you are studying]
+${JSON.stringify(global, null, 1)}
+
+[Current section]
+${JSON.stringify(active, null, 1)}`;
+}
+
+/**
+ * Learning-mode context: tutor view only.
+ * Deliberately omits positions, anim speeds, oids, builder/update code, playMode internals.
+ */
+export function buildLearningContextMessage() {
+  const docBlock = uploadedDocContextBlock();
+  const exhibits = sceneRoot.children.map(studentFacingExhibit).filter(Boolean);
+  const playTips = [];
+  if (state.playMode) playTips.push('The lesson is running — animations and click interactions are active.');
+  else playTips.push('If things look frozen, ask the student to press ▶ Play so the scene can move and respond.');
+
+  return `${learningOutlineBlock()}
+
+[What the student can see & do in this scene]
+${JSON.stringify({ exhibits, tips: playTips }, null, 1)}
+
+Rules for using this block:
+- Teach from readableLabels, exhibit names, howToPlay, and the lesson outline — as a tutor would from the classroom, not from an editor dump.
+- NEVER quote implementation numbers (orbit radii, anim speeds, oids, coordinates, code) — those are not in this block on purpose.
+- If the student asks what the scene is / how to play, describe the learning experience and guide exploration; do not invent engineering quizzes.
+${docBlock}`;
 }

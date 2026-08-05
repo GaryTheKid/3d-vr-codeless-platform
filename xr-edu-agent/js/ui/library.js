@@ -38,13 +38,13 @@ export function renderAssetLibrary(filter = '') {
 renderAssetLibrary();
 document.getElementById('asset-search').addEventListener('input', e => renderAssetLibrary(e.target.value.trim()));
 
-// 面板 Tab 切换(项目 / 资源库 / 场景层级)
+// 面板 Tab 切换(学习大纲 / 资源库 / 场景层级)
 document.querySelectorAll('.ptab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    for (const id of ['projects', 'assets', 'hierarchy']) {
-      document.getElementById('panel-' + id).classList.toggle('hidden', tab.dataset.panel !== id);
+    for (const id of ['outline', 'assets', 'hierarchy']) {
+      document.getElementById('panel-' + id)?.classList.toggle('hidden', tab.dataset.panel !== id);
     }
   });
 });

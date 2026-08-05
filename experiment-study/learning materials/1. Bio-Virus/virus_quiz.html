@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Virus Structure and Function Quiz</title><style>
+:root { --bg:#f5f7fb; --card:#ffffff; --text:#172033; --muted:#64748b; --accent:#2563eb; --border:#dbe3ef; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+header { background:linear-gradient(135deg,#172554,#2563eb); color:white; padding:44px 20px; }
+header .wrap, main { max-width:960px; margin:auto; }
+h1 { margin:0 0 8px; font-size:2.2rem; }
+.subtitle { opacity:.9; }
+.meta { margin-top:14px; font-size:.95rem; opacity:.85; }
+main { padding:28px 20px 60px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:0 6px 20px rgba(15,23,42,.05); }
+.question-title { font-weight:700; margin-bottom:12px; }
+.option { display:block; margin:9px 0; padding:10px 12px; border:1px solid var(--border); border-radius:10px; cursor:pointer; }
+.option:hover { background:#eff6ff; }
+textarea { width:100%; min-height:130px; resize:vertical; border:1px solid var(--border); border-radius:10px; padding:12px; font:inherit; }
+input[type=text] { width:100%; padding:11px; border:1px solid var(--border); border-radius:10px; font:inherit; }
+button { border:0; border-radius:10px; padding:12px 18px; font-weight:700; cursor:pointer; }
+.primary { background:var(--accent); color:white; }
+.secondary { background:#e2e8f0; color:#172033; margin-left:8px; }
+.actions { position:sticky; bottom:0; background:rgba(245,247,251,.95); backdrop-filter:blur(8px); padding:14px 0; border-top:1px solid var(--border); }
+.small { color:var(--muted); font-size:.92rem; }
+@media print { .actions { display:none; } body { background:white; } .card { box-shadow:none; break-inside:avoid; } }
+</style></head>
+<body>
+<header><div class="wrap"><h1>Virus Structure and Function Quiz</h1><div class="subtitle">Virions, Capsids, Envelopes, and Classification</div>
+<div class="meta">15 multiple-choice questions · 5 short-answer questions</div></div></header>
+<main>
+<section class="card"><label class="question-title" for="studentName">Student name</label><input id="studentName" type="text" placeholder="Enter your name"></section>
+<h2>Part I: Multiple Choice</h2>
+<p class="small">Choose one answer for each question.</p>
+<section class="card"><div class="question-title">1. An individual virus particle is called a:</div><label class="option"><input type="radio" name="mcq1" value="A"> A. Cell</label>
+<label class="option"><input type="radio" name="mcq1" value="B"> B. Virion</label>
+<label class="option"><input type="radio" name="mcq1" value="C"> C. Capsule</label>
+<label class="option"><input type="radio" name="mcq1" value="D"> D. Ribosome</label></section><section class="card"><div class="question-title">2. Viruses are generally:</div><label class="option"><input type="radio" name="mcq2" value="A"> A. Larger than prokaryotic cells</label>
+<label class="option"><input type="radio" name="mcq2" value="B"> B. Smaller than prokaryotic cells</label>
+<label class="option"><input type="radio" name="mcq2" value="C"> C. The same size as animal cells</label>
+<label class="option"><input type="radio" name="mcq2" value="D"> D. Made of many tissues</label></section><section class="card"><div class="question-title">3. Viruses cannot make proteins on their own because they lack:</div><label class="option"><input type="radio" name="mcq3" value="A"> A. Genetic material</label>
+<label class="option"><input type="radio" name="mcq3" value="B"> B. Cellular structures such as ribosomes and cytoplasm</label>
+<label class="option"><input type="radio" name="mcq3" value="C"> C. A capsid</label>
+<label class="option"><input type="radio" name="mcq3" value="D"> D. Any molecules</label></section><section class="card"><div class="question-title">4. A virus must depend on what to reproduce?</div><label class="option"><input type="radio" name="mcq4" value="A"> A. A mineral crystal</label>
+<label class="option"><input type="radio" name="mcq4" value="B"> B. A host cell</label>
+<label class="option"><input type="radio" name="mcq4" value="C"> C. Sunlight alone</label>
+<label class="option"><input type="radio" name="mcq4" value="D"> D. Another capsid</label></section><section class="card"><div class="question-title">5. A virus particle contains:</div><label class="option"><input type="radio" name="mcq5" value="A"> A. Both DNA and RNA in every case</label>
+<label class="option"><input type="radio" name="mcq5" value="B"> B. DNA or RNA</label>
+<label class="option"><input type="radio" name="mcq5" value="C"> C. Only proteins</label>
+<label class="option"><input type="radio" name="mcq5" value="D"> D. Only phospholipids</label></section><section class="card"><div class="question-title">6. The protective protein coat of a virus is the:</div><label class="option"><input type="radio" name="mcq6" value="A"> A. Envelope</label>
+<label class="option"><input type="radio" name="mcq6" value="B"> B. Capsid</label>
+<label class="option"><input type="radio" name="mcq6" value="C"> C. Cell wall</label>
+<label class="option"><input type="radio" name="mcq6" value="D"> D. Cytoplasm</label></section><section class="card"><div class="question-title">7. Some viruses have an outer layer called an:</div><label class="option"><input type="radio" name="mcq7" value="A"> A. Organelle</label>
+<label class="option"><input type="radio" name="mcq7" value="B"> B. Envelope</label>
+<label class="option"><input type="radio" name="mcq7" value="C"> C. Nucleus</label>
+<label class="option"><input type="radio" name="mcq7" value="D"> D. Flagellum</label></section><section class="card"><div class="question-title">8. A viral envelope is made from portions of the host’s:</div><label class="option"><input type="radio" name="mcq8" value="A"> A. Cell membrane</label>
+<label class="option"><input type="radio" name="mcq8" value="B"> B. DNA</label>
+<label class="option"><input type="radio" name="mcq8" value="C"> C. Cell wall only</label>
+<label class="option"><input type="radio" name="mcq8" value="D"> D. Ribosome</label></section><section class="card"><div class="question-title">9. One function of a viral envelope is to:</div><label class="option"><input type="radio" name="mcq9" value="A"> A. Make ATP independently</label>
+<label class="option"><input type="radio" name="mcq9" value="B"> B. Help protect the virus from the host immune system</label>
+<label class="option"><input type="radio" name="mcq9" value="C"> C. Perform photosynthesis</label>
+<label class="option"><input type="radio" name="mcq9" value="D"> D. Replace the viral genome</label></section><section class="card"><div class="question-title">10. Receptor molecules on an envelope can help a virus:</div><label class="option"><input type="radio" name="mcq10" value="A"> A. Bind to host cells</label>
+<label class="option"><input type="radio" name="mcq10" value="B"> B. Make its own proteins</label>
+<label class="option"><input type="radio" name="mcq10" value="C"> C. Become a bacterium</label>
+<label class="option"><input type="radio" name="mcq10" value="D"> D. Eliminate its capsid</label></section><section class="card"><div class="question-title">11. Viruses are classified partly by:</div><label class="option"><input type="radio" name="mcq11" value="A"> A. Capsid shape</label>
+<label class="option"><input type="radio" name="mcq11" value="B"> B. Presence or absence of an envelope</label>
+<label class="option"><input type="radio" name="mcq11" value="C"> C. Type of nucleic acid</label>
+<label class="option"><input type="radio" name="mcq11" value="D"> D. All of the above</label></section><section class="card"><div class="question-title">12. Which family in the reading has a helical capsid?</div><label class="option"><input type="radio" name="mcq12" value="A"> A. Adenovirus</label>
+<label class="option"><input type="radio" name="mcq12" value="B"> B. Herpes viruses</label>
+<label class="option"><input type="radio" name="mcq12" value="C"> C. Orthomyxo viruses</label>
+<label class="option"><input type="radio" name="mcq12" value="D"> D. Coronaviruses</label></section><section class="card"><div class="question-title">13. Which virus family listed has no envelope?</div><label class="option"><input type="radio" name="mcq13" value="A"> A. Adenovirus</label>
+<label class="option"><input type="radio" name="mcq13" value="B"> B. Herpes viruses</label>
+<label class="option"><input type="radio" name="mcq13" value="C"> C. Orthomyxo viruses</label>
+<label class="option"><input type="radio" name="mcq13" value="D"> D. Coronaviruses</label></section><section class="card"><div class="question-title">14. Which trait do viruses share with living things according to the reading?</div><label class="option"><input type="radio" name="mcq14" value="A"> A. They all consist of cells</label>
+<label class="option"><input type="radio" name="mcq14" value="B"> B. They can evolve</label>
+<label class="option"><input type="radio" name="mcq14" value="C"> C. They reproduce independently</label>
+<label class="option"><input type="radio" name="mcq14" value="D"> D. They have organelles</label></section><section class="card"><div class="question-title">15. Why is the classification of viruses as living or nonliving controversial?</div><label class="option"><input type="radio" name="mcq15" value="A"> A. They have no structure</label>
+<label class="option"><input type="radio" name="mcq15" value="B"> B. They lack cells and independent reproduction but possess genetic material and evolve</label>
+<label class="option"><input type="radio" name="mcq15" value="C"> C. They are all harmless</label>
+<label class="option"><input type="radio" name="mcq15" value="D"> D. They are made only of water</label></section>
+<h2>Part II: Short Answer</h2>
+<p class="small">Answer in complete sentences and include relevant concepts from the learning material.</p>
+<section class="card"><div class="question-title">Short Answer 1. Describe the basic structure of a virion.</div><textarea id="short1" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 2. Explain why viruses cannot reproduce or make proteins independently.</div><textarea id="short2" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 3. Describe how a viral envelope may help a virus infect a host cell.</div><textarea id="short3" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 4. Identify the main traits used in the reading to classify viruses.</div><textarea id="short4" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 5. Using evidence from the reading, explain why viruses are difficult to classify as clearly living or nonliving.</div><textarea id="short5" placeholder="Type your answer here..."></textarea></section>
+<div class="actions">
+<button class="primary" onclick="downloadAnswers()">Download Answer Sheet (.txt)</button>
+<button class="secondary" onclick="window.print()">Print / Save as PDF</button>
+</div>
+</main>
+<script>
+const quiz = {"title": "Virus Structure and Function Quiz", "mcq": [{"q": "An individual virus particle is called a:", "opts": ["Cell", "Virion", "Capsule", "Ribosome"]}, {"q": "Viruses are generally:", "opts": ["Larger than prokaryotic cells", "Smaller than prokaryotic cells", "The same size as animal cells", "Made of many tissues"]}, {"q": "Viruses cannot make proteins on their own because they lack:", "opts": ["Genetic material", "Cellular structures such as ribosomes and cytoplasm", "A capsid", "Any molecules"]}, {"q": "A virus must depend on what to reproduce?", "opts": ["A mineral crystal", "A host cell", "Sunlight alone", "Another capsid"]}, {"q": "A virus particle contains:", "opts": ["Both DNA and RNA in every case", "DNA or RNA", "Only proteins", "Only phospholipids"]}, {"q": "The protective protein coat of a virus is the:", "opts": ["Envelope", "Capsid", "Cell wall", "Cytoplasm"]}, {"q": "Some viruses have an outer layer called an:", "opts": ["Organelle", "Envelope", "Nucleus", "Flagellum"]}, {"q": "A viral envelope is made from portions of the host\u2019s:", "opts": ["Cell membrane", "DNA", "Cell wall only", "Ribosome"]}, {"q": "One function of a viral envelope is to:", "opts": ["Make ATP independently", "Help protect the virus from the host immune system", "Perform photosynthesis", "Replace the viral genome"]}, {"q": "Receptor molecules on an envelope can help a virus:", "opts": ["Bind to host cells", "Make its own proteins", "Become a bacterium", "Eliminate its capsid"]}, {"q": "Viruses are classified partly by:", "opts": ["Capsid shape", "Presence or absence of an envelope", "Type of nucleic acid", "All of the above"]}, {"q": "Which family in the reading has a helical capsid?", "opts": ["Adenovirus", "Herpes viruses", "Orthomyxo viruses", "Coronaviruses"]}, {"q": "Which virus family listed has no envelope?", "opts": ["Adenovirus", "Herpes viruses", "Orthomyxo viruses", "Coronaviruses"]}, {"q": "Which trait do viruses share with living things according to the reading?", "opts": ["They all consist of cells", "They can evolve", "They reproduce independently", "They have organelles"]}, {"q": "Why is the classification of viruses as living or nonliving controversial?", "opts": ["They have no structure", "They lack cells and independent reproduction but possess genetic material and evolve", "They are all harmless", "They are made only of water"]}], "short": ["Describe the basic structure of a virion.", "Explain why viruses cannot reproduce or make proteins independently.", "Describe how a viral envelope may help a virus infect a host cell.", "Identify the main traits used in the reading to classify viruses.", "Using evidence from the reading, explain why viruses are difficult to classify as clearly living or nonliving."]};
+function downloadAnswers() {
+  const name = document.getElementById('studentName').value.trim() || 'Unnamed Student';
+  let lines = [];
+  lines.push(quiz.title);
+  lines.push('Student: ' + name);
+  lines.push('Generated: ' + new Date().toLocaleString());
+  lines.push('');
+  lines.push('PART I: MULTIPLE CHOICE');
+  quiz.mcq.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="mcq${idx+1}"]:checked`);
+    lines.push(`${idx+1}. ${item.q}`);
+    item.opts.forEach((opt,j) => lines.push(`   ${String.fromCharCode(65+j)}. ${opt}`));
+    lines.push('   Student answer: ' + (selected ? selected.value : '[blank]'));
+    lines.push('');
+  });
+  lines.push('PART II: SHORT ANSWER');
+  quiz.short.forEach((q, idx) => {
+    const answer = document.getElementById(`short${idx+1}`).value.trim();
+    lines.push(`Short Answer ${idx+1}. ${q}`);
+    lines.push('Student answer: ' + (answer || '[blank]'));
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const safe = quiz.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  a.download = safe + '-' + name.replace(/[^a-z0-9]+/gi,'_') + '-answers.txt';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+</script></body></html>

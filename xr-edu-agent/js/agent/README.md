@@ -7,30 +7,37 @@ This directory is the product’s “brain.” **Anyone (including AI assistants
 ```
 js/agent/
 ├── orchestrator.js           Orchestrator: runTurn entry, Planner → confirm → Executor tool loop
-├── context.js                Context build: scene JSON / large-scene summary + prefetch / selection-as-context
+├── context.js                Context build: Outline + scene / large-scene + selection + uploaded doc (+ planned KG)
+├── doc-context.js            Docling upload mount + summary UI + context block
 ├── llm.js                    Proxy Claude API: stream, thinking, prompt caching, pricing
 ├── sandbox.js                AI code sandbox: T toolbox + compile update/click/grab handlers
 ├── logger.js                 Structured logging
+├── pedagogy/                 📚 Teaching-design static assets (pattern library + action vocab + ref pipeline)
+│   └── README.md             Edit rules + remap to vr/reading/h5/quiz
 ├── skills/                   🧠 Skill library (one module per skill, registry style)
 │   ├── index.js              App entry: import skills → AGENT_SKILLS / skillCatalogForLLM / skillPrompts
 │   ├── manifest.js           File list for the skills viewer (keep order aligned with index.js imports)
 │   └── *.js                  (globalThis.XR_AGENT_SKILLS ??= []).push({id,name,description,prompt,…})
 ├── tools/                    🔧 Tool library (grouped by role)
-│   ├── index.js              Aggregate: TOOLS / toolDefsForAPI / execTool / toolCallLabel
+│   ├── index.js              Aggregate: TOOLS / toolDefsForAPI / execTool / toolCallLabel (39 tools)
 │   ├── shared.js             ok/fail helpers
 │   ├── build-tools.js        Create: add_asset / create_custom_object / set_behavior / build_template / clear_scene
 │   ├── edit-tools.js         Edit: update_object / remove_object / select_object
 │   ├── panel-tools.js        Panels: attach_label / add_panel / update_panel / add_quiz_panel
 │   ├── query-tools.js        Query: get_scene / find_objects / get_object_detail
 │   ├── env-tools.js          Env: report_progress / set_environment / configure_locomotion / set_student_view
-│   └── space-tools.js        Space: add_arrow / add_path / build_room / build_stairs
-├── agent-map.js              📊 Workflow digraph + tool catalog (viewer data; sync manually)
-├── agent-viewer.html         🧭 Workflow viewer
+│   ├── space-tools.js        Space: add_arrow / add_path / build_room / build_stairs
+│   ├── outline-tools.js      Outline: outline_* / reading_set_chunks / h5_set_content / quiz_set_items
+│   └── course-pipeline-tools.js  Course: course_tag_figures / course_build_outline_from_doc / course_fill_section / …
+├── agent-map.js              📊 Workflow digraph + tool catalog (**v5**; viewer data; sync manually)
+├── agent-viewer.html         🧭 Workflow viewer (group `course` = pedagogy / KG / pipeline)
 ├── agent-viewer-skills.html  🧭 Skills viewer (loads skills/ registry scripts)
 ├── agent-viewer-tools.html   🧭 Tools viewer (reads agent-map.js)
 ├── agent-viewer.css / agent-viewer-common.js
 └── README.md                 This file
 ```
+
+Product evolution vs original pure 3D/VR: **`../EVOLUTION.md`**.
 
 **Open the viewers locally by double-clicking any `agent-viewer*.html`** (no server). Data sources are plain scripts, not JSON/ESM, because `file://` blocks fetch and module imports. The same skill files are imported as ESM by the app.
 
@@ -76,7 +83,7 @@ Each tool: `{ name, label(input), description, input_schema, exec(input) }`
 | Add/remove **skill** | ① import in `skills/index.js`; ② filename in `skills/manifest.js` (same order); ③ write `nameEn/descriptionEn/promptEn`. Check executor “common combos” in `agent-map.js` |
 | Edit skill content | Update Chinese **and** English fields together |
 | Add/remove **tool** | Update `agent-map.js` `tools` (+ bilingual group/summary) and tool-exec / executor tool counts |
-| Change **workflow** | Update `workflow.nodes` / `edges` (bilingual title/desc/uses). New group colors → `GROUP_COLOR` / `GROUP_NAME` in `agent-viewer.html`. Current graph includes `progress` (`pipeline` group ↔ `report_progress`) |
-| Any change | Bump `meta.updated`; verify both languages in all three viewers |
+| Change **workflow** | Update `workflow.nodes` / `edges` (bilingual title/desc/uses). New group colors → `GROUP_COLOR` / `GROUP_NAME` in `agent-viewer.html`. Current graph includes `progress` (`pipeline` group) and course-design nodes (`course` group: `pedagogy` / `knowledge-graph` / `course-pipeline`) |
+| Any change | Bump `meta.updated` (+ `meta.version` on major graph changes); verify both languages in all three viewers; if product shape changed vs pure 3D/VR, update `EVOLUTION.md` |
 
 Checklist: no dangling edges; node desc matches code; tool count = `TOOLS.length`; skills viewer lists every skill; EN mode has no leftover Chinese in bilingual data fields.

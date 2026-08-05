@@ -2,11 +2,18 @@
 //  XR EduAgent — 入口(Bootstrap)
 //  模块结构见 AGENTS.md;此文件只做装配与开场
 // ═══════════════════════════════════════════════════════════════
-import { applyDomI18n, setLang, lang, L } from './js/core/i18n.js';
+import { applyDomI18n, lang, L } from './js/core/i18n.js';
 applyDomI18n();                    // 静态 DOM 文案先就位,再装配各模块
 
 import './js/ui/library.js';       // 左栏:资源库(AssetSkill)+ Tab 切换
-import './js/ui/projects.js';      // 左栏:项目管理(新建/打开/导入 + 顶栏保存)
+import './js/ui/outline.js';       // 左栏:学习大纲(章→节)+ 工作区切换
+import { renderOutline } from './js/ui/outline.js';
+import './js/ui/learn-mode.js';    // 开始学习 / 退出学习
+import './js/ui/projects.js';      // 项目弹层(新建/打开/导入 + 顶栏保存)
+import './js/ui/settings.js';      // 设置弹层(语言 + 字号)
+import './js/ui/course-chrome-lock.js'; // 课程生成中锁定顶栏
+import './js/ui/kg-viewer.js';     // 知识图谱弹层
+import { ensureOutline } from './js/core/outline.js';
 import './js/ui/hierarchy.js';     // 左栏:场景层级 + 自然语言 Inspector
 import './js/ui/viewport.js';      // 中栏:视口交互 / 工具栏 / 检查器
 import './js/ui/layout.js';        // 左右面板可拖拽调宽
@@ -15,6 +22,9 @@ import './js/core/play-reset.js';  // 运行模式重置(停止运行 → 场景
 import './js/scene/student-rig.js';// 学生视角代表物(出生点 + 视野可视化)
 import { startLoop, setupXR } from './js/core/loop.js';
 import { loadApiKeys, hasLLM } from './js/agent/llm.js';
+import { studyFlag } from './js/core/study-test-flags.js';
+import { configureLocomotion } from './js/core/locomotion.js';
+import { ensureStudentRig } from './js/scene/student-rig.js';
 import { addMsg, renderModelOptions } from './js/ui/chat.js';
 import { SCENARIOS } from './js/labs/scenarios.js';
 import { toast } from './js/core/utils.js';
@@ -23,34 +33,28 @@ import { serializeScene, loadSceneData } from './js/core/projects.js';
 import { sceneRoot } from './js/core/three-setup.js';
 import { emit } from './js/core/events.js';
 
-// 顶栏:语言切换 / 下载 / 分享(保存在 projects.js 里接管)
-// 切语言不丢场景:先把当前场景寄存到 localStorage,刷新后自动还原。
-// 场景里的用户内容(对象名/面板文字)保持原语言;系统 UI / 之后新生成的内容用新语言
+// 顶栏:下载 / 分享(语言切换在 settings.js;保存在 projects.js)
 const LANG_STASH_KEY = 'xr-lang-stash';
 function bindTopbar() {
-  document.getElementById('btn-lang').addEventListener('click', () => {
-    try {
-      const name = document.getElementById('scene-tab-name').textContent.trim();
-      localStorage.setItem(LANG_STASH_KEY, JSON.stringify(serializeScene(name)));
-    } catch (e) {
-      console.warn('[lang] 场景寄存失败(可能超出 localStorage 限额),切换后将回到默认场景', e);
-      localStorage.removeItem(LANG_STASH_KEY);
-      if (!confirm(L('场景太大,切换语言后无法自动恢复当前场景(建议先保存到项目)。仍要切换吗?',
-        'The scene is too large to restore automatically after switching (save it as a project first). Switch anyway?'))) return;
-    }
-    setLang(lang === 'en' ? 'zh' : 'en');
-  });
   document.getElementById('btn-download').addEventListener('click', exportScene);
   document.getElementById('btn-share').addEventListener('click', () => toast(L(
     '🔗 分享链接已复制,学生可在浏览器/头显中打开(演示)',
     '🔗 Share link copied — students can open it in a browser or headset (demo)')));
   document.getElementById('scene-tab-name').textContent = L('我的第一节VR课', 'My First VR Lesson');
+  ensureOutline(document.getElementById('scene-tab-name')?.textContent?.trim() || '');
+  renderOutline();
 }
 bindTopbar();
 
 // 渲染循环 + WebXR
 startLoop();
 setupXR();
+
+// Study TEMP: force stationary 3D (no VR player / walk) — see STUDY_TEST_FLAGS.md
+if (studyFlag('disableVrPlayerController')) {
+  configureLocomotion({ mode: 'static' }, true);
+  ensureStudentRig(); // syncVisual hides the gizmo when the flag is on
+}
 
 // 加载 API Key → 决定在线/离线模式
 await loadApiKeys();

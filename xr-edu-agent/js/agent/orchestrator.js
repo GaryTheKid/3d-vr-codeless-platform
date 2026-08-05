@@ -14,8 +14,12 @@
 // ═══════════════════════════════════════════════════════════════
 import { state } from '../core/state.js';
 import { sleep, toast } from '../core/utils.js';
-import { hasLLM, callClaude, MODELS, BUDGETS, estimateCost } from './llm.js';
-import { buildContextMessage } from './context.js';
+import { hasLLM, callClaude, MODELS, BUDGETS, estimateCost, isRetryableLLMError, hasOpenAIImages, loadApiKeys } from './llm.js';
+import { generatePedagogyImage, buildPedagogyImagePrompt } from './openai-images.js';
+import { buildContextMessage, buildLearningContextMessage } from './context.js';
+import { getUploadedDoc } from './doc-context.js';
+import { ensureDocCourseMinimum } from '../core/outline.js';
+import { studyFlag } from '../core/study-test-flags.js';
 import { toolDefsForAPI, execTool, toolCallLabel } from './tools/index.js';
 import { skillCatalogForLLM, skillPrompts } from './skills/index.js';
 import { assetCatalogForLLM } from '../assets/registry.js';
@@ -152,26 +156,30 @@ function langRule() {
 function baseSystem() {
   if (isEN()) {
     return `You are "XR EduAgent" — a VR lesson-building assistant for K-12 teachers with no coding background.
-You work inside a Three.js / WebXR 3D editor.
+You work inside a Three.js / WebXR 3D editor with a Learning Outline (Chapter → Section: vr | reading | h5 | quiz).
 
 Rules:
 1. Decide the teaching intent (subject / grade / concept) first; you are building a lesson, not a pile of models.
-2. Asset choice: if a preset template is a close match → build_template; if the library has a fit → add_asset; otherwise → create_custom_object and write Three.js code. Prefer quality over crude primitives.
-3. Quality bar = the built-in oxygen-prep lab: refined models + step-by-step interaction + intentional failure branches + live data panels.
-4. ${langRule()}
-5. Read [current scene JSON] before editing; use oid in tool calls; use display names in chat.
-6. After building, give one concrete teaching tip the teacher can use tomorrow.`;
+2. Respect the active outline section: vr → 3D scene tools; reading → reading_set_chunks or course_fill_section; h5 → h5_set_content or course_fill_section; quiz → quiz_set_items or course_fill_section. Reshape the tree with outline_*; from uploaded material prefer course_tag_figures → course_build_outline_from_doc → course_fill_section per section. Each VR section stores its own scene snapshot — do not assume shared objects across VR sections.
+2b. HARD RULE when an uploaded teaching PDF/doc is in context: the course MUST include ≥1 reading section AND ≥1 quiz section filled from that material (even if the PDF is tiny). Never deliver only a 3D scene.
+3. Asset choice (3D sections): if a preset template is a close match → build_template; if the library has a fit → add_asset; otherwise → create_custom_object and write Three.js code. Prefer quality over crude primitives.
+4. Quality bar = the built-in oxygen-prep lab: refined models + step-by-step interaction + intentional failure branches + live data panels.
+5. ${langRule()}
+6. Read [current scene JSON] / [Learning Outline] before editing; use oid in scene tool calls; use display names in chat.
+7. After building, give one concrete teaching tip the teacher can use tomorrow.${studyFlag('disableVrPlayerController') ? '\n8. STUDY MODE: do NOT configure VR player / locomotion / student spawn / headset flows. Build a normal interactive 3D scene for orbit + click Play (animations & object interactions only).' : ''}`;
   }
   return `你是「XR EduAgent」——面向中小学老师的 VR 教学场景搭建助教。
-用户是没有编程背景的老师;你在一个基于 Three.js/WebXR 的 3D 编辑器里工作。
+用户是没有编程背景的老师;你在一个基于 Three.js/WebXR 的 3D 编辑器里工作,课程有 Learning Outline(章→节:vr | reading | h5 | quiz)。
 
 原则:
 1. 先想清楚教学意图(学科/学段/知识点),再动手;搭的不是"模型堆",是"一节课"。
-2. 资源选型:需求与预置模板高度吻合 → build_template;资源库有合适资源 → add_asset;两者都没有或不够精致 → create_custom_object 直接写 Three.js 代码现场造。你有完整的编程能力,不要因为没有现成资源就用简陋几何将就。
-3. 质量标准对标内置的"制取氧气"实验:精细的模型(车削玻璃器皿/弯管/粒子效果)+ 分步点击交互 + 故意设计的考点错误分支 + 实时数据面板。老师要的是能直接上课的作品。
-4. ${langRule()}
-5. 修改前先看清 [当前场景状态 JSON];工具调用里引用对象用它的 oid,给老师的文字里用显示名称。
-6. 每次搭建完,给老师一条具体可操作的教学建议。`;
+2. 对齐当前大纲节类型:vr → 3D 场景工具;reading → reading_set_chunks 或 course_fill_section;h5 → h5_set_content 或 course_fill_section;quiz → quiz_set_items 或 course_fill_section。改课程树用 outline_*;从上传材料备课优先 course_tag_figures → course_build_outline_from_doc → 逐节 course_fill_section。每个 VR 节有独立场景快照,不要假设跨 VR 节共享对象。
+2b. 硬性规则:只要上下文里有上传的教学 PDF/文档,课程必须包含 ≥1 个 reading 节和 ≥1 个 quiz 节,并根据材料填满内容(即使 PDF 很短)。禁止只交一个 3D 场景。
+3. 3D 节资源选型:需求与预置模板高度吻合 → build_template;资源库有合适资源 → add_asset;两者都没有或不够精致 → create_custom_object 直接写 Three.js 代码现场造。你有完整的编程能力,不要因为没有现成资源就用简陋几何将就。
+4. 质量标准对标内置的"制取氧气"实验:精细的模型(车削玻璃器皿/弯管/粒子效果)+ 分步点击交互 + 故意设计的考点错误分支 + 实时数据面板。老师要的是能直接上课的作品。
+5. ${langRule()}
+6. 修改前先看清 [当前场景状态 JSON] 与 [Learning Outline];场景工具调用里引用对象用 oid,给老师的文字里用显示名称。
+7. 每次搭建完,给老师一条具体可操作的教学建议。${studyFlag('disableVrPlayerController') ? '\n8. 试学模式:不要配置 VR 玩家/移动方式/学生出生点/头显流程。搭可在轨道相机下 ▶ 运行观看的普通交互 3D 场景(动画+点击交互即可)。' : ''}`;
 }
 
 function plannerSystem() {
@@ -258,6 +266,46 @@ You are the Executor. Complete the build/edits via tool calls:
 }
 
 function askSystem() {
+  if (state.learnMode) {
+    const drawRule = hasOpenAIImages()
+      ? (isEN()
+        ? `\n9. DIAGRAM POWER: when the student asks a complex / spatial / structural question where a picture would genuinely unlock understanding (motion decomposition, geometry, structure, process flow), you may request ONE illustration: after your normal reply, append on its OWN final line exactly [[draw: <concise English brief of the diagram — what to show, what to label>]]. Use at most once per reply, only when it truly helps; never mention this mechanism to the student.`
+        : `\n9. 画图助攻:当学生的问题复杂/涉及空间、结构、过程(如运动分解、几何、流程),一张示意图能真正帮到理解时,你可以申请生成一张插图:在正常回复之后,单独最后一行写 [[draw: <英文简述画什么、标注什么>]]。每次回复最多一张,确有必要才用;不要向学生提及这个机制。`)
+      : '';
+    const body = isEN()
+      ? `You are the "Learning Companion" inside XR EduAgent — a patient TUTOR for a STUDENT in a prepared lesson (reading / H5 / quiz / 3D-VR).
+
+You receive a STUDENT-facing lesson context only (what they can see & do). You are NOT an authoring / engineering assistant.
+
+CRITICAL rules (never break these):
+1. Teach learning goals, concepts, observation, and how to explore the lesson — never editor/engine details (oids, anim speeds, orbit radii like 3/4.4/6, coordinates, builder code, playMode flags) unless the student VERY EXPLICITLY asks how the scene was built technically.
+2. When they ask "what is this scene / how do I play?": describe the learning experience in plain language (what objects mean, what labels say, what to click/watch), then invite them to try one concrete action. Do NOT quiz them on hidden implementation numbers.
+3. Do NOT give final answers / full keys when they ask "just tell me". Prefer Socratic hints and one step at a time.
+4. Stay aligned with [Lesson] / readable labels / uploaded materials. Do not invent contradicting facts.
+5. Keep replies short, encouraging, age-appropriate. One idea per turn when possible.
+6. You have NO tools — Ask-only. Never claim you edited the course.
+7. ${langRule()}
+8. If stuck after 2–3 hints, give a partial worked step — still withhold the final boxed answer until they attempt it.${drawRule}
+
+You are tutoring the learner, not debugging or building the project.`
+      : `你是 XR EduAgent 里的「学习助教」——面向正在上课的学生的耐心导师(阅读 / H5 / 测验 / 3D-VR)。
+
+你只会收到「学生视角」的课堂上下文(能看到什么、能怎么玩)。你不是备课/工程助教。
+
+教学铁律(不可违反):
+1. 只谈学习目标、概念、观察与探索玩法;禁止聊编辑器/引擎实现细节(oid、动画速度、轨道半径如 3/4.4/6、坐标、搭建代码、playMode 等)——除非学生非常明确地追问「场景是怎么做出来的/技术细节」。
+2. 学生问「这是什么场景 / 怎么玩」时:用白话讲学习体验(物体含义、标签文字、点哪里/看什么),再邀请他们做一件具体操作。禁止拿实现参数出题考学生。
+3. 学生直接要答案时,禁止甩最终答案;改为反问、提示、拆小步。
+4. 紧扣 [Lesson] / 场景可读标签 / 上传材料,不编造矛盾事实。
+5. 回复短、鼓励、符合学段;尽量一轮只推进一个点。
+6. 没有工具,纯 Ask,不要声称改过课程。
+7. ${langRule()}
+8. 连续 2–3 次提示仍卡住时,可给「半步例题」,最终答案仍等学生先试。${drawRule}
+
+你在辅导学生,不是在改项目或排错。`;
+    return cachedSystem(body);
+  }
+
   const body = isEN()
     ? `${baseSystem()}
 
@@ -419,7 +467,7 @@ async function runExecutor(userText, plan, ui, complexity = null, ctxMsg = '') {
       const card = isProgress ? null : ui.addToolCard(toolCallLabel(tu.name, tu.input), true);
       if (!isProgress) await sleep(120);
       const t0 = performance.now();
-      const r = execTool(tu.name, tu.input);
+      const r = await execTool(tu.name, tu.input);
       logEvent('tool_call', { name: tu.name, input: summarizeToolInput(tu.input), ok: r.ok, msg: summarize(r.msg), ms: Math.round(performance.now() - t0) });
       if (card) ui.finishToolCard(card, `${toolCallLabel(tu.name, tu.input)}${r.ok ? '' : ' ⚠ ' + r.msg}`, r.ok);
       results.push({ type: 'tool_result', tool_use_id: tu.id, content: r.msg, is_error: !r.ok });
@@ -437,16 +485,20 @@ async function runExecutor(userText, plan, ui, complexity = null, ctxMsg = '') {
 
 // ── Ask 调用(流式输出 + 推理摘要可见)──
 async function runAsk(userText, ui, ctxMsg) {
+  await loadApiKeys();   // askSystem() checks hasOpenAIImages() — keys must be in
   const typing = ui.addTyping(L('正在思考…', 'Thinking…'));
   let sm = null;
   let tb = null;
+  const qLabel = state.learnMode
+    ? L('[学生的问题]', '[Student question]')
+    : L('[老师的问题]', '[Teacher question]');
   try {
     await llmCall('ask', {
       model: agent.model,
       system: askSystem(),
       messages: [
         ...agent.history.slice(-HISTORY_KEEP),
-        { role: 'user', content: `${ctxMsg}\n\n[老师的问题]\n${userText}` },
+        { role: 'user', content: `${ctxMsg}\n\n${qLabel}\n${userText}` },
       ],
       ...callBudget('ask'),
       onThinking: t => {
@@ -464,7 +516,40 @@ async function runAsk(userText, ui, ctxMsg) {
     typing.remove();
   }
   if (!sm) { const r = L('(无回复)', '(no reply)'); ui.addMsg('ai', r); return r; }
-  return sm.done();
+  let finalText = sm.done();
+  // Learning companion may request one realtime diagram via a trailing [[draw: …]] marker
+  const drawMatch = finalText.match(/\[\[\s*draw\s*:\s*([\s\S]*?)\]\]/i);
+  if (drawMatch) {
+    const cleaned = finalText.replace(/\[\[\s*draw\s*:[\s\S]*?\]\]/gi, '').trim();
+    sm.setFinalHtml?.(cleaned);
+    finalText = cleaned;
+    if (state.learnMode && hasOpenAIImages()) {
+      await tutorDrawDiagram(drawMatch[1].trim(), ui);
+    }
+  }
+  return finalText;
+}
+
+/** Generate + post one tutoring diagram in chat (companion-requested, best effort). */
+async function tutorDrawDiagram(brief, ui) {
+  if (!brief) return;
+  const typing = ui.addTyping(L('正在画示意图…', 'Sketching a diagram…'));
+  try {
+    const prompt = buildPedagogyImagePrompt({
+      title: '',
+      concept: brief.slice(0, 120),
+      htmlHint: brief,
+      lang: isEN() ? 'en' : 'zh',
+    });
+    const img = await generatePedagogyImage(prompt, { size: '1024x1024' });
+    if (img?.dataUrl) {
+      ui.addMsg('ai', `<figure class="ws-pedagogy-fig chat-tutor-fig"><img class="ws-inline-img" src="${img.dataUrl}" alt="" /><figcaption>${L('示意图,帮助你理解上面的讲解', 'A diagram to go with the explanation above')}</figcaption></figure>`);
+    }
+  } catch (e) {
+    console.warn('[tutor-draw]', e.message || e);
+  } finally {
+    typing.remove();
+  }
 }
 
 // ═══════════ 主入口:处理一条用户消息 ═══════════
@@ -477,9 +562,22 @@ export async function runTurn(userText, ui) {
   lastProgress = null;
   emit('agent-turn-start');   // chat.js 据此重置流水线进度卡
   logEvent('turn_start', { mode: agent.mode, model: agent.model, effort: agent.effort, input: summarize(userText, 300) });
+  if (state.learnMode) agent.mode = 'ask';
   try {
+    const doc = getUploadedDoc();
+    if (doc && !state.learnMode) {
+      ensureDocCourseMinimum({ silent: false });
+    }
     if (!hasLLM()) {
       await runOffline(userText, ui);
+      if (doc && !state.learnMode) {
+        ensureDocCourseMinimum({
+          seedIfEmpty: true,
+          markdown: doc.markdown,
+          filename: doc.filename,
+          silent: false,
+        });
+      }
       if (turnMutated) refreshPlaySnapshot();
       if (turnMutated && ui.showKeepUndo) ui.showKeepUndo();
       agent.busy = false;
@@ -489,7 +587,7 @@ export async function runTurn(userText, ui) {
     // 上下文锁定:一轮(Planner→确认→Executor 全程)只在开始时构建一次场景上下文。
     // 期间老师切运行模式/换选中对象不会改变 Agent 看到的初始状态,避免执行到一半
     // 上下文漂移(工具结果仍反映实时场景,模型照样能感知自己造成的变化)
-    const ctxMsg = buildContextMessage(userText);
+    const ctxMsg = state.learnMode ? buildLearningContextMessage() : buildContextMessage(userText);
 
     // runAsk / runExecutor 内部自带流式渲染,这里只兜底错误与取消提示
     let finalReply = '';
@@ -522,9 +620,31 @@ export async function runTurn(userText, ui) {
       }
     } catch (err) {
       logEvent('turn_error', { error: err.message });
-      finalReply = L(`⚠ 调用模型出错了:${err.message}\n\n检查 api-keys.txt 里的密钥是否有效;删掉密钥可回到离线演示模式。`,
-        `⚠ Model call failed: ${err.message}\n\nCheck that the key in api-keys.txt is valid; remove it to fall back to offline demo mode.`);
+      if (isRetryableLLMError(err.message) || /overloaded/i.test(err.message || '')) {
+        finalReply = L(
+          `⚠ 模型服务暂时过载:${err.message}\n\nPDF 与计划都已就绪——等十几秒后再次点击计划「确认」,或把同一条「Build from this」消息再发一次即可继续搭建。`,
+          `⚠ Model service temporarily overloaded: ${err.message}\n\nYour PDF and plan are fine — wait ~10–15s, then confirm the plan again, or resend the same "Build from this" message to continue.`);
+      } else if (/Failed to fetch|CORS|网络请求失败/i.test(err.message || '')) {
+        finalReply = L(
+          `⚠ 调用模型出错了:${err.message}\n\n请用仓库根目录 \`python server.py\` 打开(同域 /__llm 可绕过浏览器 CORS)。`,
+          `⚠ Model call failed: ${err.message}\n\nOpen via \`python server.py\` from the repo root (same-origin /__llm avoids CORS).`);
+      } else if (/密钥|api-keys|401|403|invalid/i.test(err.message || '')) {
+        finalReply = L(
+          `⚠ 调用模型出错了:${err.message}\n\n请检查 api-keys.txt 里的 CLAUDE_PROXY_API_KEY 是否有效。`,
+          `⚠ Model call failed: ${err.message}\n\nCheck that CLAUDE_PROXY_API_KEY in api-keys.txt is valid.`);
+      } else {
+        finalReply = L(`⚠ 调用模型出错了:${err.message}`, `⚠ Model call failed: ${err.message}`);
+      }
       ui.addMsg('ai', finalReply);
+    }
+    // Safety net: imported PDF courses always keep reading + quiz (seed if agent left them empty)
+    if (doc && !state.learnMode && agent.mode !== 'ask') {
+      ensureDocCourseMinimum({
+        seedIfEmpty: true,
+        markdown: doc.markdown,
+        filename: doc.filename,
+        silent: false,
+      });
     }
     // Agent 在运行模式中改了场景 → 更新运行回滚基线,防止停止运行时把本轮成果回滚掉
     if (turnMutated) refreshPlaySnapshot();

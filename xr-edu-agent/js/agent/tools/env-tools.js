@@ -8,6 +8,7 @@ import { dirLight, grid, orbit } from '../../core/three-setup.js';
 import { configureLocomotion, locomotionDesc } from '../../core/locomotion.js';
 import { setStudentView, getStudentSpawn } from '../../scene/student-rig.js';
 import { L } from '../../core/i18n.js';
+import { studyFlag } from '../../core/study-test-flags.js';
 import { ok, fail } from './shared.js';
 
 export default [
@@ -33,7 +34,7 @@ export default [
         stage: +inp.stage || 0, total: +inp.total || 0,
         title: String(inp.title || ''), note: String(inp.note || ''),
       });
-      return ok('已汇报;继续执行本阶段');
+      return ok(L('已汇报;继续执行本阶段', 'Progress reported; continue this stage'));
     },
   },
   {
@@ -52,13 +53,13 @@ export default [
     },
     exec(inp) {
       const done = [];
-      if (inp.play_mode !== undefined) { setPlayMode(inp.play_mode); done.push(inp.play_mode ? '已进入运行模式(动画+交互生效)' : '已回到编辑模式'); }
-      if (inp.anim_playing !== undefined) { state.animPlaying = inp.anim_playing; emit('anim-toggled', inp.anim_playing); done.push(`动画${inp.anim_playing ? '播放' : '暂停'}`); }
-      if (inp.main_light !== undefined) { dirLight.visible = inp.main_light; done.push(`主光源${inp.main_light ? '开' : '关'}`); }
-      if (inp.grid_visible !== undefined) { grid.visible = inp.grid_visible; done.push(`网格${inp.grid_visible ? '显示' : '隐藏'}`); }
-      if (inp.camera_locked !== undefined) { orbit.enabled = !inp.camera_locked; done.push(`视角${inp.camera_locked ? '锁定' : '解锁'}`); }
+      if (inp.play_mode !== undefined) { setPlayMode(inp.play_mode); done.push(inp.play_mode ? L('已进入运行模式(动画+交互生效)', 'Entered play mode (animation + interactions active)') : L('已回到编辑模式', 'Returned to edit mode')); }
+      if (inp.anim_playing !== undefined) { state.animPlaying = inp.anim_playing; emit('anim-toggled', inp.anim_playing); done.push(L(`动画${inp.anim_playing ? '播放' : '暂停'}`, `Animation ${inp.anim_playing ? 'playing' : 'paused'}`)); }
+      if (inp.main_light !== undefined) { dirLight.visible = inp.main_light; done.push(L(`主光源${inp.main_light ? '开' : '关'}`, `Main light ${inp.main_light ? 'on' : 'off'}`)); }
+      if (inp.grid_visible !== undefined) { grid.visible = inp.grid_visible; done.push(L(`网格${inp.grid_visible ? '显示' : '隐藏'}`, `Grid ${inp.grid_visible ? 'visible' : 'hidden'}`)); }
+      if (inp.camera_locked !== undefined) { orbit.enabled = !inp.camera_locked; done.push(L(`视角${inp.camera_locked ? '锁定' : '解锁'}`, `Camera ${inp.camera_locked ? 'locked' : 'unlocked'}`)); }
       emit('hierarchy-changed');
-      return ok(done.join(';') || '无变更');
+      return ok(done.join(';') || L('无变更', 'No changes'));
     },
   },
   {
@@ -79,9 +80,16 @@ allowed_radius 限定活动半径(米,防学生走丢,0=不限);turn_mode 转向
       },
     },
     exec(inp) {
+      // Study TEMP — see STUDY_TEST_FLAGS.md
+      if (studyFlag('disableVrPlayerController')) {
+        return ok(L('试学模式:已跳过 VR 移动配置(当前为普通 3D 场景)', 'Study mode: skipped VR locomotion (normal 3D scene)'));
+      }
       const done = configureLocomotion({ mode: inp.movement_mode, allowedRadius: inp.allowed_radius, turnMode: inp.turn_mode }, true);
       emit('hierarchy-changed');
-      return done.length ? ok(`学生移动已配置:${done.join(';')}。当前:${locomotionDesc()}`) : fail('未提供有效配置');
+      return done.length ? ok(L(
+        `学生移动已配置:${done.join(';')}。当前:${locomotionDesc()}`,
+        `Student locomotion configured: ${done.join(';')}. Current: ${locomotionDesc()}`
+      )) : fail(L('未提供有效配置', 'No valid configuration provided'));
     },
   },
   {
@@ -106,13 +114,20 @@ allowed_radius 限定活动半径(米,防学生走丢,0=不限);turn_mode 转向
       },
     },
     exec(inp) {
-      if (inp.x === undefined && inp.z === undefined && !inp.look_at && inp.yaw_deg === undefined) return fail('未提供任何参数');
+      // Study TEMP — see STUDY_TEST_FLAGS.md
+      if (studyFlag('disableVrPlayerController')) {
+        return ok(L('试学模式:已跳过学生出生点设置(当前为普通 3D 场景)', 'Study mode: skipped student spawn (normal 3D scene)'));
+      }
+      if (inp.x === undefined && inp.z === undefined && !inp.look_at && inp.yaw_deg === undefined) return fail(L('未提供任何参数', 'No parameters provided'));
       setStudentView({
         x: inp.x, z: inp.z, lookAt: inp.look_at,
         yaw: inp.yaw_deg !== undefined ? inp.yaw_deg * Math.PI / 180 : undefined,
       });
       const sp = getStudentSpawn();
-      return ok(`学生出生点已设为 (${sp.x.toFixed(1)}, ${sp.z.toFixed(1)}),朝向 ${Math.round(sp.yaw * 180 / Math.PI)}°`);
+      return ok(L(
+        `学生出生点已设为 (${sp.x.toFixed(1)}, ${sp.z.toFixed(1)}),朝向 ${Math.round(sp.yaw * 180 / Math.PI)}°`,
+        `Student spawn set to (${sp.x.toFixed(1)}, ${sp.z.toFixed(1)}), facing ${Math.round(sp.yaw * 180 / Math.PI)}°`
+      ));
     },
   },
 ];

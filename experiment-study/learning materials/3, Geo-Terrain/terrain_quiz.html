@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Terrain Formation Quiz</title><style>
+:root { --bg:#f5f7fb; --card:#ffffff; --text:#172033; --muted:#64748b; --accent:#2563eb; --border:#dbe3ef; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+header { background:linear-gradient(135deg,#172554,#2563eb); color:white; padding:44px 20px; }
+header .wrap, main { max-width:960px; margin:auto; }
+h1 { margin:0 0 8px; font-size:2.2rem; }
+.subtitle { opacity:.9; }
+.meta { margin-top:14px; font-size:.95rem; opacity:.85; }
+main { padding:28px 20px 60px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:0 6px 20px rgba(15,23,42,.05); }
+.question-title { font-weight:700; margin-bottom:12px; }
+.option { display:block; margin:9px 0; padding:10px 12px; border:1px solid var(--border); border-radius:10px; cursor:pointer; }
+.option:hover { background:#eff6ff; }
+textarea { width:100%; min-height:130px; resize:vertical; border:1px solid var(--border); border-radius:10px; padding:12px; font:inherit; }
+input[type=text] { width:100%; padding:11px; border:1px solid var(--border); border-radius:10px; font:inherit; }
+button { border:0; border-radius:10px; padding:12px 18px; font-weight:700; cursor:pointer; }
+.primary { background:var(--accent); color:white; }
+.secondary { background:#e2e8f0; color:#172033; margin-left:8px; }
+.actions { position:sticky; bottom:0; background:rgba(245,247,251,.95); backdrop-filter:blur(8px); padding:14px 0; border-top:1px solid var(--border); }
+.small { color:var(--muted); font-size:.92rem; }
+@media print { .actions { display:none; } body { background:white; } .card { box-shadow:none; break-inside:avoid; } }
+</style></head>
+<body>
+<header><div class="wrap"><h1>Terrain Formation Quiz</h1><div class="subtitle">Weathering, Erosion, Uplift, and Canyon Formation at Zion</div>
+<div class="meta">15 multiple-choice questions · 5 short-answer questions</div></div></header>
+<main>
+<section class="card"><label class="question-title" for="studentName">Student name</label><input id="studentName" type="text" placeholder="Enter your name"></section>
+<h2>Part I: Multiple Choice</h2>
+<p class="small">Choose one answer for each question.</p>
+<section class="card"><div class="question-title">1. Weathering is the process of:</div><label class="option"><input type="radio" name="mcq1" value="A"> A. Moving sediment from one place to another</label>
+<label class="option"><input type="radio" name="mcq1" value="B"> B. Breaking down rock at or near the surface</label>
+<label class="option"><input type="radio" name="mcq1" value="C"> C. Melting all rock into magma</label>
+<label class="option"><input type="radio" name="mcq1" value="D"> D. Raising a plateau</label></section><section class="card"><div class="question-title">2. Erosion begins when:</div><label class="option"><input type="radio" name="mcq2" value="A"> A. A rock particle moves</label>
+<label class="option"><input type="radio" name="mcq2" value="B"> B. A rock first forms</label>
+<label class="option"><input type="radio" name="mcq2" value="C"> C. A mineral changes color</label>
+<label class="option"><input type="radio" name="mcq2" value="D"> D. A plateau stops rising</label></section><section class="card"><div class="question-title">3. Mechanical weathering:</div><label class="option"><input type="radio" name="mcq3" value="A"> A. Changes mineral composition</label>
+<label class="option"><input type="radio" name="mcq3" value="B"> B. Breaks rock physically without changing mineral composition</label>
+<label class="option"><input type="radio" name="mcq3" value="C"> C. Requires lava</label>
+<label class="option"><input type="radio" name="mcq3" value="D"> D. Only occurs underground</label></section><section class="card"><div class="question-title">4. Chemical weathering:</div><label class="option"><input type="radio" name="mcq4" value="A"> A. Includes a chemical change in minerals</label>
+<label class="option"><input type="radio" name="mcq4" value="B"> B. Never involves water</label>
+<label class="option"><input type="radio" name="mcq4" value="C"> C. Only moves sediment</label>
+<label class="option"><input type="radio" name="mcq4" value="D"> D. Is identical to erosion</label></section><section class="card"><div class="question-title">5. Deposition is:</div><label class="option"><input type="radio" name="mcq5" value="A"> A. The removal of all rock</label>
+<label class="option"><input type="radio" name="mcq5" value="B"> B. The addition of material to a landform or basin</label>
+<label class="option"><input type="radio" name="mcq5" value="C"> C. The melting of sediment</label>
+<label class="option"><input type="radio" name="mcq5" value="D"> D. The formation of a fault</label></section><section class="card"><div class="question-title">6. Lithification changes:</div><label class="option"><input type="radio" name="mcq6" value="A"> A. Solid rock into lava</label>
+<label class="option"><input type="radio" name="mcq6" value="B"> B. Sediment into solid rock</label>
+<label class="option"><input type="radio" name="mcq6" value="C"> C. A canyon into a basin</label>
+<label class="option"><input type="radio" name="mcq6" value="D"> D. Water into ice</label></section><section class="card"><div class="question-title">7. At Zion, sediments accumulated in layers in a basin near:</div><label class="option"><input type="radio" name="mcq7" value="A"> A. A volcanic crater</label>
+<label class="option"><input type="radio" name="mcq7" value="B"> B. Sea level</label>
+<label class="option"><input type="radio" name="mcq7" value="C"> C. The center of Earth</label>
+<label class="option"><input type="radio" name="mcq7" value="D"> D. A glacier</label></section><section class="card"><div class="question-title">8. What helped cement Zion’s sediments into rock?</div><label class="option"><input type="radio" name="mcq8" value="A"> A. Mineral-laden water and pressure</label>
+<label class="option"><input type="radio" name="mcq8" value="B"> B. Only wind</label>
+<label class="option"><input type="radio" name="mcq8" value="C"> C. Lightning alone</label>
+<label class="option"><input type="radio" name="mcq8" value="D"> D. Plant roots only</label></section><section class="card"><div class="question-title">9. Tectonic uplift raised the:</div><label class="option"><input type="radio" name="mcq9" value="A"> A. Colorado Plateau</label>
+<label class="option"><input type="radio" name="mcq9" value="B"> B. Pacific Ocean</label>
+<label class="option"><input type="radio" name="mcq9" value="C"> C. Virgin River only</label>
+<label class="option"><input type="radio" name="mcq9" value="D"> D. Earth’s core</label></section><section class="card"><div class="question-title">10. Why did uplift increase the cutting power of streams?</div><label class="option"><input type="radio" name="mcq10" value="A"> A. It made streams flow down a steeper gradient</label>
+<label class="option"><input type="radio" name="mcq10" value="B"> B. It stopped gravity</label>
+<label class="option"><input type="radio" name="mcq10" value="C"> C. It removed all sediment</label>
+<label class="option"><input type="radio" name="mcq10" value="D"> D. It made water flow uphill</label></section><section class="card"><div class="question-title">11. The Virgin River primarily formed Zion’s deep canyons through:</div><label class="option"><input type="radio" name="mcq11" value="A"> A. Erosion and transport of rock</label>
+<label class="option"><input type="radio" name="mcq11" value="B"> B. Freezing the entire plateau</label>
+<label class="option"><input type="radio" name="mcq11" value="C"> C. Volcanic eruption only</label>
+<label class="option"><input type="radio" name="mcq11" value="D"> D. Meteor impact</label></section><section class="card"><div class="question-title">12. Most sediment transport by the Virgin River occurs during:</div><label class="option"><input type="radio" name="mcq12" value="A"> A. Clear low flow</label>
+<label class="option"><input type="radio" name="mcq12" value="B"> B. Floods</label>
+<label class="option"><input type="radio" name="mcq12" value="C"> C. Winter nights only</label>
+<label class="option"><input type="radio" name="mcq12" value="D"> D. Earthquakes</label></section><section class="card"><div class="question-title">13. When softer shale is eroded beneath harder sandstone, the sandstone may:</div><label class="option"><input type="radio" name="mcq13" value="A"> A. Become magma</label>
+<label class="option"><input type="radio" name="mcq13" value="B"> B. Collapse and widen the canyon</label>
+<label class="option"><input type="radio" name="mcq13" value="C"> C. Turn into limestone</label>
+<label class="option"><input type="radio" name="mcq13" value="D"> D. Stop weathering permanently</label></section><section class="card"><div class="question-title">14. Mass wasting is movement of material:</div><label class="option"><input type="radio" name="mcq14" value="A"> A. Down slope due to gravity</label>
+<label class="option"><input type="radio" name="mcq14" value="B"> B. Upward due to magnetism</label>
+<label class="option"><input type="radio" name="mcq14" value="C"> C. Only by rivers</label>
+<label class="option"><input type="radio" name="mcq14" value="D"> D. Only by wind</label></section><section class="card"><div class="question-title">15. Which sequence best summarizes Zion’s long-term formation?</div><label class="option"><input type="radio" name="mcq15" value="A"> A. Deposition → lithification → uplift → weathering and erosion</label>
+<label class="option"><input type="radio" name="mcq15" value="B"> B. Erosion → melting → freezing → deposition</label>
+<label class="option"><input type="radio" name="mcq15" value="C"> C. Uplift → evaporation → photosynthesis → collapse</label>
+<label class="option"><input type="radio" name="mcq15" value="D"> D. Volcanism → rainfall → no further change</label></section>
+<h2>Part II: Short Answer</h2>
+<p class="small">Answer in complete sentences and include relevant concepts from the learning material.</p>
+<section class="card"><div class="question-title">Short Answer 1. Explain the difference between weathering and erosion.</div><textarea id="short1" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 2. Describe how deposited sediments became the rock layers visible at Zion.</div><textarea id="short2" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 3. Explain how uplift helped the Virgin River carve deep canyons.</div><textarea id="short3" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 4. Describe how erosion of softer shale beneath sandstone can widen a canyon.</div><textarea id="short4" placeholder="Type your answer here..."></textarea></section><section class="card"><div class="question-title">Short Answer 5. Summarize the major sequence of geologic processes that formed and exposed Zion’s landscape.</div><textarea id="short5" placeholder="Type your answer here..."></textarea></section>
+<div class="actions">
+<button class="primary" onclick="downloadAnswers()">Download Answer Sheet (.txt)</button>
+<button class="secondary" onclick="window.print()">Print / Save as PDF</button>
+</div>
+</main>
+<script>
+const quiz = {"title": "Terrain Formation Quiz", "mcq": [{"q": "Weathering is the process of:", "opts": ["Moving sediment from one place to another", "Breaking down rock at or near the surface", "Melting all rock into magma", "Raising a plateau"]}, {"q": "Erosion begins when:", "opts": ["A rock particle moves", "A rock first forms", "A mineral changes color", "A plateau stops rising"]}, {"q": "Mechanical weathering:", "opts": ["Changes mineral composition", "Breaks rock physically without changing mineral composition", "Requires lava", "Only occurs underground"]}, {"q": "Chemical weathering:", "opts": ["Includes a chemical change in minerals", "Never involves water", "Only moves sediment", "Is identical to erosion"]}, {"q": "Deposition is:", "opts": ["The removal of all rock", "The addition of material to a landform or basin", "The melting of sediment", "The formation of a fault"]}, {"q": "Lithification changes:", "opts": ["Solid rock into lava", "Sediment into solid rock", "A canyon into a basin", "Water into ice"]}, {"q": "At Zion, sediments accumulated in layers in a basin near:", "opts": ["A volcanic crater", "Sea level", "The center of Earth", "A glacier"]}, {"q": "What helped cement Zion\u2019s sediments into rock?", "opts": ["Mineral-laden water and pressure", "Only wind", "Lightning alone", "Plant roots only"]}, {"q": "Tectonic uplift raised the:", "opts": ["Colorado Plateau", "Pacific Ocean", "Virgin River only", "Earth\u2019s core"]}, {"q": "Why did uplift increase the cutting power of streams?", "opts": ["It made streams flow down a steeper gradient", "It stopped gravity", "It removed all sediment", "It made water flow uphill"]}, {"q": "The Virgin River primarily formed Zion\u2019s deep canyons through:", "opts": ["Erosion and transport of rock", "Freezing the entire plateau", "Volcanic eruption only", "Meteor impact"]}, {"q": "Most sediment transport by the Virgin River occurs during:", "opts": ["Clear low flow", "Floods", "Winter nights only", "Earthquakes"]}, {"q": "When softer shale is eroded beneath harder sandstone, the sandstone may:", "opts": ["Become magma", "Collapse and widen the canyon", "Turn into limestone", "Stop weathering permanently"]}, {"q": "Mass wasting is movement of material:", "opts": ["Down slope due to gravity", "Upward due to magnetism", "Only by rivers", "Only by wind"]}, {"q": "Which sequence best summarizes Zion\u2019s long-term formation?", "opts": ["Deposition \u2192 lithification \u2192 uplift \u2192 weathering and erosion", "Erosion \u2192 melting \u2192 freezing \u2192 deposition", "Uplift \u2192 evaporation \u2192 photosynthesis \u2192 collapse", "Volcanism \u2192 rainfall \u2192 no further change"]}], "short": ["Explain the difference between weathering and erosion.", "Describe how deposited sediments became the rock layers visible at Zion.", "Explain how uplift helped the Virgin River carve deep canyons.", "Describe how erosion of softer shale beneath sandstone can widen a canyon.", "Summarize the major sequence of geologic processes that formed and exposed Zion\u2019s landscape."]};
+function downloadAnswers() {
+  const name = document.getElementById('studentName').value.trim() || 'Unnamed Student';
+  let lines = [];
+  lines.push(quiz.title);
+  lines.push('Student: ' + name);
+  lines.push('Generated: ' + new Date().toLocaleString());
+  lines.push('');
+  lines.push('PART I: MULTIPLE CHOICE');
+  quiz.mcq.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="mcq${idx+1}"]:checked`);
+    lines.push(`${idx+1}. ${item.q}`);
+    item.opts.forEach((opt,j) => lines.push(`   ${String.fromCharCode(65+j)}. ${opt}`));
+    lines.push('   Student answer: ' + (selected ? selected.value : '[blank]'));
+    lines.push('');
+  });
+  lines.push('PART II: SHORT ANSWER');
+  quiz.short.forEach((q, idx) => {
+    const answer = document.getElementById(`short${idx+1}`).value.trim();
+    lines.push(`Short Answer ${idx+1}. ${q}`);
+    lines.push('Student answer: ' + (answer || '[blank]'));
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const safe = quiz.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  a.download = safe + '-' + name.replace(/[^a-z0-9]+/gi,'_') + '-answers.txt';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+</script></body></html>

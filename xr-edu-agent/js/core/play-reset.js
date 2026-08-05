@@ -14,7 +14,7 @@
 //  refreshPlaySnapshot() 把基线更新为最新状态,否则停止运行会把 AI 的成果一起回滚。
 // ═══════════════════════════════════════════════════════════════
 import { sceneRoot } from './three-setup.js';
-import { state } from './state.js';
+import { state, setPlayMode } from './state.js';
 import { on, emit } from './events.js';
 import { deselect, selBox } from '../scene/manager.js';
 import { toast } from './utils.js';
@@ -100,7 +100,7 @@ function restoreNode(n) {
   }
 }
 
-function restore() {
+function restore(opts = {}) {
   if (!snap) return;
   // 根级对象列表回滚(先做,子树才完整)
   for (const c of sceneRoot.children.slice()) sceneRoot.remove(c);
@@ -119,7 +119,9 @@ function restore() {
   state.contextPins = [...state.selection];
   emit('hierarchy-changed');
   emit('context-changed');
-  toast(L('⏹ 场景已还原到运行前的状态', '⏹ Scene restored to its pre-play state'));
+  if (!opts.silent) {
+    toast(L('⏹ 场景已还原到运行前的状态', '⏹ Scene restored to its pre-play state'));
+  }
 }
 
 // Agent 在运行模式中改完场景后调用:把回滚基线更新为最新状态,
@@ -128,4 +130,21 @@ export function refreshPlaySnapshot() {
   if (state.playMode) capture();
 }
 
-on('play-mode-changed', v => { if (v) capture(); else restore(); });
+/** Exit ▶ Play before swapping VR sections (silent restore — section sync will load the target). */
+let silentRestoreOnce = false;
+export function stopPlayForSectionSwitch() {
+  if (!state.playMode) return false;
+  silentRestoreOnce = true;
+  setPlayMode(false);
+  return true;
+}
+
+on('play-mode-changed', v => {
+  if (v) {
+    capture();
+    return;
+  }
+  const silent = silentRestoreOnce;
+  silentRestoreOnce = false;
+  restore({ silent });
+});

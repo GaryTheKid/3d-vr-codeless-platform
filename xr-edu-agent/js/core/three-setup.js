@@ -50,11 +50,70 @@ sceneRoot.name = 'SceneRoot';
 scene.add(sceneRoot);
 
 // 相机控制
+// 注意:three@0.160 OrbitControls 用 (devicePixelRatio|0) 归一化滚轮;
+// 浏览器缩小页面时 DPR 可能 <1 → 截成 0 → 除零 → 一格飞出场景。
+// 因此关掉内置 zoom,自管滚轮(手感接近默认,但 DPR 安全)。
 export const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.target.set(0, 1.5, 0);
 orbit.enableDamping = true;
 orbit.dampingFactor = 0.08;
 orbit.maxPolarAngle = Math.PI / 2 + 0.05;
+orbit.minDistance = 1.5;
+orbit.maxDistance = 60;
+orbit.enableZoom = false; // custom wheel below — avoids three@0.160 DPR|0 divide-by-zero
+
+/**
+ * Match stock OrbitControls feel (~5% per typical mouse notch), but:
+ * - never divide by (devicePixelRatio|0) when DPR < 1
+ * - clamp per-event delta so trackpads can't dump huge jumps
+ */
+renderer.domElement.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  if (!orbit.enabled) return;
+  const dir = Math.sign(e.deltaY);
+  if (!dir) return;
+  const offset = camera.position.clone().sub(orbit.target);
+  let dist = offset.length();
+  if (!Number.isFinite(dist) || dist < 1e-4) {
+    resetOrbitCamera(null);
+    return;
+  }
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  const capped = Math.min(100, Math.abs(e.deltaY));
+  const normalized = capped / (100 * dpr);
+  const factor = Math.pow(0.95, Math.max(0.05, normalized)); // zoomSpeed ≈ 1
+  const next = dir > 0 ? dist / factor : dist * factor; // scroll down = zoom out
+  const clamped = Math.min(orbit.maxDistance, Math.max(orbit.minDistance, next));
+  offset.multiplyScalar(clamped / dist);
+  camera.position.copy(orbit.target).add(offset);
+  camera.zoom = 1;
+  camera.updateProjectionMatrix();
+  orbit.update();
+}, { passive: false });
+
+/** Reset broken / NaN camera — do not fight normal orbit zoom. */
+export function sanitizeOrbitCamera() {
+  const dist = camera.position.distanceTo(orbit.target);
+  if (!Number.isFinite(dist) || !Number.isFinite(camera.position.x) || dist < 0.05) {
+    camera.position.set(9, 7, 12);
+    orbit.target.set(0, 1.5, 0);
+    camera.up.set(0, 1, 0);
+    camera.zoom = 1;
+    camera.updateProjectionMatrix();
+    orbit.update();
+  }
+}
+
+/** Soft framing used when switching VR sections — never carry extreme dolly across sections. */
+export function resetOrbitCamera(defaults = null) {
+  const d = defaults || { position: [9, 7, 12], target: [0, 1.5, 0] };
+  camera.position.fromArray(d.position);
+  orbit.target.fromArray(d.target);
+  camera.up.set(0, 1, 0);
+  camera.zoom = 1;
+  camera.updateProjectionMatrix();
+  orbit.update();
+}
 
 // 变换 Gizmo(移动/旋转/缩放)
 export const tctrl = new TransformControls(camera, renderer.domElement);

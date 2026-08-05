@@ -14,6 +14,12 @@ export const state = {
   contextPins: [],     // 已加入对话上下文的场景对象(= selection 的镜像,选中即上下文)
   ctxTurn: 0,          // 对话轮次计数(orchestrator 每轮 +1,工作集判定用)
   touched: new Map(),  // oid → 最后被创建/修改的轮次("工作集":近几轮碰过的对象在大场景里优先进上下文)
+  outline: null,       // Learning Outline (Chapter→Section); see core/outline.js
+  knowledgeGraph: null, // MindMap / KG hard-anchor; see core/knowledge-graph.js
+  learnMode: false,    // 学生学习模式:精简 UI + Ask 学习助教;退出时还原备课态
+  coursePipelineBusy: false, // true while PDF→KG→Outline→section fan-out runs
+  /** jobId of the teaching doc this authoring session is bound to (null = none) */
+  activeDocJobId: null,
 };
 
 // 切换 运行/编辑 模式(工具栏 ▶ 按钮 / XR 进入 / AI 工具共用入口)

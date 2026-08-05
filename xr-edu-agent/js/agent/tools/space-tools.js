@@ -55,14 +55,17 @@ export default [
       required: ['name', 'from', 'to'],
     },
     exec(inp) {
-      if (!inp.from || !inp.to) return fail('from/to 必填');
+      if (!inp.from || !inp.to) return fail(L('from/to 必填', 'from/to are required'));
       const obj = buildArrow({
         from: inp.from, to: inp.to,
         color: inp.color ? parseInt(inp.color.replace('#', ''), 16) : undefined,
         width: inp.width, curveHeight: inp.curve_height || 0,
       });
       place(obj, { name: inp.name, icon: '➡️', description: inp.description, role: inp.role, kind: 'arrow' });
-      return ok(`已添加箭头 ${inp.name}(oid=${obj.userData.oid})`);
+      return ok(L(
+        `已添加箭头 ${inp.name}(oid=${obj.userData.oid})`,
+        `Added arrow ${inp.name} (oid=${obj.userData.oid})`
+      ));
     },
   },
   {
@@ -94,7 +97,7 @@ export default [
       required: ['name', 'points'],
     },
     exec(inp) {
-      if (!Array.isArray(inp.points) || inp.points.length < 2) return fail('points 至少 2 个点');
+      if (!Array.isArray(inp.points) || inp.points.length < 2) return fail(L('points 至少 2 个点', 'points needs at least 2 points'));
       const obj = buildPath({
         points: inp.points,
         color: inp.color ? parseInt(inp.color.replace('#', ''), 16) : undefined,
@@ -102,8 +105,12 @@ export default [
         showDirection: !!inp.show_direction, markWaypoints: !!inp.mark_waypoints, closed: !!inp.closed,
       });
       place(obj, { name: inp.name, icon: '〰️', description: inp.description, role: inp.role, kind: 'path' });
-      const hint = inp.role === 'content' ? '' : ';这是引导线,运行/导出时学生看不到';
-      return ok(`已添加路线 ${inp.name}(oid=${obj.userData.oid},${inp.points.length} 个点${hint})`);
+      const guideHintZh = inp.role === 'content' ? '' : ';这是引导线,运行/导出时学生看不到';
+      const guideHintEn = inp.role === 'content' ? '' : '; guide line — hidden from students in play/export';
+      return ok(L(
+        `已添加路线 ${inp.name}(oid=${obj.userData.oid},${inp.points.length} 个点${guideHintZh}`,
+        `Added path ${inp.name} (oid=${obj.userData.oid}, ${inp.points.length} points${guideHintEn})`
+      ));
     },
   },
   {
@@ -150,8 +157,14 @@ export default [
       if (inp.z !== undefined) obj.position.z = inp.z;
       if (inp.y) obj.position.y = inp.y;
       place(obj, { name: inp.name, icon: '🏠', description: inp.description });
-      const doorNote = inp.door_wall && inp.door_wall !== door ? `(door_wall=${inp.door_wall} 不合法,已回退 s——房间必须有门)` : '';
-      return ok(`已搭建房间 ${inp.name}(oid=${obj.userData.oid},${inp.width || 10}×${inp.depth || 8}×${inp.height || 3} 米,门朝 ${door}${doorNote}${inp.y ? `,楼层高度 ${inp.y} 米` : ''})。接下来摆陈设(家具必须完整落在房间内)、配移动方式、放学生出生点`);
+      const doorNoteZh = inp.door_wall && inp.door_wall !== door ? `(door_wall=${inp.door_wall} 不合法,已回退 s——房间必须有门)` : '';
+      const doorNoteEn = inp.door_wall && inp.door_wall !== door ? `(door_wall=${inp.door_wall} invalid, reverted to s — every room needs a door)` : '';
+      const floorNoteZh = inp.y ? `,楼层高度 ${inp.y} 米` : '';
+      const floorNoteEn = inp.y ? `, floor height ${inp.y} m` : '';
+      return ok(L(
+        `已搭建房间 ${inp.name}(oid=${obj.userData.oid},${inp.width || 10}×${inp.depth || 8}×${inp.height || 3} 米,门朝 ${door}${doorNoteZh}${floorNoteZh})。接下来摆陈设(家具必须完整落在房间内)、配移动方式、放学生出生点`,
+        `Built room ${inp.name} (oid=${obj.userData.oid}, ${inp.width || 10}×${inp.depth || 8}×${inp.height || 3} m, door on ${door}${doorNoteEn}${floorNoteEn}). Next: place furnishings (fully inside the room), configure locomotion, set student spawn`
+      ));
     },
   },
   {
@@ -194,7 +207,10 @@ export default [
       const YAW = { n: 0, s: Math.PI, e: -Math.PI / 2, w: Math.PI / 2 };
       obj.rotation.y = YAW[inp.face ?? 'n'] ?? 0;
       place(obj, { name: inp.name, icon: '🪜', description: inp.description });
-      return ok(`已搭建楼梯 ${inp.name}(oid=${obj.userData.oid},升 ${inp.rise ?? 3} 米/进深 ${inp.run ?? 3.6} 米,起步在 (${inp.x ?? 0}, ${inp.z ?? 0}))`);
+      return ok(L(
+        `已搭建楼梯 ${inp.name}(oid=${obj.userData.oid},升 ${inp.rise ?? 3} 米/进深 ${inp.run ?? 3.6} 米,起步在 (${inp.x ?? 0}, ${inp.z ?? 0}))`,
+        `Built stairs ${inp.name} (oid=${obj.userData.oid}, rise ${inp.rise ?? 3} m / run ${inp.run ?? 3.6} m, start at (${inp.x ?? 0}, ${inp.z ?? 0}))`
+      ));
     },
   },
 ];

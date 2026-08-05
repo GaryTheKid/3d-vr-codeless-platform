@@ -6,9 +6,9 @@
 globalThis.XR_AGENT_MAP =
 {
   "meta": {
-    "version": 3,
-    "updated": "2026-07-14",
-    "note": "Agent 工作流有向图 + 工具目录(v3:流水线阶段 + report_progress 进度 UI + debugging 排障技能),全部文案为 zh/en 双语对象。维护方式见 js/agent/README.md;可视化页 agent-viewer*.html 纯本地,直接双击打开。技能库不在此文件里——技能页加载 skills/ 目录的注册表脚本(含 debugging.js;英文版写在 nameEn/descriptionEn/promptEn),技能改动自动同步。"
+    "version": 5,
+    "updated": "2026-08-05",
+    "note": "Agent 工作流有向图 + 工具目录(v5: 教学设计资产 pedagogy/ + 已落地材料→KG→大纲→分节填充流水线 + Outline/Docling/非VR工作区/大纲与 course_* 工具 + 课程技能)。相对最初纯 3D/VR 产品的差异见 EVOLUTION.md。全部文案 zh/en。维护见 js/agent/README.md。"
   },
 
   "workflow": {
@@ -21,11 +21,80 @@ globalThis.XR_AGENT_MAP =
         "group": "input",
         "title": { "zh": "老师发送输入", "en": "Teacher sends input" },
         "desc": {
-          "zh": "一轮对话的起点。输入有四个入口:① 右栏聊天输入框(自然语言描述需求);② 快捷指令 chips(预置的示例 prompt);③ 视口检查器里的对象级 AI 指令框(emit 'agent-request';该对象因处于选中态已自动在上下文里——\"选中即上下文\",文本前会拼上对象引用);④ 计划确认卡上的修改反馈。所有入口最终都汇到 chat.js 的 send() → runTurn(text, ui)。",
-          "en": "The start of a turn. Input arrives through four entries: ① the chat box in the right panel (natural-language request); ② quick-command chips (preset example prompts); ③ the per-object AI command box in the viewport inspector (emits 'agent-request'; the object is already in context because it is selected — 'selection is context' — and the text is prefixed with an object reference); ④ revision feedback on the plan-confirmation card. All entries converge into chat.js send() → runTurn(text, ui)."
+          "zh": "一轮对话的起点。输入入口:① 右栏聊天;② 快捷 chips;③ 检查器对象级 AI;④ 计划确认卡反馈;⑤ 📎「据此备课」;⑥ 学习大纲改结构;⑦(规划)材料→KG→大纲备课流水线。汇到 chat.js → runTurn。",
+          "en": "Start of a turn. Entries: ① chat; ② chips; ③ inspector AI; ④ plan-card feedback; ⑤ “Build from this”; ⑥ Outline edits; ⑦ (planned) material→KG→outline pipeline. All → chat.js → runTurn."
         },
         "uses": { "skills": [], "tools": [] },
         "file": "js/ui/chat.js"
+      },
+      {
+        "id": "doc-ingest",
+        "icon": "📄",
+        "col": 0,
+        "group": "input",
+        "title": { "zh": "文档上传 Docling", "en": "Document ingest (Docling)" },
+        "desc": {
+          "zh": "📎 上传 PDF/Word/PPT → POST /__doc/convert → Markdown + 抽图。doc-context.js 挂载;摘要语言跟 UI。材料本身不改课——规划路径:先过知识图谱,再写 Outline / 填内容。",
+          "en": "📎 Upload PDF/Word/PPT → POST /__doc/convert → Markdown + images. Held in doc-context.js; summary follows UI language. Material alone does not build the course — planned path: Knowledge Graph first, then Outline / content fill."
+        },
+        "uses": {
+          "skills": [],
+          "tools": [
+            { "zh": "(HTTP /__doc/convert;非 Agent 工具协议)", "en": "(HTTP /__doc/convert; not the Agent tool protocol)" }
+          ]
+        },
+        "file": "js/agent/doc-context.js + server.py + services/docling_service.py"
+      },
+      {
+        "id": "pedagogy",
+        "icon": "📚",
+        "col": 1,
+        "group": "course",
+        "title": { "zh": "教学设计资产 Pedagogy", "en": "Pedagogy assets" },
+        "desc": {
+          "zh": "静态只读资产(js/agent/pedagogy/):pattern_library_v1.0_en.md(24 模式 P00–P23,按 K1–K7×节角色查表);action_vocab_master_v2_en.json(唯一可编辑源,18 功能族)+ 三学段视图(生成物勿手改);pdf_course_pipeline_v1.0_en.md(另一产品参考流水线)。铁律:动作只能经 pattern slot 的 moves_from 选取,禁止当块类型点菜。本产品 remap:interactive_3d→vr / interactive_2d→h5 / 文本→reading / quiz_*→quiz 或 follow-up。",
+          "en": "Versioned read-only assets under js/agent/pedagogy/: pattern_library_v1.0_en.md (24 patterns P00–P23, lookup by K1–K7 × section role); action_vocab_master_v2_en.json (sole editable source, 18 families) + 3 level views (generated — never hand-edit); pdf_course_pipeline_v1.0_en.md (reference pipeline from sibling product). Iron rule: actions only via pattern slot moves_from — never a free block-type picker. Remap here: interactive_3d→vr / interactive_2d→h5 / prose→reading / quiz_*→quiz section or follow-up."
+        },
+        "uses": { "skills": [], "tools": [] },
+        "file": "js/agent/pedagogy/* + EVOLUTION.md"
+      },
+      {
+        "id": "knowledge-graph",
+        "icon": "🕸",
+        "col": 1,
+        "group": "course",
+        "title": { "zh": "知识图谱 / 思维导图", "en": "Knowledge Graph / MindMap" },
+        "desc": {
+          "zh": "【已落地】从文档+用户意图抽出概念/原理/技能节点与依赖边、贯穿主例、学段。经 course_build_outline_from_doc / extractKgAndOutlinePlan 写入 state.knowledgeGraph 与项目 cfg;后续大纲 covers[] 与分节填充必须对齐 KG。",
+          "en": "[Shipped] Mines concept/principle/skill nodes + edges, anchor example, learner level from doc + intent via course_build_outline_from_doc / extractKgAndOutlinePlan into state.knowledgeGraph + project cfg. Outline covers[] and section fill must align to the KG."
+        },
+        "uses": {
+          "skills": [{ "zh": "course-outline / course-pipeline", "en": "course-outline / course-pipeline" }],
+          "tools": [
+            { "zh": "course_tag_figures / course_build_outline_from_doc / course_kg_digest", "en": "course_tag_figures / course_build_outline_from_doc / course_kg_digest" }
+          ]
+        },
+        "file": "js/core/knowledge-graph.js + js/agent/course-pipeline.js"
+      },
+      {
+        "id": "course-pipeline",
+        "icon": "🧭",
+        "col": 1,
+        "group": "course",
+        "title": { "zh": "备课流水线", "en": "Course authoring pipeline" },
+        "desc": {
+          "zh": "【已落地】raw→Docling md →① course_tag_figures →②③ course_build_outline_from_doc(KG+Outline) →④ 逐节 course_fill_section / runCoursePipeline(阅读+gpt-image 软性≥1图;H5 自适应高度;测验;VR 每节独立场景快照)。技能 course-pipeline / course-outline / course-reading / course-h5 / course-quiz 引导弱模型调工具。",
+          "en": "[Shipped] raw→Docling md →① course_tag_figures →②③ course_build_outline_from_doc (KG+Outline) →④ per-section course_fill_section / runCoursePipeline (reading + soft ≥1 gpt-image; auto-height H5; quiz; isolated VR scene per section). Skills course-pipeline / course-outline / course-reading / course-h5 / course-quiz guide weaker models to tools."
+        },
+        "uses": {
+          "skills": [
+            { "zh": "course-pipeline + course-outline + course-reading / course-h5 / course-quiz", "en": "course-pipeline + course-outline + course-reading / course-h5 / course-quiz" }
+          ],
+          "tools": [
+            { "zh": "course_* + outline_* / reading_set_chunks / h5_set_content / quiz_set_items + 场景工具", "en": "course_* + outline_* / reading_set_chunks / h5_set_content / quiz_set_items + scene tools" }
+          ]
+        },
+        "file": "js/agent/course-pipeline.js + js/agent/tools/course-pipeline-tools.js"
       },
       {
         "id": "turn",
@@ -59,19 +128,37 @@ globalThis.XR_AGENT_MAP =
         "file": "js/agent/orchestrator.js#runOffline"
       },
       {
+        "id": "outline",
+        "icon": "📋",
+        "col": 2,
+        "group": "context",
+        "title": { "zh": "学习大纲 Outline", "en": "Learning Outline" },
+        "desc": {
+          "zh": "【已落地】Chapter→Section;类型 vr|reading|h5|quiz。左栏大纲 Tab:课程/章/节/目的灰色 ✎ 与选中分离。vr=3D;reading/h5/quiz=中心工作区。非 VR 隐藏变换工具栏与顶栏 VR。工具:outline_* / reading_set_chunks / h5_set_content / quiz_set_items。规划中由 KG 驱动生成并绑 covers[]。",
+          "en": "[Shipped] Chapter→Section; types vr|reading|h5|quiz. Outline tab: grey ✎ for course/chapter/section/purpose vs select. vr=3D; reading/h5/quiz=center editors. Non-VR hides gizmos & VR button. Tools: outline_* / reading_set_chunks / h5_set_content / quiz_set_items. Planned: KG-driven generation with covers[]."
+        },
+        "uses": {
+          "skills": [],
+          "tools": [
+            { "zh": "outline_get / outline_set_active / outline_update_* / outline_add_* / reading_set_chunks / h5_set_content / quiz_set_items", "en": "outline_get / outline_set_active / outline_update_* / outline_add_* / reading_set_chunks / h5_set_content / quiz_set_items" }
+          ]
+        },
+        "file": "js/core/outline.js + js/ui/outline.js + js/ui/section-workspaces.js + js/agent/tools/outline-tools.js"
+      },
+      {
         "id": "context",
         "icon": "🧩",
         "col": 2,
         "group": "context",
         "title": { "zh": "构建输入上下文", "en": "Build the input context" },
         "desc": {
-          "zh": "buildContextMessage(userText):把用户 prompt 与场景状态拼成一条 user 消息。组成:① 老师当前选中对象的高细节块(选中即上下文,Shift 可多选;pinnedContextBlock,含行为代码)——参照 Put-That-There 一脉的多模态指代研究,3D 直选取代手动 📌;② 场景状态——对象数 ≤ FULL_JSON_MAX(20) 发全量 JSON(每个对象的位置/缩放/颜色/动画/交互/面板/描述),超过则进大场景模式 = 分类分组的一行式摘要索引 + searchObjects() 纯 JS 相关性预取(选中对象+近3轮工作集+与 userText 的中文双字 n-gram 命中,top-8 附全参数但剥掉行为代码);③ 全局状态(playMode/animPlaying/学生 locomotion/出生点 studentSpawn/实验状态)。上下文锁定:此消息在 runTurn 开始时构建一次,整轮(Planner→确认→Executor)复用同一份——老师中途切运行模式/换选中不会让 Agent 看到的初始状态漂移;工具结果仍反映实时场景,模型能感知自己造成的变化。",
-          "en": "buildContextMessage(userText): assembles the user prompt and scene state into one user message. Parts: ① high-detail blocks for the teacher's currently selected objects (selection IS context, Shift multi-select; pinnedContextBlock, behavior code included) — direct 3D selection replaces manual 📌 pinning, following the Put-That-There lineage of multimodal-reference research; ② scene state — with ≤ FULL_JSON_MAX (20) objects, sends full JSON (each object's position/scale/color/animation/interactions/panels/description); above that, large-scene mode = a categorized one-line summary index + pure-JS relevance prefetch via searchObjects() (selected object + last-3-round working set + bigram hits against userText; top-8 with full params, behavior code stripped); ③ global state (playMode/animPlaying/student locomotion/studentSpawn/experiment state). Context locking: this message is built once at the start of runTurn and reused for the whole turn (Planner → confirmation → Executor) — the teacher toggling play mode or changing selection mid-turn cannot drift the initial state the agent saw; tool results still reflect the live scene, so the model perceives its own changes."
+          "zh": "buildContextMessage(userText)。组成(v5):① Outline 全局树+当前节;② 选中对象高细节;③ 场景 JSON/大场景摘要;④ 全局状态;⑤ 上传文档块;⑥(规划)知识图谱摘要+coverage。上下文锁定:runTurn 开头构建一次整轮复用。",
+          "en": "buildContextMessage(userText). Parts (v5): ① Outline tree + active section; ② pinned selection; ③ scene JSON / large-scene summary; ④ global state; ⑤ uploaded doc block; ⑥ (planned) KG digest + coverage. Context lock: built once at runTurn start."
         },
         "uses": {
           "skills": [],
           "tools": [
-            { "zh": "(大场景模式会在提示里引导模型后续用 find_objects / get_object_detail 拉细节)", "en": "(In large-scene mode the prompt steers the model to pull details later via find_objects / get_object_detail)" }
+            { "zh": "(大场景模式会引导后续用 find_objects / get_object_detail)", "en": "(Large-scene mode steers later find_objects / get_object_detail)" }
           ]
         },
         "file": "js/agent/context.js#buildContextMessage"
@@ -147,15 +234,15 @@ globalThis.XR_AGENT_MAP =
         "group": "llm",
         "title": { "zh": "执行器工具循环 runExecutor", "en": "Executor tool loop (runExecutor)" },
         "desc": {
-          "zh": "核心执行阶段:带全部 23 个工具定义的多轮 tool-use 循环(上限 20 轮)。系统提示分两块做 Prompt Caching:稳定块 = BASE_SYSTEM + 资源/模板目录(标 cache_control: ephemeral);变化块 = Planner 选中技能的完整 prompt(skillPrompts)。复杂任务(≥3 步)按流水线推进——每进入新阶段先调 report_progress(语义本体→搭建场景→加交互→核验;修复类:排查→修复→免疫→验收);打字三个点上方同步显示灰字阶段状态(类 Cursor)。循环内:流式思考/正文/tool_use → 本地执行 → tool_result 回填 → 缓存断点滑动(第 2 轮起 0.1× 价)。report_progress 零副作用,不触发场景快照/Keep 卡。质量纪律:validation 引导 get_scene 自检;排障任务带 debugging;max_tokens 给可读截断提示。结束时 emit('agent-progress-end') 把进度卡末阶段标完成。",
-          "en": "Core execution: a multi-round tool-use loop with all 23 tool definitions (capped at 20 rounds). System prompt split for caching: stable = BASE_SYSTEM + catalogs (cache_control: ephemeral); variable = full prompts of selected skills (skillPrompts). Complex tasks (≥3 steps) follow the pipeline — call report_progress on each new stage (ontology → build → interact → verify; repair: diagnose → fix → immunize → accept); grey stage status appears above the typing dots (Cursor-like). Loop: stream thinking/body/tool_use → local exec → tool_result → sliding cache breakpoint (0.1× from round 2). report_progress is zero-side-effect and does not trigger scene snapshots/Keep cards. Quality: validation nudges get_scene; bug-fix loads debugging; max_tokens shows a readable truncation notice. On finish, emit('agent-progress-end') seals the last pipeline stage as done."
+          "zh": "核心执行阶段:带全部 39 个工具定义的多轮 tool-use 循环(上限 20 轮)。系统提示分两块做 Prompt Caching:稳定块 = BASE_SYSTEM + 资源/模板目录(标 cache_control: ephemeral);变化块 = Planner 选中技能的完整 prompt(skillPrompts)。复杂任务(≥3 步)按流水线推进——每进入新阶段先调 report_progress(语义本体→搭建场景→加交互→核验;修复类:排查→修复→免疫→验收);打字三个点上方同步显示灰字阶段状态(类 Cursor)。循环内:流式思考/正文/tool_use → 本地执行 → tool_result 回填 → 缓存断点滑动(第 2 轮起 0.1× 价)。report_progress 零副作用,不触发场景快照/Keep 卡。质量纪律:validation 引导 get_scene 自检;排障任务带 debugging;max_tokens 给可读截断提示。结束时 emit('agent-progress-end') 把进度卡末阶段标完成。备课自文档时优先 course_* / outline_* 确定性工具(弱模型友好);对齐 Learning Outline 当前节 type;每个 VR 节独立场景快照。",
+          "en": "Core execution: multi-round tool-use with all 39 tools (≤20 rounds). Prompt caching: stable = BASE_SYSTEM + catalogs; variable = selected skill prompts. Complex tasks call report_progress per pipeline stage. When authoring from an uploaded doc, prefer deterministic course_* / outline_* tools (weaker-model friendly); align with active Outline section type; each VR section owns an isolated scene snapshot."
         },
         "uses": {
           "skills": [
-            { "zh": "Planner 选中的技能完整 prompt 注入变化块(常见:scene-organization + object-creation + pedagogy;精细建模 + custom-modeling;交互实验 + experiment-logic + interaction-design;室内 + room-design;导览 + view-navigation;收尾 validation / locomotion;排障 + debugging)", "en": "Full prompts of selected skills in the variable block (common: scene-organization + object-creation + pedagogy; custom-modeling for refined builds; experiment-logic + interaction-design; room-design indoors; view-navigation for touring; wrap-up validation / locomotion; debugging for bug-fix)" }
+            { "zh": "Planner 选中的技能完整 prompt 注入变化块(常见:scene-organization + object-creation + pedagogy;课程备课 + course-pipeline / course-outline / course-reading|h5|quiz;精细建模 + custom-modeling;交互实验 + experiment-logic + interaction-design;室内 + room-design;导览 + view-navigation;收尾 validation / locomotion;排障 + debugging)", "en": "Full prompts of selected skills in the variable block (common: scene-organization + object-creation + pedagogy; course-pipeline / course-outline / course-reading|h5|quiz for authoring; custom-modeling; experiment-logic + interaction-design; room-design; view-navigation; validation / locomotion; debugging)" }
           ],
           "tools": [
-            { "zh": "全部 23 个工具;复杂任务每阶段开头调 report_progress 汇报流水线进度", "en": "All 23 tools; complex tasks call report_progress at the start of each pipeline stage" }
+            { "zh": "全部 39 个工具;复杂任务每阶段开头调 report_progress 汇报流水线进度", "en": "All 39 tools; complex tasks call report_progress at the start of each pipeline stage" }
           ]
         },
         "file": "js/agent/orchestrator.js#runExecutor"
@@ -167,8 +254,8 @@ globalThis.XR_AGENT_MAP =
         "group": "tools",
         "title": { "zh": "工具执行 execTool", "en": "Tool execution (execTool)" },
         "desc": {
-          "zh": "本地执行模型发起的 tool_use:tools/index.js 按 name 分发到六个分组模块(build/edit/panel/query/env/space),exec(input) 直接操作 Three.js 场景;改场景的工具都会 markTouched(obj) 并 emit 事件刷 UI。普通工具在聊天区渲染工具卡;report_progress 不渲染工具卡(改走流水线进度节点)。结果 {ok, msg} 作为 tool_result 回填;异常捕获成 fail——模型自行改参重试。",
-          "en": "Executes tool_use locally: tools/index.js dispatches by name to six modules (build/edit/panel/query/env/space); exec(input) mutates the Three.js scene; scene-mutating tools call markTouched(obj) and emit UI events. Normal tools render a chat tool card; report_progress skips the card (routes to the pipeline-progress node instead). {ok, msg} feeds back as tool_result; exceptions become fail messages for the model to retry."
+          "zh": "本地执行模型发起的 tool_use:tools/index.js 按 name 分发到八个分组模块(build/edit/panel/query/env/space/outline/course),exec(input) 可异步(course_* 填充);改场景的工具都会 markTouched(obj) 并 emit 事件刷 UI。普通工具在聊天区渲染工具卡;report_progress 不渲染工具卡(改走流水线进度节点)。结果 {ok, msg} 作为 tool_result 回填;异常捕获成 fail——模型自行改参重试。",
+          "en": "Executes tool_use locally: tools/index.js dispatches by name to eight modules (build/edit/panel/query/env/space/outline/course); exec(input) may be async (course_* fills); scene-mutating tools call markTouched(obj) and emit UI events. Normal tools render a chat tool card; report_progress skips the card (routes to the pipeline-progress node instead). {ok, msg} feeds back as tool_result; exceptions become fail messages for the model to retry."
         },
         "uses": {
           "skills": [],
@@ -178,7 +265,9 @@ globalThis.XR_AGENT_MAP =
             { "zh": "面板类 panel-tools:attach_label / add_panel / update_panel / add_quiz_panel", "en": "Panel group panel-tools: attach_label / add_panel / update_panel / add_quiz_panel" },
             { "zh": "查询类 query-tools:get_scene / find_objects / get_object_detail", "en": "Query group query-tools: get_scene / find_objects / get_object_detail" },
             { "zh": "环境类 env-tools:report_progress / set_environment / configure_locomotion / set_student_view", "en": "Environment group env-tools: report_progress / set_environment / configure_locomotion / set_student_view" },
-            { "zh": "空间引导类 space-tools:add_arrow / add_path / build_room / build_stairs", "en": "Space & guidance group space-tools: add_arrow / add_path / build_room / build_stairs" }
+            { "zh": "空间引导类 space-tools:add_arrow / add_path / build_room / build_stairs", "en": "Space & guidance group space-tools: add_arrow / add_path / build_room / build_stairs" },
+            { "zh": "大纲类 outline-tools:outline_get / outline_set_active / outline_update_* / outline_add_* / reading_set_chunks / h5_set_content / quiz_set_items", "en": "Outline group outline-tools: outline_get / outline_set_active / outline_update_* / outline_add_* / reading_set_chunks / h5_set_content / quiz_set_items" },
+            { "zh": "备课类 course-pipeline-tools:course_tag_figures / course_build_outline_from_doc / course_fill_section / course_kg_digest / course_enrich_reading_images / course_generate_image", "en": "Course group course-pipeline-tools: course_tag_figures / course_build_outline_from_doc / course_fill_section / course_kg_digest / course_enrich_reading_images / course_generate_image" }
           ]
         },
         "file": "js/agent/tools/index.js#execTool"
@@ -233,6 +322,16 @@ globalThis.XR_AGENT_MAP =
 
     "edges": [
       { "from": "input", "to": "turn", "label": "" },
+      { "from": "doc-ingest", "to": "turn", "label": { "zh": "据此备课 / 发指令", "en": "Build from this / typed ask" } },
+      { "from": "doc-ingest", "to": "context", "label": { "zh": "材料挂载(md+图+摘要)", "en": "Material attached (md+imgs+summary)" } },
+      { "from": "doc-ingest", "to": "knowledge-graph", "label": { "zh": "规划:先抽图谱", "en": "Planned: mine KG first" } },
+      { "from": "pedagogy", "to": "course-pipeline", "label": { "zh": "pattern + vocab", "en": "pattern + vocab" } },
+      { "from": "pedagogy", "to": "knowledge-graph", "label": { "zh": "学段/K 类型参考", "en": "level / K-type hints" } },
+      { "from": "knowledge-graph", "to": "course-pipeline", "label": { "zh": "硬锚点", "en": "Hard anchor" } },
+      { "from": "knowledge-graph", "to": "outline", "label": { "zh": "规划:驱动大纲", "en": "Planned: drive outline" } },
+      { "from": "knowledge-graph", "to": "context", "label": { "zh": "规划:注入上下文", "en": "Planned: inject context" } },
+      { "from": "course-pipeline", "to": "outline", "label": { "zh": "规划:写骨架+选型", "en": "Planned: skeleton + strategy" } },
+      { "from": "outline", "to": "context", "label": { "zh": "全局树 + 当前节", "en": "Global tree + active section" } },
       { "from": "turn", "to": "offline", "label": { "zh": "无 API Key(离线演示)", "en": "No API key (offline demo)" } },
       { "from": "turn", "to": "context", "label": { "zh": "已接入 LLM", "en": "LLM configured" } },
       { "from": "context", "to": "mode", "label": "" },
@@ -300,6 +399,38 @@ globalThis.XR_AGENT_MAP =
     { "name": "build_room", "group": { "zh": "空间引导 space", "en": "Space & Guidance" }, "file": "js/agent/tools/space-tools.js",
       "summary": { "zh": "房间壳生成器(地板+四墙+门洞/窗带/可选天花板):教室/密室/餐厅等室内体验的第一步;每间强制有门(密室锁门=门洞上放门对象);y>0 可整体抬到二层;房间内面板享受平台级可见性规则(外→隐藏/内→顶层);说明里带户型拼合与陈设不出墙次序。", "en": "Room-shell generator (floor + four walls + doorway/window band/optional ceiling): step one of any in-room experience (classroom/escape room/restaurant); every room is guaranteed a doorway (a locked escape room = a door object in the opening); y>0 lifts the whole room to an upper floor; panels inside rooms get the platform visibility rule (hidden from outside / top-rendered inside); its description carries floor-plan tiling & keep-furniture-inside rules." } },
     { "name": "build_stairs", "group": { "zh": "空间引导 space", "en": "Space & Guidance" }, "file": "js/agent/tools/space-tools.js",
-      "summary": { "zh": "直跑楼梯生成器(实心台阶 ≤0.25 米/级 + 顶部缓步平台与护栏):多层楼之间的物理通道;平台尽头须对齐二层门洞(说明里有对接公式);瞬移/平滑移动/WASD 都能逐级上下;电梯场景则用按钮 + T.teleportStudent 模式。", "en": "Straight-run staircase generator (solid steps ≤0.25 m each + a top landing with guard rails): the physical link between floors; the landing edge must dock to the upper-floor doorway (docking formula in the description); teleport/smooth/WASD all climb it step by step; for elevators use a button + T.teleportStudent instead." } }
+      "summary": { "zh": "直跑楼梯生成器(实心台阶 ≤0.25 米/级 + 顶部缓步平台与护栏):多层楼之间的物理通道;平台尽头须对齐二层门洞(说明里有对接公式);瞬移/平滑移动/WASD 都能逐级上下;电梯场景则用按钮 + T.teleportStudent 模式。", "en": "Straight-run staircase generator (solid steps ≤0.25 m each + a top landing with guard rails): the physical link between floors; the landing edge must dock to the upper-floor doorway (docking formula in the description); teleport/smooth/WASD all climb it step by step; for elevators use a button + T.teleportStudent instead." } },
+    { "name": "outline_get", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "读取课程大纲树 + 当前节 reading/h5/quiz 内容摘要。改大纲前先调。", "en": "Reads the course outline tree + active section reading/h5/quiz summary. Call before editing the outline." } },
+    { "name": "outline_set_active", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "切换活动小节(同时切换中心工作区类型)。", "en": "Activates a section (and swaps the center workspace type)." } },
+    { "name": "outline_update_course", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "更新课程标题/目标/节奏备注。", "en": "Updates course title / goal / pace note." } },
+    { "name": "outline_update_chapter", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "更新章节标题或摘要。", "en": "Updates a chapter title or summary." } },
+    { "name": "outline_update_section", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "更新小节标题/目的/类型(vr|reading|h5|quiz)/摘要。", "en": "Updates section title / purpose / type (vr|reading|h5|quiz) / summary." } },
+    { "name": "outline_add_chapter", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "新增一章(默认带一个 VR 节)。", "en": "Adds a chapter (default one VR section)." } },
+    { "name": "outline_add_section", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "在指定章下新增小节;测验建议放章末。", "en": "Adds a section under a chapter; prefer quiz at chapter end." } },
+    { "name": "reading_set_chunks", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "覆盖 reading 节知识块(富文本 HTML + 可选追问测验)。", "en": "Overwrites reading-section knowledge chunks (rich HTML + optional follow-up quiz)." } },
+    { "name": "h5_set_content", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "写入 h5 节的 prompt/HTML/追问;Agent 可直接生成交互 HTML。", "en": "Writes h5 section prompt/HTML/follow-up; Agent can supply interactive HTML directly." } },
+    { "name": "quiz_set_items", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "覆盖 quiz 节题目列表(选择题/简答)。", "en": "Overwrites quiz-section items (MCQ / short answer)." } },
+    { "name": "course_tag_figures", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",
+      "summary": { "zh": "标注上传材料插图的教学用途与 visualSummary。", "en": "Tags uploaded figures for pedagogy + visualSummary." } },
+    { "name": "course_build_outline_from_doc", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",
+      "summary": { "zh": "从材料抽取 KG 并生成 Learning Outline(会覆盖大纲树)。", "en": "Extracts KG and builds Learning Outline from the doc (overwrites outline)." } },
+    { "name": "course_fill_section", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",
+      "summary": { "zh": "按节类型自动填充 reading/h5/quiz/vr(VR 独立场景快照)。", "en": "Auto-fills reading/h5/quiz/vr by section type (isolated VR scenes)." } },
+    { "name": "course_kg_digest", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",
+      "summary": { "zh": "读取当前知识图谱紧凑摘要。", "en": "Returns a compact knowledge-graph digest." } },
+    { "name": "course_enrich_reading_images", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",
+      "summary": { "zh": "对 reading 节调用 gpt-image-2 软性补示意图。", "en": "Soft-enriches a reading section with gpt-image-2 diagrams." } },
+    { "name": "course_generate_image", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",
+      "summary": { "zh": "生成一张教学插图,可选写入某 reading chunk。", "en": "Generates one pedagogy image; optionally injects into a reading chunk." } }
   ]
 };

@@ -5,140 +5,157 @@
 import { sceneRoot } from '../../core/three-setup.js';
 import { findObject } from '../../scene/manager.js';
 import { attachLabel, addFreePanel, updatePanelContent } from '../../panels/panel3d.js';
+import { resolvePanelPosition } from '../../panels/panel-layout.js';
 import { markTouched, assignOid } from '../../core/state.js';
 import { emit } from '../../core/events.js';
 import { L, isEN } from '../../core/i18n.js';
 import { runBuilderCode } from '../sandbox.js';
 import { ok, fail } from './shared.js';
+import * as THREE from 'three';
 
-// "键|值" 文本行 → 面板键值行对象
 const parseLines = lines => lines.map(l => l.includes('|') ? { k: l.split('|')[0], v: l.split('|')[1] } : l);
 
 export default [
   {
     name: 'attach_label',
     label: inp => L(`给 ${inp.ref} 挂标注面板`, `Attach label to ${inp.ref}`),
-    description: '给对象头顶挂一块标注面板(始终面向学生)。',
+    description: 'Attach a billboard label above an object (always faces the student). Prefer ONE label per object; platform auto-staggers extras sideways.',
     input_schema: {
       type: 'object',
       properties: {
         ref: { type: 'string' },
-        title: { type: 'string', description: '可选标题' },
-        lines: { type: 'array', items: { type: 'string' }, description: '内容行(纯文本);键值对写成 "键|值"' },
-        accent: { type: 'string', description: '边框色 #rrggbb,默认 #4a9eff' },
-        width: { type: 'number', description: '面板宽度(米),默认 1.6' },
+        title: { type: 'string', description: 'Optional title' },
+        lines: { type: 'array', items: { type: 'string' }, description: 'Content lines; key|value as "key|value"' },
+        accent: { type: 'string', description: 'Border color #rrggbb, default #4a9eff' },
+        width: { type: 'number', description: 'Panel width (m), default 3.2' },
       },
       required: ['ref', 'lines'],
     },
     exec(inp) {
       const obj = findObject(inp.ref);
-      if (!obj) return fail(`找不到对象 ${inp.ref}`);
-      attachLabel(obj, { title: inp.title || '', lines: parseLines(inp.lines), accent: inp.accent || '#4a9eff', width: inp.width || 1.6, gap: 0.35 });
+      if (!obj) return fail(L(`找不到对象 ${inp.ref}`, `Object not found: ${inp.ref}`));
+      attachLabel(obj, { title: inp.title || '', lines: parseLines(inp.lines), accent: inp.accent || '#4a9eff', width: inp.width || 3.2, gap: 0.35 });
       markTouched(obj);
       emit('hierarchy-changed');
-      return ok(`已给 ${obj.userData.displayName} 挂标注`);
+      return ok(L(`已给 ${obj.userData.displayName} 挂标注`, `Attached label to ${obj.userData.displayName}`));
     },
   },
   {
     name: 'add_panel',
     label: inp => L(`放置面板「${inp.title}」`, `Place panel "${inp.title}"`),
-    description: '在场景中放置一块独立的 3D 教学面板(公式板/任务板/知识板等,可被老师拖动)。',
+    description: `Place a free-standing 3D teaching panel (task / legend / knowledge).
+LAYOUT: Prefer flanks (x≈±6) or behind the model (negative z). Do NOT stack panels at the origin / default front camera cone — the runtime auto-nudges overlapping positions, but still choose sensible slots. Prefer ≤2 free panels; put object-specific text on attach_label instead of duplicating free panels in front of the diorama.`,
     input_schema: {
       type: 'object',
       properties: {
-        name: { type: 'string', description: '层级里的显示名' },
+        name: { type: 'string', description: 'Display name in hierarchy' },
         title: { type: 'string' },
-        lines: { type: 'array', items: { type: 'string' }, description: '内容行;键值对写成 "键|值"' },
+        lines: { type: 'array', items: { type: 'string' }, description: 'Lines; key|value as "key|value"' },
         x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' },
         accent: { type: 'string' }, width: { type: 'number' },
+        role: { type: 'string', description: 'task | info | legend — affects auto-slot preference' },
       },
       required: ['title', 'lines', 'x', 'z'],
     },
     exec(inp) {
+      const role = ['task', 'quiz', 'legend', 'info'].includes(inp.role) ? inp.role : 'info';
       const g = addFreePanel(
-        { name: inp.name, title: inp.title, lines: parseLines(inp.lines), accent: inp.accent || '#4a9eff', width: inp.width || 2.4 },
+        { name: inp.name, title: inp.title, lines: parseLines(inp.lines), accent: inp.accent || '#4a9eff', width: inp.width || 4.2, role },
         { x: inp.x, y: inp.y ?? 2.8, z: inp.z }
       );
       markTouched(g);
-      return ok(`已放置面板 ${g.userData.displayName}(oid=${g.userData.oid})`);
+      return ok(L(
+        `已放置面板 ${g.userData.displayName}(oid=${g.userData.oid})`,
+        `Placed panel ${g.userData.displayName} (oid=${g.userData.oid})`
+      ));
     },
   },
   {
     name: 'update_panel',
     label: inp => L(`更新 ${inp.ref} 的面板文字`, `Update panel text of ${inp.ref}`),
-    description: '只修改已有面板/标注的文字内容,不重建对象(改面板文字时优先用它,不要删了重加)。ref 为面板对象或挂着标注的对象;同一对象有多块面板时用 panel_index 指定(0 起)。实时数据面板(live)由代码驱动,本工具改不了,需用 set_behavior 改逻辑。',
+    description: 'Update text on an existing panel/label without rebuilding. Prefer this over delete+re-add.',
     input_schema: {
       type: 'object',
       properties: {
-        ref: { type: 'string', description: '对象 oid 或显示名' },
-        title: { type: 'string', description: '新标题;留空字符串=去掉标题;不传=不改' },
-        lines: { type: 'array', items: { type: 'string' }, description: '新内容行;键值对写成 "键|值";不传=不改' },
-        panel_index: { type: 'number', description: '对象上第几块面板(0 起,默认 0)' },
+        ref: { type: 'string', description: 'Object oid or display name' },
+        title: { type: 'string', description: 'New title; empty string clears; omit = keep' },
+        lines: { type: 'array', items: { type: 'string' }, description: 'New lines; omit = keep' },
+        panel_index: { type: 'number', description: 'Which panel on the object (0-based)' },
       },
       required: ['ref'],
     },
     exec(inp) {
       const obj = findObject(inp.ref);
-      if (!obj) return fail(`找不到对象 ${inp.ref}`);
+      if (!obj) return fail(L(`找不到对象 ${inp.ref}`, `Object not found: ${inp.ref}`));
       const meshes = [];
       obj.traverse(c => { if (c.userData.panelData) meshes.push(c); });
-      if (!meshes.length) return fail(`${obj.userData.displayName} 上没有面板`);
+      if (!meshes.length) return fail(L(`${obj.userData.displayName} 上没有面板`, `No panel on ${obj.userData.displayName}`));
       const mesh = meshes[inp.panel_index || 0];
-      if (!mesh) return fail(`面板序号超出范围(共 ${meshes.length} 块)`);
-      if (mesh.userData.panelData.live) return fail('这是实时数据面板(live 函数驱动),请用 set_behavior 修改其显示逻辑');
+      if (!mesh) return fail(L(`面板序号超出范围(共 ${meshes.length} 块)`, `Panel index out of range (${meshes.length} panels)`));
+      if (mesh.userData.panelData.live) {
+        return fail(L('这是实时数据面板(live 函数驱动),请用 set_behavior 修改其显示逻辑',
+          'This is a live data panel — update it via set_behavior'));
+      }
       const upd = {};
       if (inp.title !== undefined) upd.title = inp.title;
       if (inp.lines) upd.lines = parseLines(inp.lines);
       updatePanelContent(mesh, upd);
       markTouched(obj);
-      emit('selection-changed');   // 检查器同步刷新面板文字编辑区
-      return ok(`已更新 ${obj.userData.displayName} 的面板文字`);
+      emit('selection-changed');
+      return ok(L(`已更新 ${obj.userData.displayName} 的面板文字`, `Updated panel text on ${obj.userData.displayName}`));
     },
   },
   {
     name: 'add_quiz_panel',
     label: inp => L(`放置选择题面板「${inp.question || ''}」`, `Place quiz panel "${inp.question || ''}"`),
-    description: `放置一块"可点击作答"的选择题面板:问题 + 2~4 个选项按钮,学生(PC 点击 / VR 扳机)选择后立即得到对/错反馈。
-- 这是深度学习交互的标准件:检查理解(quiz)、剧情分支、密室答题解锁都用它,不要手写选择题代码
-- 答对后面板记入 userData.quiz.done = true:其他对象的行为代码可用 getObjectByName 找到它并读这个标志做"答对才解锁"(见 interaction-design 技能的条件解锁模式)
-- correct 是正确选项下标(0 起);feedback 不填有默认对/错提示
-- 面板始终面向学生;需要多题时每题一块,错开摆放`,
+    description: 'Place ONE clickable MCQ card: question on top, option buttons in a vertical list below (large readable text). LAYOUT: flank only (x≈±7, y≈5 high — options stack downward; never low/near ground), never in front of the diorama. Prefer a single quiz per section.',
     input_schema: {
       type: 'object',
       properties: {
-        name: { type: 'string', description: '显示名,如「第1题」' },
-        question: { type: 'string', description: '题干(一行,尽量短)' },
-        options: { type: 'array', items: { type: 'string' }, description: '选项文字(2~4 个,每个 ≤8 字)' },
-        correct: { type: 'number', description: '正确选项下标(0 起)' },
-        correct_feedback: { type: 'string', description: '答对提示(可选)' },
-        wrong_feedback: { type: 'string', description: '答错提示(可选)' },
+        name: { type: 'string', description: 'Display name' },
+        question: { type: 'string', description: 'Stem (one short line)' },
+        options: { type: 'array', items: { type: 'string' }, description: '2–4 options' },
+        correct: { type: 'number', description: 'Correct option index (0-based)' },
+        correct_feedback: { type: 'string' },
+        wrong_feedback: { type: 'string' },
         x: { type: 'number' }, y: { type: 'number' }, z: { type: 'number' },
-        accent: { type: 'string', description: '边框色 #rrggbb' },
+        accent: { type: 'string' },
       },
       required: ['question', 'options', 'correct', 'x', 'z'],
     },
     exec(inp) {
-      if (!Array.isArray(inp.options) || inp.options.length < 2) return fail('options 至少 2 个');
-      if (inp.correct < 0 || inp.correct >= inp.options.length) return fail('correct 下标越界');
+      if (!Array.isArray(inp.options) || inp.options.length < 2) {
+        return fail(L('options 至少 2 个', 'options needs at least 2 items'));
+      }
+      if (inp.correct < 0 || inp.correct >= inp.options.length) {
+        return fail(L('correct 下标越界', 'correct index out of range'));
+      }
+      const letters = 'ABCDEFGH';
       const spec = {
         question: inp.question,
-        options: inp.options,
+        options: inp.options.map((opt, i) => `${letters[i] || (i + 1)}. ${opt}`),
         correct: inp.correct,
         okMsg: inp.correct_feedback || (isEN() ? 'Correct! Well done' : '答对了,真棒!'),
         noMsg: inp.wrong_feedback || (isEN() ? 'Not quite — try again' : '不对哦,再想想'),
         accent: inp.accent || '#4a9eff',
+        hint: isEN() ? 'Tap an option below' : '点击下方选项作答',
       };
-      // builderCode 模式:交互闭包在构建代码里,保存/导出后照常复活
+      // Single vertical card: wide question + stacked option panels (readable in orbit view)
       const code = `const spec = ${JSON.stringify(spec)};
 const g = T.group();
-const q = T.makePanel({ title: spec.question, lines: [''], width: 2.4, accent: spec.accent });
-q.position.y = 1.0;
+const W = 3.8;
+const gap = 0.12;
+const q = T.makePanel({ title: spec.question, lines: [spec.hint], width: W, accent: spec.accent });
+const qH = q.userData.panelH || 1.15;
+q.position.set(0, 0, 0);
 g.add(q);
-const w = 1.0, gap = 0.12;
-const total = spec.options.length * w + (spec.options.length - 1) * gap;
+let cursor = -qH / 2 - gap;
 spec.options.forEach((opt, i) => {
-  const btn = T.makePanel({ lines: [opt], width: w, accent: '#8a93a0' });
-  btn.position.set(-total / 2 + w / 2 + i * (w + gap), 0.3, 0.03);
+  const btn = T.makePanel({ lines: [opt], width: W, accent: '#9aa3af' });
+  const bH = btn.userData.panelH || 0.72;
+  cursor -= bH / 2;
+  btn.position.set(0, cursor, 0.04);
+  cursor -= bH / 2 + gap;
   btn.userData.optIndex = i;
   g.add(btn);
 });
@@ -152,10 +169,10 @@ g.userData.onActivate = (obj, detail) => {
     const d = wp.distanceTo(detail.point);
     if (d < bd) { bd = d; best = c; }
   });
-  if (!best || bd > 1.4) return;
+  if (!best || bd > 2.2) return;
   obj.userData.quiz.tries += 1;
   const hit = best;
-  hit.scale.setScalar(1.18);
+  hit.scale.setScalar(1.12);
   setTimeout(() => hit.scale.setScalar(1), 220);
   if (hit.userData.optIndex === obj.userData.quiz.correct) {
     obj.userData.quiz.done = true;
@@ -167,8 +184,14 @@ g.userData.onActivate = (obj, detail) => {
 return g;`;
       let g;
       try { g = runBuilderCode(code); }
-      catch (e) { return fail(`选择题面板构建失败:${e.message}`); }
-      g.position.set(inp.x, inp.y ?? 1.2, inp.z);
+      catch (e) {
+        return fail(L(`选择题面板构建失败:${e.message}`, `Quiz panel build failed: ${e.message}`));
+      }
+      const pos = resolvePanelPosition(
+        { x: inp.x, y: inp.y ?? 5.0, z: inp.z },
+        { role: 'quiz' }
+      );
+      g.position.set(pos.x, pos.y, pos.z);
       assignOid(g);
       g.userData.builderCode = code;
       g.userData.icon = '❓';
@@ -177,9 +200,18 @@ return g;`;
         `选择题:「${inp.question}」,答对后 userData.quiz.done=true(可被其他对象读作解锁条件)`,
         `Quiz: "${inp.question}"; on correct answer userData.quiz.done=true (readable by other objects as an unlock condition)`);
       sceneRoot.add(g);
+      // Options stack downward from the group origin — lift so the card clears the ground
+      g.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(g);
+      if (Number.isFinite(box.min.y) && box.min.y < 0.45) {
+        g.position.y += 0.45 - box.min.y;
+      }
       markTouched(g);
       emit('hierarchy-changed');
-      return ok(`已放置选择题面板 ${g.userData.displayName}(oid=${g.userData.oid},${inp.options.length} 个选项,正确=第 ${inp.correct + 1} 个)`);
+      return ok(L(
+        `已放置选择题面板 ${g.userData.displayName}(oid=${g.userData.oid},${inp.options.length} 个选项,正确=第 ${inp.correct + 1} 个)`,
+        `Placed quiz panel ${g.userData.displayName} (oid=${g.userData.oid}, ${inp.options.length} options, correct=#${inp.correct + 1})`
+      ));
     },
   },
 ];

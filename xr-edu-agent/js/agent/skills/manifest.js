@@ -15,4 +15,9 @@ globalThis.XR_SKILL_FILES = [
   'view-navigation.js',
   'room-design.js',
   'debugging.js',
+  'course-outline.js',
+  'course-reading.js',
+  'course-h5.js',
+  'course-quiz.js',
+  'course-pipeline.js',
 ];

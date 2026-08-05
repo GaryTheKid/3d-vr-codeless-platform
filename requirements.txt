@@ -1,1 +1,18 @@
-docling
+# XR EduAgent Python deps (ASCII-only; Windows pip uses local encoding).
+#
+# Prefer GPU PyTorch when an NVIDIA GPU is available; otherwise CPU.
+# Do NOT run plain "pip install -r requirements.txt" alone on Windows:
+# that pulls the CPU torch wheel from PyPI and can replace a CUDA install.
+#
+# Recommended:
+#   python install_requirements.py
+#
+# Manual GPU example (CUDA 12.6 wheels):
+#   python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+#   python -m pip install -r requirements.txt --upgrade-strategy only-if-needed
+#
+# Manual CPU fallback:
+#   python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+#   python -m pip install -r requirements.txt --upgrade-strategy only-if-needed
+
+docling>=2.15.0

@@ -93,7 +93,7 @@ export const T = {
     for (const seg of str.split('\n')) {
       for (let i = 0; i < seg.length || i === 0; i += chunk) lines.push(seg.slice(i, i + chunk));
     }
-    const panel = makePanel({ title: opts.title || '', lines, width: 1.6, accent: opts.accent || '#f0c840' });
+    const panel = makePanel({ title: opts.title || '', lines, width: opts.width || 3.2, accent: opts.accent || '#f0c840' });
     const g = new THREE.Group();
     g.add(panel);
     g.userData.transient = true;

@@ -11,15 +11,16 @@ function TopBar() {
   return html`
     <header id="topbar">
       <div className="topbar-left">
+        <button type="button" className="tb-btn folder-btn" id="btn-projects-folder" data-i18n-title="proj.folderBtnTitle" title="浏览项目">📁</button>
         <div className="logo"><span className="logo-mark">◈</span> XR <b>EduAgent</b></div>
         <div className="scene-tab active">
           <span className="tab-icon">🌌</span>
-          <span id="scene-tab-name">我的第一节VR课</span><span className="tab-suffix">.xrscene</span>
+          <span id="scene-tab-name" data-i18n="top.sceneTabDefault">我的第一节VR课</span><span className="tab-suffix">.xrscene</span>
           <span className="tab-dot"></span>
         </div>
       </div>
       <div className="topbar-right">
-        <button className="lang-btn" id="btn-lang" data-i18n-title="top.langTitle">EN/中</button>
+        <button type="button" className="tb-btn gear-btn" id="btn-settings" data-i18n-title="settings.btnTitle" title="Settings">⚙</button>
         <button className="tb-btn" id="btn-save" data-i18n="top.save" data-i18n-title="top.saveTitle">💾 保存</button>
         <button className="tb-btn" id="btn-download" data-i18n="top.download" data-i18n-title="top.downloadTitle">⬇ 下载</button>
         <button className="tb-btn" id="btn-share" data-i18n="top.share" data-i18n-title="top.shareTitle">🔗 分享给学生</button>
@@ -29,19 +30,93 @@ function TopBar() {
   `;
 }
 
-function ProjectsPanel() {
+function ProjectsOverlay() {
   return html`
-    <div className="panel-body hidden" id="panel-projects">
-      <div className="proj-actions">
-        <button className="mini-btn primary" id="btn-proj-new" data-i18n="proj.new">➕ 新建项目</button>
-        <button className="mini-btn" id="btn-proj-import" data-i18n="proj.import" data-i18n-title="proj.importTitle">📥 导入 HTML</button>
-        <button className="mini-btn" id="btn-proj-folder" data-i18n="proj.connectFolder" data-i18n-title="proj.connectFolderTitle">📂 选择项目文件夹</button>
-        <input type="file" id="proj-import-file" accept=".html,.htm" className="hidden" />
+    <div id="projects-overlay" className="hidden" aria-hidden="true">
+      <div className="projects-overlay-backdrop" id="projects-overlay-backdrop"></div>
+      <div className="projects-overlay-panel" role="dialog" aria-labelledby="projects-overlay-title">
+        <div className="projects-overlay-head">
+          <div id="projects-overlay-title" data-i18n="proj.overlayTitle">项目</div>
+          <button type="button" className="mini-btn" id="btn-projects-close" data-i18n-title="proj.closeOverlay" title="关闭">✕</button>
+        </div>
+        <div className="proj-actions">
+          <button className="mini-btn primary" id="btn-proj-new" data-i18n="proj.new">➕ 新建项目</button>
+          <button className="mini-btn" id="btn-proj-import" data-i18n="proj.import" data-i18n-title="proj.importTitle">📥 导入 HTML</button>
+          <button className="mini-btn" id="btn-proj-folder" data-i18n="proj.connectFolder" data-i18n-title="proj.connectFolderTitle">📂 选择项目文件夹</button>
+          <input type="file" id="proj-import-file" accept=".html,.htm" className="hidden" />
+        </div>
+        <div className="proj-storage-note" id="proj-storage-note"></div>
+        <ul id="project-list"></ul>
+        <div className="hierarchy-empty" id="project-empty" data-i18n="proj.empty">
+          还没有项目<br />点「新建项目」保存当前场景,或导入之前下载的 HTML
+        </div>
       </div>
-      <div className="proj-storage-note" id="proj-storage-note"></div>
-      <ul id="project-list"></ul>
-      <div className="hierarchy-empty" id="project-empty" data-i18n="proj.empty">
-        还没有项目<br />点「新建项目」保存当前场景,或导入之前下载的 HTML
+    </div>
+  `;
+}
+
+function SettingsOverlay() {
+  return html`
+    <div id="settings-overlay" className="hidden" aria-hidden="true">
+      <div className="settings-overlay-backdrop" id="settings-overlay-backdrop"></div>
+      <div className="settings-overlay-panel" role="dialog" aria-labelledby="settings-overlay-title">
+        <div className="settings-overlay-head">
+          <div id="settings-overlay-title" data-i18n="settings.title">设置</div>
+          <button type="button" className="mini-btn" id="btn-settings-close" data-i18n-title="settings.close" title="关闭">✕</button>
+        </div>
+        <div className="settings-section">
+          <div className="settings-label" data-i18n="settings.language">界面语言</div>
+          <div className="settings-seg" id="settings-lang-seg" role="group">
+            <button type="button" className="settings-seg-btn" data-lang="en">English</button>
+            <button type="button" className="settings-seg-btn" data-lang="zh">中文</button>
+          </div>
+          <p className="settings-hint" data-i18n="settings.langHint">切换语言会刷新页面;当前场景会尽量自动恢复。</p>
+        </div>
+        <div className="settings-section">
+          <div className="settings-label" data-i18n="settings.fontSize">界面字号</div>
+          <div className="settings-seg" id="settings-font-seg" role="group">
+            <button type="button" className="settings-seg-btn" data-font="sm" data-i18n="settings.fontSm">小</button>
+            <button type="button" className="settings-seg-btn" data-font="md" data-i18n="settings.fontMd">中</button>
+            <button type="button" className="settings-seg-btn" data-font="lg" data-i18n="settings.fontLg">大</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function KgOverlay() {
+  return html`
+    <div id="kg-overlay" className="hidden" aria-hidden="true">
+      <div className="kg-overlay-backdrop" id="kg-overlay-backdrop"></div>
+      <div className="kg-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="kg-overlay-title">
+        <div className="kg-overlay-head">
+          <div>
+            <div id="kg-overlay-title" data-i18n="kg.overlayTitle">知识图谱</div>
+            <div className="kg-overlay-meta" id="kg-overlay-meta"></div>
+          </div>
+          <button type="button" className="mini-btn" id="btn-kg-close" data-i18n-title="kg.close" title="关闭">✕</button>
+        </div>
+        <div className="kg-overlay-stage" id="kg-overlay-stage"></div>
+      </div>
+    </div>
+  `;
+}
+
+function OutlinePanel() {
+  return html`
+    <div className="panel-body" id="panel-outline">
+      <div className="outline-toolbar">
+        <button type="button" className="mini-btn primary" id="btn-outline-add-chapter" data-i18n="outline.addChapter">＋ 章</button>
+        <button type="button" className="mini-btn" id="btn-outline-add-section" data-i18n="outline.addSection">＋ 节</button>
+      </div>
+      <div className="outline-course" id="outline-course-meta"></div>
+      <ul id="outline-tree"></ul>
+      <div className="hierarchy-empty hidden" id="outline-empty" data-i18n="outline.empty">
+        还没有大纲<br />点「＋ 章」开始设计课程
+      </div>
+      <div className="outline-learn-foot">
+        <button type="button" className="learn-start-btn" id="btn-start-learn" data-i18n="learn.start">▶ 开始学习</button>
       </div>
     </div>
   `;
@@ -49,7 +124,7 @@ function ProjectsPanel() {
 
 function AssetsPanel() {
   return html`
-    <div className="panel-body" id="panel-assets">
+    <div className="panel-body hidden" id="panel-assets">
       <div className="search-box">
         <input type="text" id="asset-search" data-i18n-ph="assets.search" placeholder="搜索教学资源…" />
       </div>
@@ -89,11 +164,11 @@ function LeftPanel() {
   return html`
     <aside id="left-panel">
       <div className="panel-tabs">
-        <button className="ptab" data-panel="projects" data-i18n="tab.projects">📁 项目</button>
-        <button className="ptab active" data-panel="assets" data-i18n="tab.assets">📦 资源库</button>
+        <button className="ptab active" data-panel="outline" data-i18n="tab.outline">📋 学习大纲</button>
+        <button className="ptab" data-panel="assets" data-i18n="tab.assets">📦 资源库</button>
         <button className="ptab" data-panel="hierarchy" data-i18n="tab.hierarchy">🗂 场景层级</button>
       </div>
-      <${ProjectsPanel} />
+      <${OutlinePanel} />
       <${AssetsPanel} />
       <${HierarchyPanel} />
     </aside>
@@ -168,10 +243,27 @@ function Inspector() {
   `;
 }
 
+function WorkspacePlaceholders() {
+  return html`
+    <div id="ws-reading" className="workspace-panel hidden">
+      <div className="ws-shell" id="ws-reading-root"></div>
+    </div>
+    <div id="ws-h5" className="workspace-panel hidden">
+      <div className="ws-shell" id="ws-h5-root"></div>
+    </div>
+    <div id="ws-quiz" className="workspace-panel hidden">
+      <div className="ws-shell" id="ws-quiz-root"></div>
+    </div>
+  `;
+}
+
 function Viewport() {
   return html`
     <div id="viewport-wrap">
-      <div id="viewport"></div>
+      <div id="workspace-host">
+        <div id="viewport"></div>
+        <${WorkspacePlaceholders} />
+      </div>
       <${ViewportToolbar} />
       <${Inspector} />
       <div id="drop-hint" className="hidden" data-i18n="assets.dropHint">松开以放置到场景中</div>
@@ -207,7 +299,10 @@ function RightPanel() {
       <div id="chat-messages"></div>
       <div id="chat-chips"></div>
       <div id="context-pins" className="hidden"></div>
+      <div id="doc-context-bar" className="hidden"></div>
       <div className="chat-input-wrap">
+        <button id="chat-attach" type="button" data-i18n-title="chat.attachTitle" title="上传教学文档 (PDF / Word / PPT…)">📎</button>
+        <input type="file" id="chat-doc-file" className="hidden" accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.html,.htm,.md,.txt,.png,.jpg,.jpeg" />
         <textarea
           id="chat-input"
           rows="2"
@@ -228,7 +323,6 @@ export function App() {
     let mounted = true;
     (async () => {
       try {
-        // 再等一帧 + 轮询 id，避免 GitHub Pages / 慢 CDN 下 React commit 与 legacy import 竞态
         await waitForDom(BOOTSTRAP_IDS);
         await import('../../main.js');
       } catch (error) {
@@ -257,6 +351,19 @@ export function App() {
         <${Viewport} />
         <div className="panel-resizer" id="resizer-right" data-i18n-title="layout.resizeRight" title="拖拽调整 AI 助教栏宽度"></div>
         <${RightPanel} />
+      </div>
+      <${ProjectsOverlay} />
+      <${SettingsOverlay} />
+      <${KgOverlay} />
+      <div id="doc-summary-overlay" className="hidden" aria-hidden="true">
+        <div className="doc-summary-overlay-backdrop" id="doc-summary-overlay-backdrop"></div>
+        <div className="doc-summary-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="doc-summary-overlay-title">
+          <div className="doc-summary-overlay-head">
+            <div id="doc-summary-overlay-title" data-i18n="chat.docSumFullTitle">📄 完整摘要</div>
+            <button type="button" className="mini-btn" id="btn-doc-summary-close" data-i18n-title="chat.docSumClose" title="关闭">✕</button>
+          </div>
+          <div className="doc-summary-overlay-body" id="doc-summary-overlay-body"></div>
+        </div>
       </div>
       <div id="toast-container"></div>
     </${React.Fragment}>

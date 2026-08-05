@@ -17,7 +17,8 @@ export function waitForDom(ids, { timeout = 10000, root = document } = {}) {
 
 /** legacy controller 启动前必须存在的最小 id 集合 */
 export const BOOTSTRAP_IDS = [
-  'btn-lang', 'scene-tab-name', 'btn-save', 'btn-download', 'btn-share', 'btn-vr',
-  'viewport', 'asset-categories', 'asset-search', 'chat-messages', 'chat-send',
+  'btn-settings', 'scene-tab-name', 'btn-save', 'btn-download', 'btn-share', 'btn-vr',
+  'btn-projects-folder', 'projects-overlay', 'settings-overlay', 'kg-overlay', 'outline-tree',
+  'viewport', 'asset-categories', 'asset-search', 'chat-messages', 'chat-send', 'chat-attach',
   'model-select', 'vt-play', 'vt-focus',
 ];

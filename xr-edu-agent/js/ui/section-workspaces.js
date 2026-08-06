@@ -10,6 +10,7 @@ import {
   createReadingChunk, createQuizItem, createFollowUp,
 } from '../core/outline.js';
 import { callClaude, hasLLM, MODELS } from '../agent/llm.js';
+import { resolveSampleAssetUrl } from '../core/sample-assets.js';
 import { mountLearnerQuestion } from './learner-quiz.js';
 
 let activeHostKey = '';
@@ -408,14 +409,7 @@ function setH5FrameHtml(frame, html) {
 function resolveAppMediaUrl(src) {
   const s = String(src || '').trim();
   if (!s || /^(https?:|data:|blob:|about:|#)/i.test(s)) return s;
-  if (/^sample-asset:/i.test(s)) {
-    // Lazy import avoided — samples.js already rewrote these on open; keep a local fallback
-    try {
-      const base = new URL('../../../pre-built-samples/assets/', import.meta.url);
-      const rel = s.replace(/^sample-asset:/i, '').split('/').map(encodeURIComponent).join('/');
-      return new URL(rel, base).href;
-    } catch { /* fall through */ }
-  }
+  if (/^sample-asset:/i.test(s)) return resolveSampleAssetUrl(s);
   // Strip a leading slash so URL() keeps the repo base path on GitHub Pages
   const rel = s.replace(/^\.\//, '').replace(/^\//, '');
   return new URL(rel, new URL('.', window.location.href)).href;

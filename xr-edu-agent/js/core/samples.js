@@ -9,15 +9,17 @@
 //  library — the manifest is fetched once and a package only when opened.
 //
 //  PDF figures live under pre-built-samples/assets/ and are referenced from
-//  course HTML as sample-asset:<course-id>/<file>. We rewrite those tokens
-//  to real absolute URLs on open so both localhost and GitHub project pages
-//  resolve images correctly (a leading "/…" would miss the repo base path).
+//  course HTML as sample-asset:<course-id>/<file> tokens; resolution lives
+//  in sample-assets.js and also runs inside loadSceneData, so tokens survive
+//  save/stash/import round-trips on any origin.
 // ═══════════════════════════════════════════════════════════════
 import { isEN } from './i18n.js';
 import { parseCourseFileText, loadCourseData } from './projects.js';
+import { rewriteSampleAssetsInCourse } from './sample-assets.js';
+
+export { resolveSampleAssetUrl, sampleAssetUrl } from './sample-assets.js';
 
 const SAMPLES_BASE = new URL('../../../pre-built-samples/', import.meta.url);
-const ASSETS_BASE = new URL('assets/', SAMPLES_BASE);
 
 // Promise, not result: the projects panel re-renders on every change and must
 // not fire a second catalog request while the first is still in flight
@@ -25,42 +27,6 @@ let catalogPromise = null;
 
 function sampleUrl(file) {
   return new URL(encodeURIComponent(file), SAMPLES_BASE);
-}
-
-/** sample-asset:bio-virus/fig-01.jpg → https://…/pre-built-samples/assets/bio-virus/fig-01.jpg */
-export function resolveSampleAssetUrl(token) {
-  const s = String(token || '');
-  const m = /^sample-asset:(.+)$/i.exec(s);
-  if (!m) return s;
-  // Encode each path segment but keep slashes
-  const rel = m[1].split('/').map(encodeURIComponent).join('/');
-  return new URL(rel, ASSETS_BASE).href;
-}
-
-function rewriteSampleAssetsInString(str) {
-  return String(str || '').replace(
-    /sample-asset:[A-Za-z0-9._\- /%]+/gi,
-    m => resolveSampleAssetUrl(m.trim()),
-  );
-}
-
-/** Walk outline HTML fields and rewrite sample-asset: tokens in place. */
-export function rewriteSampleAssetsInCourse(data) {
-  const outline = data?.cfg?.outline ?? data?.outline;
-  if (!outline?.chapters) return data;
-  for (const ch of outline.chapters) {
-    for (const sec of ch.sections || []) {
-      if (sec.type === 'reading') {
-        for (const chunk of sec.reading?.chunks || []) {
-          if (chunk.html) chunk.html = rewriteSampleAssetsInString(chunk.html);
-        }
-      }
-      if (sec.type === 'h5' && sec.h5?.html) {
-        sec.h5.html = rewriteSampleAssetsInString(sec.h5.html);
-      }
-    }
-  }
-  return data;
 }
 
 /**
@@ -96,7 +62,10 @@ export function sampleSubjectLabel(sample) {
 export async function openSampleCourse(id) {
   const sample = (await listSampleCourses()).find(c => c.id === id);
   if (!sample) throw new Error(`Unknown sample: ${id}`);
-  const res = await fetch(sampleUrl(sample.file), { cache: 'force-cache' });
+  // no-cache = revalidate with the server (ETag 304 when unchanged).
+  // force-cache pinned the first-ever cached copy forever, so participants
+  // kept getting packages from older deployments after a site update.
+  const res = await fetch(sampleUrl(sample.file), { cache: 'no-cache' });
   if (!res.ok) throw new Error(`HTTP ${res.status} — ${sample.file}`);
   const data = parseCourseFileText(await res.text(), sample.file);
   rewriteSampleAssetsInCourse(data);

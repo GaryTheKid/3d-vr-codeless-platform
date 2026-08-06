@@ -33,6 +33,7 @@ import { locomotion, configureLocomotion } from './locomotion.js';
 import { ensureStudentRig } from '../scene/student-rig.js';
 import * as projectFs from './project-fs.js';
 import { getOutline, setOutline, normalizeOutline } from './outline.js';
+import { rewriteSampleAssetsInOutline } from './sample-assets.js';
 import { setKnowledgeGraph, clearKnowledgeGraph } from './knowledge-graph.js';
 import {
   resetVrSceneBinding, getLiveVrSectionId, saveLiveSceneToSection,
@@ -285,6 +286,11 @@ export function loadSceneData(data) {
   const kgRaw = data.cfg?.knowledgeGraph ?? data.knowledgeGraph;
   const loco = data.cfg?.locomotion ?? data.locomotion;
   const outline = normalizeOutline(outlineRaw, data.name || '');
+  // Fix figure URLs no matter where the course came from (sample open,
+  // saved project, working-draft restore, .xrcourse import): raw
+  // sample-asset: tokens and asset URLs from another origin both resolve
+  // against THIS deployment, or images break after any version/origin mix.
+  rewriteSampleAssetsInOutline(outline);
 
   // Prefer active VR section snapshot when present; else top-level scene
   const activeId = outline.activeSectionId;

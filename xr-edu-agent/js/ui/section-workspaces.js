@@ -404,18 +404,32 @@ function setH5FrameHtml(frame, html) {
   frame.srcdoc = wrapH5Srcdoc(absolutizeH5Media(html));
 }
 
+/** Resolve a site-relative path under the app base (GitHub project pages ≠ domain root). */
+function resolveAppMediaUrl(src) {
+  const s = String(src || '').trim();
+  if (!s || /^(https?:|data:|blob:|about:|#)/i.test(s)) return s;
+  if (/^sample-asset:/i.test(s)) {
+    // Lazy import avoided — samples.js already rewrote these on open; keep a local fallback
+    try {
+      const base = new URL('../../../pre-built-samples/assets/', import.meta.url);
+      const rel = s.replace(/^sample-asset:/i, '').split('/').map(encodeURIComponent).join('/');
+      return new URL(rel, base).href;
+    } catch { /* fall through */ }
+  }
+  // Strip a leading slash so URL() keeps the repo base path on GitHub Pages
+  const rel = s.replace(/^\.\//, '').replace(/^\//, '');
+  return new URL(rel, new URL('.', window.location.href)).href;
+}
+
 /** Make relative / doc-image URLs work inside srcdoc iframes. */
 function absolutizeH5Media(html) {
-  const origin = window.location.origin;
   return String(html || '')
     .replace(/(<img\b[^>]*?\bsrc=["'])(?!https?:|data:|blob:)([^"']+)/gi, (_, pre, src) => {
-      const path = src.startsWith('/') ? src : `/${src.replace(/^\.\//, '')}`;
-      return `${pre}${origin}${path}`;
+      return `${pre}${resolveAppMediaUrl(src)}`;
     })
     .replace(/(url\(\s*['"]?)(?!https?:|data:|blob:)([^'")]+)/gi, (m, pre, src) => {
       if (/^(#|about:)/i.test(src)) return m;
-      const path = src.startsWith('/') ? src : `/${src.replace(/^\.\//, '')}`;
-      return `${pre}${origin}${path}`;
+      return `${pre}${resolveAppMediaUrl(src)}`;
     });
 }
 

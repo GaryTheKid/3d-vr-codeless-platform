@@ -1045,9 +1045,13 @@ function absolutizeMediaUrl(url) {
   if (!url) return '';
   const s = String(url);
   if (/^(https?:|data:|blob:)/i.test(s)) return s;
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const path = s.startsWith('/') ? s : `/${s.replace(/^\.\//, '')}`;
-  return origin ? `${origin}${path}` : path;
+  if (typeof window === 'undefined') {
+    const path = s.startsWith('/') ? s : `/${s.replace(/^\.\//, '')}`;
+    return path;
+  }
+  // Keep GitHub project-page base path (origin + "/uploads/…" would 404 there)
+  const rel = s.replace(/^\.\//, '').replace(/^\//, '');
+  return new URL(rel, new URL('.', window.location.href)).href;
 }
 
 function absolutizeH5Html(html) {

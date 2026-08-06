@@ -4,8 +4,21 @@
 const DB_NAME = 'xr-edu-project-fs';
 const DB_VER = 1;
 const HANDLE_KEY = 'projects-dir';
-export const FILE_EXT = '.xrscene';
+/** Primary on-disk extension for course packages. */
+export const FILE_EXT = '.xrcourse';
+/** Legacy extension still listed/imported. */
+export const LEGACY_FILE_EXT = '.xrscene';
+const COURSE_MAGIC = 'XR-EDU-COURSE';
 const SCENE_MAGIC = 'XR-EDU-SCENE';
+
+function isCourseFileName(name) {
+  const lower = String(name || '').toLowerCase();
+  return lower.endsWith(FILE_EXT) || lower.endsWith(LEGACY_FILE_EXT);
+}
+
+function isKnownMagic(magic) {
+  return magic === COURSE_MAGIC || magic === SCENE_MAGIC;
+}
 
 let dirHandle = null;
 
@@ -59,6 +72,7 @@ async function ensurePermission(handle, mode = 'readwrite') {
 // 文件名安全化(保留中文/字母/数字,其余变连字符)
 export function safeFilename(name, id) {
   const base = (name || 'project').trim()
+    .replace(/\.(xrcourse|xrscene)$/i, '')
     .replace(/[<>:"/\\|?*\x00-\x1f]/g, '')
     .replace(/\s+/g, ' ')
     .slice(0, 80) || 'project';
@@ -121,14 +135,17 @@ async function readFileEntry(handle) {
   const file = await handle.getFile();
   const text = await file.text();
   const data = JSON.parse(text);
-  if (data.magic !== SCENE_MAGIC) throw new Error('bad magic');
+  if (!isKnownMagic(data.magic)) throw new Error('bad magic');
   const meta = data._file || {};
+  const sectionCount = (data.cfg?.outline?.chapters || data.outline?.chapters || [])
+    .reduce((n, c) => n + (c.sections?.length || 0), 0);
   return {
     id: meta.id || handle.name,
-    name: data.name || handle.name.replace(/\.xrscene$/i, ''),
+    name: data.name || handle.name.replace(/\.(xrcourse|xrscene)$/i, ''),
     createdAt: meta.createdAt || file.lastModified,
     updatedAt: meta.updatedAt || file.lastModified,
     objects: meta.objects ?? (data.scene?.object?.children?.length || 0),
+    sections: sectionCount,
     data,
     _handle: handle,
     _filename: handle.name,
@@ -139,7 +156,7 @@ export async function listFolderProjects() {
   if (!dirHandle) return [];
   const out = [];
   for await (const [name, handle] of dirHandle.entries()) {
-    if (handle.kind !== 'file' || !name.toLowerCase().endsWith(FILE_EXT)) continue;
+    if (handle.kind !== 'file' || !isCourseFileName(name)) continue;
     try {
       out.push(await readFileEntry(handle));
     } catch (e) {

@@ -5,7 +5,7 @@
 import { L } from '../../core/i18n.js';
 import {
   getOutline, getActiveSection, setActiveSection, findSection,
-  updateCourse, updateChapter, updateSection, addChapter, addSection,
+  updateCourse, updateChapter, updateSection, addChapter, addSection, removeSection,
   createReadingChunk, createQuizItem, createFollowUp, SECTION_TYPES,
 } from '../../core/outline.js';
 import { ok, fail } from './shared.js';
@@ -15,6 +15,17 @@ function requireSection(section_id) {
   const hit = findSection(id);
   if (!hit) return { err: fail(L(`找不到小节 ${id || '(none)'}`, `Section not found: ${id || '(none)'}`)) };
   return { id, ...hit };
+}
+
+/** A section nobody has authored yet — safe to reuse instead of adding another. */
+function isBlankSection(s) {
+  if (!s) return false;
+  if (s.buildStatus === 'done') return false;
+  const kids = s.vr?.scene?.object?.children?.length || 0;
+  return !(s.reading?.chunks?.length)
+    && !(s.quiz?.items?.length)
+    && !(s.h5?.html || '').trim()
+    && kids <= 1;
 }
 
 export default [
@@ -139,12 +150,34 @@ export default [
   {
     name: 'outline_add_chapter',
     label: () => L('📋 新增章', '📋 Add chapter'),
-    description: '新增一章(默认带一个 VR 节)。建议章名说清主题。',
+    description: '新增一章(默认带一个空 VR 节)。⚠ 只有老师明确要求「加一章」时才可调用;改现有内容不要新增章。requested_by_teacher 必须原样引用老师提出该要求的原话。',
     input_schema: {
       type: 'object',
-      properties: { title: { type: 'string' }, summary: { type: 'string' } },
+      properties: {
+        title: { type: 'string' },
+        summary: { type: 'string' },
+        requested_by_teacher: {
+          type: 'string',
+          description: 'Quote the teacher words that asked for a NEW chapter. Leave out if they did not ask.',
+        },
+      },
+      required: ['requested_by_teacher'],
     },
     exec(inp) {
+      if (!String(inp.requested_by_teacher || '').trim()) {
+        return fail(L(
+          '老师没有要求新增章。改内容请用 outline_update_* 或对应内容工具。',
+          'The teacher did not ask for a new chapter. Edit existing content with outline_update_* or the content tools.'
+        ));
+      }
+      const chapters = getOutline().chapters;
+      const tail = chapters[chapters.length - 1];
+      if (tail && tail.sections.length && tail.sections.every(isBlankSection)) {
+        return fail(L(
+          `上一章「${tail.title}」还全是空节,请先填满或改用它(${tail.id}),不要再加新章。`,
+          `The last chapter "${tail.title}" is still all-blank — fill or reuse it (${tail.id}) instead of adding another.`
+        ));
+      }
       const ch = addChapter({
         title: inp.title ? String(inp.title) : undefined,
         summary: inp.summary ? String(inp.summary) : '',
@@ -155,7 +188,7 @@ export default [
   {
     name: 'outline_add_section',
     label: inp => L(`📋 新增节(${inp.type || 'vr'})`, `📋 Add section (${inp.type || 'vr'})`),
-    description: '在指定章下新增小节。测验节建议加在章末。type=vr|reading|h5|quiz。',
+    description: '在指定章下新增空小节。⚠ 只有老师明确要求「加一节」时才可调用——修改/重做已有小节请用 outline_update_section + 内容工具,不要新增。新节不会抢走当前活动节。type=vr|reading|h5|quiz。',
     input_schema: {
       type: 'object',
       properties: {
@@ -163,17 +196,60 @@ export default [
         title: { type: 'string' },
         type: { type: 'string', enum: SECTION_TYPES },
         purpose: { type: 'string' },
+        requested_by_teacher: {
+          type: 'string',
+          description: 'Quote the teacher words that asked for a NEW section. Leave out if they did not ask.',
+        },
       },
-      required: ['chapter_id'],
+      required: ['chapter_id', 'requested_by_teacher'],
     },
     exec(inp) {
+      if (!String(inp.requested_by_teacher || '').trim()) {
+        return fail(L(
+          '老师没有要求新增小节。要改已有小节请用 outline_update_section / reading_set_chunks / h5_set_content / quiz_set_items / 3D 场景工具。',
+          'The teacher did not ask for a new section. To change an existing one use outline_update_section / reading_set_chunks / h5_set_content / quiz_set_items / the 3D scene tools.'
+        ));
+      }
       const type = SECTION_TYPES.includes(inp.type) ? inp.type : 'vr';
+      const ch = getOutline().chapters.find(c => c.id === String(inp.chapter_id));
+      if (!ch) return fail(L('章节不存在', 'Chapter not found'));
+      const spare = ch.sections.find(s => s.type === type && isBlankSection(s));
+      if (spare) {
+        return fail(L(
+          `本章已有一个空的 ${type} 节「${spare.title}」(${spare.id}),请直接填它,不要再加。`,
+          `This chapter already has a blank ${type} section "${spare.title}" (${spare.id}) — fill that one instead of adding another.`
+        ));
+      }
+      // activate:false — a new blank section must not swap the teacher's 3D viewport
       const sec = addSection(String(inp.chapter_id), {
         type,
         title: inp.title ? String(inp.title) : undefined,
         purpose: inp.purpose ? String(inp.purpose) : '',
-      });
+      }, { activate: false });
       return sec ? ok(L(`已添加节 ${sec.id}`, `Added section ${sec.id}`), { section_id: sec.id, type: sec.type }) : fail(L('章节不存在', 'Chapter not found'));
+    },
+  },
+  {
+    name: 'outline_remove_section',
+    label: inp => L(`📋 删除空节 ${inp.section_id || ''}`, `📋 Remove blank section ${inp.section_id || ''}`),
+    description: '删除一个还没有内容的小节(清理误加的空节)。已填过内容的小节不会被删除。',
+    input_schema: {
+      type: 'object',
+      properties: { section_id: { type: 'string' } },
+      required: ['section_id'],
+    },
+    exec(inp) {
+      const hit = findSection(String(inp.section_id));
+      if (!hit) return fail(L('小节不存在', 'Section not found'));
+      if (!isBlankSection(hit.section)) {
+        return fail(L(
+          `「${hit.section.title}」已有内容,不能用此工具删除,请让老师在大纲里手动删。`,
+          `"${hit.section.title}" already has content — ask the teacher to delete it from the outline instead.`
+        ));
+      }
+      return removeSection(String(inp.section_id))
+        ? ok(L(`已删除空节 ${inp.section_id}`, `Removed blank section ${inp.section_id}`))
+        : fail(L('无法删除(课程至少要保留一个小节)', 'Cannot remove — the course needs at least one section'));
     },
   },
   {
@@ -196,7 +272,7 @@ export default [
         ...c,
         followUp: c.followUp ? createFollowUp(c.followUp) : null,
       }));
-      updateSection(id, { reading: { chunks } });
+      updateSection(id, { reading: { chunks }, buildStatus: chunks.length ? 'done' : section.buildStatus });
       return ok(L(`已写入 ${chunks.length} 个知识块`, `Wrote ${chunks.length} reading chunks`));
     },
   },
@@ -225,6 +301,7 @@ export default [
       }
       if (inp.followUp === null) patch.h5.followUp = null;
       else if (inp.followUp) patch.h5.followUp = createFollowUp(inp.followUp);
+      if (patch.h5.status === 'ready') patch.buildStatus = 'done';
       updateSection(id, patch);
       return ok(L('H5 内容已更新', 'H5 content updated'));
     },
@@ -246,7 +323,7 @@ export default [
       if (err) return err;
       if (section.type !== 'quiz') return fail(L('当前节不是 quiz', 'Current section is not quiz'));
       const items = (inp.items || []).map(createQuizItem);
-      updateSection(id, { quiz: { items } });
+      updateSection(id, { quiz: { items }, buildStatus: items.length ? 'done' : section.buildStatus });
       return ok(L(`已写入 ${items.length} 道题`, `Wrote ${items.length} quiz items`));
     },
   },

@@ -30,6 +30,7 @@ import './course-reading.js';
 import './course-h5.js';
 import './course-quiz.js';
 import './course-pipeline.js';
+import './course-live-edit.js';
 import { isEN } from '../../core/i18n.js';
 
 export const AGENT_SKILLS = globalThis.XR_AGENT_SKILLS ?? [];

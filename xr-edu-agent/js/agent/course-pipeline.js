@@ -24,7 +24,10 @@ import { studyFlag } from '../core/study-test-flags.js';
 import { TOOLS, execTool, toolCallLabel } from './tools/index.js';
 import { clearScene } from '../scene/manager.js';
 import { ensureStudentRig } from '../scene/student-rig.js';
-import { beginVrSectionFill, finishVrSectionFill, ensureVrFillSceneBound, restoreViewerAfterVrFillTool, countTeachingObjects } from '../core/section-scene.js';
+import {
+  beginVrSectionFill, finishVrSectionFill, ensureVrFillSceneBound,
+  restoreViewerAfterVrFillTool, countTeachingObjects, unrestorableSnapshotObjects,
+} from '../core/section-scene.js';
 
 const MD_SLICE = 18000;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -548,8 +551,107 @@ function sectionContext(section, doc, kg, board = null) {
       relevance: im.relevance,
       anchor: im.anchor, concepts: im.concepts,
     })),
-    markdownSlice: (doc.markdown || '').slice(0, 8000),
+    markdownSlice: sectionMarkdownSlice(doc, section, covered),
   };
+}
+
+/**
+ * Source window centred on this section's own material.
+ * Every section used to get the same first 8000 chars, which pushed sub-agents
+ * (especially 3D ones) toward building the same scene twice.
+ */
+function sectionMarkdownSlice(doc, section, covered, size = 8000) {
+  const md = doc.markdown || '';
+  if (md.length <= size) return md;
+  const hay = md.toLowerCase();
+  const needles = [section.sourceHint, section.title, ...covered.map(n => n.label)]
+    .filter(Boolean)
+    .map(s => String(s).trim())
+    .filter(s => s.length >= 2);
+  const hits = [];
+  for (const nd of needles) {
+    const i = hay.indexOf(nd.toLowerCase());
+    if (i >= 0) hits.push(i);
+  }
+  if (!hits.length) return md.slice(0, size);
+  // Densest region: the hit with the most other hits inside one window
+  let anchor = hits[0];
+  let bestCount = -1;
+  for (const h of hits) {
+    const n = hits.filter(x => Math.abs(x - h) < size).length;
+    if (n > bestCount) { bestCount = n; anchor = h; }
+  }
+  const start = Math.max(0, Math.min(md.length - size, anchor - Math.floor(size * 0.2)));
+  return md.slice(start, start + size);
+}
+
+/** Teaching-object names inside a saved VR snapshot (peer de-dup + duplicate detection). */
+function vrSceneObjectNames(sceneJson) {
+  const kids = sceneJson?.object?.children || [];
+  const out = [];
+  for (const c of kids) {
+    const ud = c.userData || {};
+    if (ud.system || ud.studentRig) continue;
+    const n = ud.displayName || c.name || ud.panelTitle || c.type || '';
+    if (n) out.push(String(n).trim().slice(0, 40));
+  }
+  return out;
+}
+
+/** Comments, whitespace and literal numbers removed — near-identical builds collide. */
+function normalizeBuilderCode(code) {
+  return String(code)
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '')
+    .replace(/[\d.]+/g, '#')
+    .replace(/\s+/g, '')
+    .toLowerCase();
+}
+
+/**
+ * Fingerprint of what a section actually contains. Built from generator code
+ * and panel text rather than display names, which the model varies freely
+ * while building the very same scene.
+ */
+function vrSceneSignature(sceneJson) {
+  const parts = [];
+  for (const c of sceneJson?.object?.children || []) {
+    const ud = c.userData || {};
+    if (ud.system || ud.studentRig) continue;
+    if (ud.builderCode) parts.push(`c:${normalizeBuilderCode(ud.builderCode)}`);
+    else if (ud.panelSpec) {
+      parts.push(`p:${ud.panelSpec.title || ''}|${(ud.panelSpec.lines || []).join('/')}`.toLowerCase());
+    } else {
+      const n = (ud.displayName || c.name || c.type || '').toLowerCase().replace(/\s*\d+\s*$/, '').trim();
+      if (n) parts.push(`n:${n}`);
+    }
+  }
+  if (parts.length < 2) return '';
+  return parts.sort().join('||');
+}
+
+/** What the other 3D sections already contain, so the next one can stay distinct. */
+function peerVrScenes(sectionId) {
+  const rows = [];
+  for (const ch of getOutline().chapters || []) {
+    for (const s of ch.sections || []) {
+      if (s.type !== 'vr' || s.id === sectionId || !s.vr?.scene) continue;
+      const objects = vrSceneObjectNames(s.vr.scene).slice(0, 10);
+      if (objects.length) rows.push({ title: s.title, objects });
+    }
+  }
+  return rows;
+}
+
+function findDuplicateVrSection(sectionId, sig) {
+  if (!sig) return null;
+  for (const ch of getOutline().chapters || []) {
+    for (const s of ch.sections || []) {
+      if (s.type !== 'vr' || s.id === sectionId || !s.vr?.scene) continue;
+      if (vrSceneSignature(s.vr.scene) === sig) return s;
+    }
+  }
+  return null;
 }
 
 /** Dynamic shared board: completed section digests for parallel/serial sub-agents. */
@@ -591,7 +693,10 @@ async function mapPool(items, concurrency, fn) {
 }
 
 async function fillSection(section, doc, kg, ui, { board = null, activate = false } = {}) {
-  updateSection(section.id, { buildStatus: 'running' }, { silent: false });
+  // VR: silent status update — a noisy outline-changed → sync mid-pipeline was
+  // restoring empty snapshots and wiping the 2nd/3rd 3D section builds.
+  const silentStatus = section.type === 'vr';
+  updateSection(section.id, { buildStatus: 'running' }, { silent: silentStatus });
   // Avoid stealing the teacher's view during parallel fills; VR bind is handled inside fillVrSection
   if (activate) setActiveSection(section.id);
   emit('course-pipeline-section', {
@@ -616,7 +721,10 @@ async function fillSection(section, doc, kg, ui, { board = null, activate = fals
           ? L(`测验 ${(findSection(section.id)?.section?.quiz?.items || []).length} 题`, `${(findSection(section.id)?.section?.quiz?.items || []).length} quiz items`)
           : section.type === 'h5'
             ? L('H5 交互已生成', 'H5 interactive ready')
-            : L('3D 场景快照已保存', '3D scene snapshot saved'),
+            : L(
+              `3D 对象: ${vrSceneObjectNames(findSection(section.id)?.section?.vr?.scene).join('、') || '—'}`,
+              `3D objects: ${vrSceneObjectNames(findSection(section.id)?.section?.vr?.scene).join(', ') || '—'}`
+            ),
     });
     emit('course-pipeline-section', {
       sectionId: section.id,
@@ -1075,7 +1183,7 @@ document.getElementById('h5-go').onclick=()=>{
 async function fillVrSection(section, ctx, ui) {
   beginVrSectionFill(section.id);
   const toolDefs = TOOLS.filter(t =>
-    !['outline_add_chapter', 'outline_add_section'].includes(t.name)
+    !['outline_add_chapter', 'outline_add_section', 'outline_remove_section'].includes(t.name)
     && !String(t.name).startsWith('course_')
   ).map(({ name, description, input_schema }) => ({ name, description, input_schema }));
   const lang = isEN() ? 'English' : 'Chinese';
@@ -1084,31 +1192,42 @@ async function fillVrSection(section, ctx, ui) {
 IMPORTANT: The live scene was CLEARED for this section only. Build ONLY this section's covered nodes. Do not assume objects from other sections exist.
 Study mode: orbit 3D + click interactions (no VR player/locomotion).
 AHA CONSTRUCTION (highest priority if [Aha keys] present): the scene's CENTERPIECE must let the student construct that insight through manipulation, not read it. Use buildIdea as the seed. Pattern: show the components/causes as SEPARATE animated/clickable objects, plus the combined result, with click-toggles to isolate each part (e.g. "motion decomposes into independent x/y" → an x-marker sliding at constant speed, a y-marker falling with gravity, and the combined projectile tracing its curve; clicking toggles each component so the student SEES independence). Set panel text to prompt prediction BEFORE the reveal. Decorations come after the aha centerpiece, never instead of it.
+DISTINCTNESS (critical): this course has several 3D sections. Yours must teach ONLY its own covered nodes, with its own centerpiece, geometry, layout and interaction. If [Peer 3D scenes] is present, treat that object list as forbidden — do not rebuild the same objects, the same demo or the same arrangement, even if the concepts are related.
 Prefer create_custom_object / add_panel / attach_label / set_behavior. Wide panels (no overlapping key|value text).
 LANGUAGE LOCK (critical): Platform UI language is ${lang}. ALL student-facing 3D text MUST be in ${lang}.
 PANEL LAYOUT: flanks (x≈±6) or behind (z≈−5..−7); ≤2 free panels; no stacking in front of the diorama.
 Quiz: use add_quiz_panel once — it is ONE vertical card (question on top, options listed below). Place it on a flank HIGH (y≈5) so the tall card does not sink into the ground. If an aha key applies, the quiz must probe it in a re-skinned context.
+SNAPSHOT-SAFE GEOMETRY (critical): every section is saved and reloaded through THREE.ObjectLoader. In create_custom_object code use only core parametric geometries (Box/Sphere/Cylinder/Cone/Torus/TorusKnot/Plane/Circle/Ring/Capsule/Lathe/Extrude/Tube/Icosahedron…) or a hand-built BufferGeometry. NEVER use EdgesGeometry / WireframeGeometry / TextGeometry / example-only loaders — they cannot be reloaded and the section comes back empty. For outlines set material.wireframe = true instead.
 HARD: You MUST call tools to create visible objects. An empty scene (only the student avatar) is a FAILURE. At least 2 teaching objects + 1 panel.
 When done, stop with a short summary. Max ~10 tool calls.`
     : `你是小节子 Agent,只负责填充本节(id=${section.id})的交互 3D 场景。
 重要:现场景已为本节清空。只建本节 covers 节点,不要假设其他节的对象还在。
+差异化(硬性):本课程有多个 3D 小节。你只讲本节 covers,主角对象、几何、布局、交互都必须与其他节不同。若出现 [Peer 3D scenes],其中列出的对象一律禁止重建,不得复制同一个演示或同一种摆法,哪怕概念相关。
 试学模式:轨道相机 3D + 点击交互。
 顿悟建构(若有 [Aha keys],这是最高优先级):场景主角必须让学生通过"操作"自己建构出 insight,而不是读结论。以 buildIdea 为蓝本,套路:把成因/分量做成可独立动画、可点击的对象 + 合成结果,点击可单独开关(如"运动可分解为独立的 x/y 分运动"→ 匀速滑动的 x 标记、自由下落的 y 标记、再加合成的抛体划出曲线;点击开关各分量,学生亲眼看到互不影响)。面板文案先让学生"预测",再揭示。装饰物永远排在顿悟主角之后。
 优先 create_custom_object / add_panel / attach_label / set_behavior。
 语言锁定:全部学生可见 3D 文案用 ${lang}。
 面板放侧面/后方,最多 1–2 块自由面板。
 测验用 add_quiz_panel一次即可(单卡竖排:题干在上、选项列表在下),放侧面且挂高(y≈5),避免竖卡沉入地面;若涉及 aha key,题目必须换情境考察该 insight。
+快照安全(硬性):每节场景要经 THREE.ObjectLoader 存取还原。create_custom_object 里只能用核心参数化几何(Box/Sphere/Cylinder/Cone/Torus/TorusKnot/Plane/Circle/Ring/Capsule/Lathe/Extrude/Tube/Icosahedron…)或手写 BufferGeometry;禁止 EdgesGeometry / WireframeGeometry / TextGeometry / examples 里的加载器——它们无法还原,会导致本节重新打开时变成空场景。要描边就用 material.wireframe = true。
 硬性:必须调用工具创建可见对象。空场景(只剩学生代表物)视为失败。至少 2 个教学对象 + 1 块面板。
 完成后给简短总结。最多约 10 次工具调用。`;
 
   const ahaBlock = ctx.ahaKeys?.length
     ? `\n[Aha keys — the insights this scene must let the student CONSTRUCT]\n${JSON.stringify(ctx.ahaKeys)}\n`
     : '';
-  const brief = `${ctx.kgDigest}\n\n[Section brief]\n${JSON.stringify(ctx.section)}\n[Covered nodes]\n${JSON.stringify(ctx.coveredNodes)}${ahaBlock}[Figures]\n${JSON.stringify(ctx.images)}\n[Source slice]\n${ctx.markdownSlice}\n\nBuild THIS section's 3D scene from an empty stage. Every on-scene string must be in ${lang}.`;
+  const peers = peerVrScenes(section.id);
+  const peerVrBlock = peers.length
+    ? `\n[Peer 3D scenes — already built, FORBIDDEN to repeat]\n${JSON.stringify(peers)}\n`
+    : '';
+  const boardBlock = ctx.peerBoard?.length
+    ? `\n[Sections already filled in this course]\n${JSON.stringify(ctx.peerBoard)}\n`
+    : '';
+  const brief = `${ctx.kgDigest}\n\n[Section brief]\n${JSON.stringify(ctx.section)}\n[Covered nodes]\n${JSON.stringify(ctx.coveredNodes)}${ahaBlock}${peerVrBlock}${boardBlock}[Figures]\n${JSON.stringify(ctx.images)}\n[Source slice]\n${ctx.markdownSlice}\n\nBuild THIS section's 3D scene from an empty stage. Every on-scene string must be in ${lang}.`;
 
   await runVrToolLoop({ section, ui, sys, toolDefs, userContent: brief });
 
-  // Empty scene is a known rare failure (model exits with text-only). Retry once, then seed a minimal fallback.
+  // Empty scene is a known failure (model exits text-only, or a sync wipe). Retry once, then seed.
   if (countTeachingObjects() === 0) {
     ui?.addMsg?.('ai', L(
       `⚠ 「${section.title}」3D 场景为空,正在重试…`,
@@ -1132,6 +1251,70 @@ When done, stop with a short summary. Max ~10 tool calls.`
     section.id,
     L('本节 3D 场景已由子 Agent 生成(独立快照)', '3D scene for this section generated (isolated snapshot)')
   );
+
+  // Post-condition: saved snapshot must contain teaching objects (not only the student rig)
+  const saved = findSection(section.id)?.section?.vr?.scene;
+  const savedKids = saved?.object?.children?.length || 0;
+  if (countTeachingObjects() === 0 || savedKids <= 1) {
+    beginVrSectionFill(section.id);
+    await seedMinimalVrFallback(section, ctx, ui);
+    finishVrSectionFill(
+      section.id,
+      L('本节 3D 场景已补种最小内容(生成结果为空)', '3D section re-seeded (previous snapshot was empty)')
+    );
+    return;
+  }
+
+  // A snapshot ObjectLoader cannot read back looks perfect while building and
+  // empty the moment the teacher reopens the section — rebuild it now.
+  const fragile = unrestorableSnapshotObjects(findSection(section.id)?.section?.vr?.scene);
+  if (fragile.length) {
+    ui?.addMsg?.('ai', L(
+      `⚠ 「${section.title}」有 ${fragile.length} 个对象无法存档还原,正在用可保存的几何重建…`,
+      `⚠ ${fragile.length} object(s) in “${section.title}” cannot survive saving — rebuilding with storable geometry…`
+    ));
+    beginVrSectionFill(section.id);
+    await runVrToolLoop({
+      section,
+      ui,
+      sys,
+      toolDefs,
+      userContent: `${brief}\n\nCRITICAL REBUILD: these objects could not be saved and reloaded: ${JSON.stringify(fragile)}. They almost certainly used EdgesGeometry / WireframeGeometry / TextGeometry or another type THREE.ObjectLoader cannot parse. Rebuild the whole scene using ONLY core parametric geometries or hand-built BufferGeometry, and use material.wireframe = true for outlines.`,
+      maxIters: 8,
+    });
+    if (countTeachingObjects() === 0) await seedMinimalVrFallback(section, ctx, ui);
+    finishVrSectionFill(
+      section.id,
+      L('本节 3D 场景已用可存档几何重建', '3D scene rebuilt with storable geometry')
+    );
+  }
+
+  // Distinctness: an identical object set to another 3D section is a failed build
+  const twin = findDuplicateVrSection(
+    section.id,
+    vrSceneSignature(findSection(section.id)?.section?.vr?.scene)
+  );
+  if (twin) {
+    ui?.addMsg?.('ai', L(
+      `⚠ 「${section.title}」与「${twin.title}」场景重复,正在重建…`,
+      `⚠ “${section.title}” duplicated “${twin.title}” — rebuilding a distinct scene…`
+    ));
+    const twinObjects = vrSceneObjectNames(twin.vr?.scene).slice(0, 10);
+    beginVrSectionFill(section.id);
+    await runVrToolLoop({
+      section,
+      ui,
+      sys,
+      toolDefs,
+      userContent: `${brief}\n\nCRITICAL REBUILD: your previous attempt produced a scene IDENTICAL to the section "${twin.title}" (objects: ${JSON.stringify(twinObjects)}). Those objects are BANNED. Build a different centerpiece with different geometry, a different interaction and a different layout, teaching only THIS section's covered nodes.`,
+      maxIters: 8,
+    });
+    if (countTeachingObjects() === 0) await seedMinimalVrFallback(section, ctx, ui);
+    finishVrSectionFill(
+      section.id,
+      L('本节 3D 场景已重建(避免与其他小节重复)', '3D scene rebuilt to stay distinct from other sections')
+    );
+  }
 }
 
 async function runVrToolLoop({ section, ui, sys, toolDefs, userContent, maxIters = 10 }) {
@@ -1183,12 +1366,25 @@ async function seedMinimalVrFallback(section, ctx, ui) {
   const body = isEN()
     ? `Key idea: ${label}\n${section.purpose || ''}\n(Auto-seeded because the 3D builder returned an empty scene.)`
     : `要点: ${label}\n${section.purpose || ''}\n(因 3D 生成结果为空而自动补种。)`;
+  // Vary shape/colour by section so two fallbacks never look like the same scene
+  const SHAPES = [
+    'new THREE.BoxGeometry(1.2, 1.2, 1.2)',
+    'new THREE.IcosahedronGeometry(0.8, 0)',
+    'new THREE.TorusGeometry(0.7, 0.26, 16, 40)',
+    'new THREE.ConeGeometry(0.8, 1.4, 24)',
+    'new THREE.CylinderGeometry(0.6, 0.6, 1.4, 24)',
+  ];
+  const COLORS = [0x4a9eff, 0xff9f43, 0x4ecb71, 0xc084fc, 0xf25f5c];
+  let h = 0;
+  for (const ch of String(section.id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const geo = SHAPES[h % SHAPES.length];
+  const color = COLORS[h % COLORS.length];
   try {
     await execTool('create_custom_object', {
       name: label.slice(0, 40) || 'Concept',
       icon: '📦',
-      code: `const g = new THREE.BoxGeometry(1.2, 1.2, 1.2);
-const m = new THREE.MeshStandardMaterial({ color: 0x4a9eff, roughness: 0.45, metalness: 0.1 });
+      code: `const g = ${geo};
+const m = new THREE.MeshStandardMaterial({ color: ${color}, roughness: 0.45, metalness: 0.1 });
 const mesh = new THREE.Mesh(g, m);
 mesh.position.set(0, 1.2, 0);
 return mesh;`,

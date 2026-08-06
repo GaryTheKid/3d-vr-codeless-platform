@@ -33,9 +33,12 @@ git push origin main
 
 Root already has `index.html` and `.nojekyll`. App code lives under `xr-edu-agent/` — you do **not** need to move everything to root.
 
+Keep `pre-built-samples/` at the repo root: it holds the ready-made `.xrcourse` packages the Projects panel lists, fetched only when a participant opens one. To add or replace a sample, drop the `.xrcourse` in that folder and run `python pre-built-samples/build_manifest.py`.
+
 ### 3. Client tips
 
 - **Browser**: Chrome or Edge (recommended: WebXR + local project folder)
+- **Start here**: **📁 Projects** → **Sample courses** — five finished courses (Physics / Chemistry / Biology / Geoscience / Mechanical) open in one click, no PDF conversion and no AI key needed
 - **AI**: configured by the deployer; the playtest UI has no Key settings button
 - **No Key**: offline demo still works (keyword rules build sample scenes)
 - **Saving projects**:
@@ -50,6 +53,8 @@ Root already has `index.html` and `.nojekyll`. App code lives under `xr-edu-agen
 |---------|-------------------|--------------|
 | Static page / 3D / VR | ✅ | ✅ |
 | AI Agent (key configured) | ✅ | ✅ |
+| PDF/Word upload (`POST /__doc/convert` + Docling) | ✅ | ❌ (static host → HTTP 405; open a **sample course** instead, or run local `server.py`) |
+| OpenAI image proxy (`/__openai/…`) | ✅ | ❌ (needs `server.py` or your own proxy) |
 | Structured logs `logs/*.jsonl` | ✅ | ❌ (memory fallback) |
 | Export write to `download/` | ✅ | ❌ (browser download) |
 | Auto-load `api-keys.txt` | ✅ | ❌ (deployer proxy auth) |

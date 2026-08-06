@@ -600,7 +600,7 @@ async function handleDocUpload(file) {
   } catch (err) {
     typing.remove();
     const msg = String(err?.message || err);
-    const needServer = /Failed to fetch|NetworkError|503|not installed|Docling/i.test(msg);
+    const needServer = /Failed to fetch|NetworkError|503|405|404|not installed|Docling|GitHub Pages|server\.py|非 JSON|non-JSON|invalid response|无法连接|Cannot reach/i.test(msg);
     addMsg('ai', `<span style="color:var(--danger)">${escapeHtml(t('chat.docFail'))}: ${escapeHtml(msg)}</span>`
       + (needServer ? `<br><small>${escapeHtml(t('chat.docNeedServer'))}</small>` : ''));
     toast(t('chat.docFail'));

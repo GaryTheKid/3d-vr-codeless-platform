@@ -15,7 +15,7 @@ function TopBar() {
         <div className="logo"><span className="logo-mark">◈</span> XR <b>EduAgent</b></div>
         <div className="scene-tab active">
           <span className="tab-icon">🌌</span>
-          <span id="scene-tab-name" data-i18n="top.sceneTabDefault">我的第一节VR课</span><span className="tab-suffix">.xrscene</span>
+          <span id="scene-tab-name" data-i18n="top.sceneTabDefault">我的第一节VR课</span><span className="tab-suffix">.xrcourse</span>
           <span className="tab-dot"></span>
         </div>
       </div>
@@ -41,14 +41,20 @@ function ProjectsOverlay() {
         </div>
         <div className="proj-actions">
           <button className="mini-btn primary" id="btn-proj-new" data-i18n="proj.new">➕ 新建项目</button>
-          <button className="mini-btn" id="btn-proj-import" data-i18n="proj.import" data-i18n-title="proj.importTitle">📥 导入 HTML</button>
+          <button className="mini-btn" id="btn-proj-download" data-i18n="proj.downloadCourse" data-i18n-title="proj.downloadCourseTitle">⬇ 下载课程包</button>
+          <button className="mini-btn" id="btn-proj-import" data-i18n="proj.import" data-i18n-title="proj.importTitle">📥 导入课程</button>
           <button className="mini-btn" id="btn-proj-folder" data-i18n="proj.connectFolder" data-i18n-title="proj.connectFolderTitle">📂 选择项目文件夹</button>
-          <input type="file" id="proj-import-file" accept=".html,.htm" className="hidden" />
+          <input type="file" id="proj-import-file" accept=".xrcourse,.xrscene,.html,.htm,application/json" className="hidden" />
         </div>
         <div className="proj-storage-note" id="proj-storage-note"></div>
+        <div id="proj-samples" className="hidden">
+          <div className="proj-group-title" data-i18n="proj.samplesTitle">示例课程(点开即用)</div>
+          <ul id="sample-list"></ul>
+          <div className="proj-group-title" data-i18n="proj.myProjectsTitle">我的项目</div>
+        </div>
         <ul id="project-list"></ul>
         <div className="hierarchy-empty" id="project-empty" data-i18n="proj.empty">
-          还没有项目<br />点「新建项目」保存当前场景,或导入之前下载的 HTML
+          还没有项目<br />点「新建项目」保存当前课程,或导入 .xrcourse 课程包
         </div>
       </div>
     </div>

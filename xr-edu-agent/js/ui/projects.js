@@ -8,17 +8,21 @@ import { t, L } from '../core/i18n.js';
 import { clearScene } from '../scene/manager.js';
 import {
   listProjects, currentProjectId, getProject, saveToProject,
-  openProject, deleteProject, renameProject, copyProject, importHTMLFile,
+  openProject, deleteProject, renameProject, copyProject, importCourseFile,
+  downloadCoursePackage,
   storageMode, connectedFolderName, folderStorageSupported,
   connectProjectsFolder, disconnectProjectsFolder, initProjectStorage,
-  stashWorkingDraft, isWorkingDraft,
+  stashWorkingDraft, isWorkingDraft, setCurrentProject,
 } from '../core/projects.js';
+import { listSampleCourses, openSampleCourse, sampleSubjectLabel } from '../core/samples.js';
 import { setOutline, createDefaultOutline } from '../core/outline.js';
 import { resetVrSceneBinding } from '../core/section-scene.js';
 import { resetOrbitCamera } from '../core/three-setup.js';
 
 const listEl = document.getElementById('project-list');
 const emptyEl = document.getElementById('project-empty');
+const samplesEl = document.getElementById('proj-samples');
+const sampleListEl = document.getElementById('sample-list');
 const tabName = document.getElementById('scene-tab-name');
 const storageNote = document.getElementById('proj-storage-note');
 const folderBtn = document.getElementById('btn-proj-folder');
@@ -70,8 +74,56 @@ function updateStorageUI() {
   else folderBtn.classList.remove('hidden');
 }
 
+/**
+ * Ready-made courses from pre-built-samples/. Opening one loads it straight
+ * into the workspace; the multi-MB package is never copied into the project
+ * library (that is what fills the localStorage quota).
+ */
+async function renderSamples() {
+  if (!samplesEl || !sampleListEl) return;
+  const samples = await listSampleCourses();
+  samplesEl.classList.toggle('hidden', samples.length === 0);
+  if (!samples.length) return;
+  sampleListEl.innerHTML = '';
+  for (const s of samples) {
+    const li = document.createElement('li');
+    li.className = 'proj-item sample';
+    li.title = t('proj.sampleOpenTitle');
+    const meta = [sampleSubjectLabel(s), t('proj.sections', { n: s.sections ?? 0 })]
+      .filter(Boolean).join(' · ');
+    li.innerHTML = `
+      <div class="proj-main">
+        <span class="proj-name">${escapeHtml(s.title || s.id)}</span>
+        <span class="proj-badge sample">${t('proj.sampleBadge')}</span>
+        <div class="proj-meta">${escapeHtml(meta)}</div>
+      </div>`;
+    li.addEventListener('click', async () => {
+      if (!confirm(t('proj.sampleOpenConfirm', { name: s.title || s.id }))) return;
+      li.classList.add('loading');
+      try {
+        // A full localStorage must not stand between a participant and a sample
+        try { await stashWorkingDraft(); }
+        catch (e) { console.warn('[projects] could not stash before opening a sample', e); }
+        const info = await openSampleCourse(s.id);
+        // Not a library entry — clear "current" so Save asks for a new name
+        // instead of overwriting whatever project was open before.
+        setCurrentProject(null);
+        tabName.textContent = info.name;
+        toast(t('proj.sampleOpened', { name: info.name, sections: info.sections }));
+        closeProjectsOverlay();
+      } catch (e) {
+        toast(t('proj.sampleFailed', { err: e.message || String(e) }));
+      } finally {
+        li.classList.remove('loading');
+      }
+    });
+    sampleListEl.appendChild(li);
+  }
+}
+
 export function renderProjects() {
   updateStorageUI();
+  renderSamples();
   const projects = listProjects().sort((a, b) => {
     // Working draft always pins to top
     if (isWorkingDraft(a.id) && !isWorkingDraft(b.id)) return -1;
@@ -196,6 +248,20 @@ export async function saveCurrent() {
 }
 document.getElementById('btn-save').addEventListener('click', saveCurrent);
 
+document.getElementById('btn-proj-download')?.addEventListener('click', () => {
+  if (document.body.classList.contains('course-pipeline-busy')) {
+    toast(L('课程生成中,暂不可用', 'Unavailable while the course is generating'));
+    return;
+  }
+  const name = tabName.textContent.trim() || t('proj.defaultName');
+  try {
+    const data = downloadCoursePackage(name);
+    toast(t('proj.downloadCourseOk', { name: data.name || name }));
+  } catch (e) {
+    toast(t('proj.saveFailed', { err: e.message || String(e) }));
+  }
+});
+
 const fileInput = document.getElementById('proj-import-file');
 document.getElementById('btn-proj-import').addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', async () => {
@@ -203,7 +269,7 @@ fileInput.addEventListener('change', async () => {
   fileInput.value = '';
   if (file) {
     await stashWorkingDraft();
-    await importHTMLFile(file);
+    await importCourseFile(file);
     closeProjectsOverlay();
   }
 });

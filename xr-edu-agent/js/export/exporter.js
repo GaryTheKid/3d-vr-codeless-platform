@@ -34,7 +34,7 @@ function sceneName() {
 
 export async function exportScene() {
   if (!sceneRoot.children.length) { toast(t('export.empty')); return; }
-  const data = serializeScene(sceneName());
+  const data = serializeScene(sceneName(), { slim: false });
   const cfg = {
     name: data.name,
     locomotion: data.cfg.locomotion,

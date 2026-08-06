@@ -1,4 +1,4 @@
-// Agent 工作流有向图 + 工具目录(agent-viewer*.html 的数据源)
+﻿// Agent 工作流有向图 + 工具目录(agent-viewer*.html 的数据源)
 // ⚠ 内容保持 JSON 字面量,仅外面包了一层赋值——这样可视化页在 file:// 下
 //   当普通 <script> 加载即可拿到数据(file:// 禁 fetch,.json 无法读取)
 // ⚠ 文案字段一律写成 {"zh":"…","en":"…"} 双语对象(查看器按语言开关取值);
@@ -234,15 +234,15 @@ globalThis.XR_AGENT_MAP =
         "group": "llm",
         "title": { "zh": "执行器工具循环 runExecutor", "en": "Executor tool loop (runExecutor)" },
         "desc": {
-          "zh": "核心执行阶段:带全部 39 个工具定义的多轮 tool-use 循环(上限 20 轮)。系统提示分两块做 Prompt Caching:稳定块 = BASE_SYSTEM + 资源/模板目录(标 cache_control: ephemeral);变化块 = Planner 选中技能的完整 prompt(skillPrompts)。复杂任务(≥3 步)按流水线推进——每进入新阶段先调 report_progress(语义本体→搭建场景→加交互→核验;修复类:排查→修复→免疫→验收);打字三个点上方同步显示灰字阶段状态(类 Cursor)。循环内:流式思考/正文/tool_use → 本地执行 → tool_result 回填 → 缓存断点滑动(第 2 轮起 0.1× 价)。report_progress 零副作用,不触发场景快照/Keep 卡。质量纪律:validation 引导 get_scene 自检;排障任务带 debugging;max_tokens 给可读截断提示。结束时 emit('agent-progress-end') 把进度卡末阶段标完成。备课自文档时优先 course_* / outline_* 确定性工具(弱模型友好);对齐 Learning Outline 当前节 type;每个 VR 节独立场景快照。",
-          "en": "Core execution: multi-round tool-use with all 39 tools (≤20 rounds). Prompt caching: stable = BASE_SYSTEM + catalogs; variable = selected skill prompts. Complex tasks call report_progress per pipeline stage. When authoring from an uploaded doc, prefer deterministic course_* / outline_* tools (weaker-model friendly); align with active Outline section type; each VR section owns an isolated scene snapshot."
+          "zh": "核心执行阶段:带全部 40 个工具定义的多轮 tool-use 循环(上限 20 轮)。系统提示分两块做 Prompt Caching:稳定块 = BASE_SYSTEM + 资源/模板目录(标 cache_control: ephemeral);变化块 = Planner 选中技能的完整 prompt(skillPrompts)。复杂任务(≥3 步)按流水线推进——每进入新阶段先调 report_progress(语义本体→搭建场景→加交互→核验;修复类:排查→修复→免疫→验收);打字三个点上方同步显示灰字阶段状态(类 Cursor)。循环内:流式思考/正文/tool_use → 本地执行 → tool_result 回填 → 缓存断点滑动(第 2 轮起 0.1× 价)。report_progress 零副作用,不触发场景快照/Keep 卡。质量纪律:validation 引导 get_scene 自检;排障任务带 debugging;max_tokens 给可读截断提示。结束时 emit('agent-progress-end') 把进度卡末阶段标完成。备课自文档时优先 course_* / outline_* 确定性工具(弱模型友好);对齐 Learning Outline 当前节 type;每个 VR 节独立场景快照。",
+          "en": "Core execution: multi-round tool-use with all 40 tools (≤20 rounds). Prompt caching: stable = BASE_SYSTEM + catalogs; variable = selected skill prompts. Complex tasks call report_progress per pipeline stage. When authoring from an uploaded doc, prefer deterministic course_* / outline_* tools (weaker-model friendly); align with active Outline section type; each VR section owns an isolated scene snapshot."
         },
         "uses": {
           "skills": [
             { "zh": "Planner 选中的技能完整 prompt 注入变化块(常见:scene-organization + object-creation + pedagogy;课程备课 + course-pipeline / course-outline / course-reading|h5|quiz;精细建模 + custom-modeling;交互实验 + experiment-logic + interaction-design;室内 + room-design;导览 + view-navigation;收尾 validation / locomotion;排障 + debugging)", "en": "Full prompts of selected skills in the variable block (common: scene-organization + object-creation + pedagogy; course-pipeline / course-outline / course-reading|h5|quiz for authoring; custom-modeling; experiment-logic + interaction-design; room-design; view-navigation; validation / locomotion; debugging)" }
           ],
           "tools": [
-            { "zh": "全部 39 个工具;复杂任务每阶段开头调 report_progress 汇报流水线进度", "en": "All 39 tools; complex tasks call report_progress at the start of each pipeline stage" }
+            { "zh": "全部 40 个工具;复杂任务每阶段开头调 report_progress 汇报流水线进度", "en": "all 40 tools; complex tasks call report_progress at the start of each pipeline stage" }
           ]
         },
         "file": "js/agent/orchestrator.js#runExecutor"
@@ -411,9 +411,11 @@ globalThis.XR_AGENT_MAP =
     { "name": "outline_update_section", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
       "summary": { "zh": "更新小节标题/目的/类型(vr|reading|h5|quiz)/摘要。", "en": "Updates section title / purpose / type (vr|reading|h5|quiz) / summary." } },
     { "name": "outline_add_chapter", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
-      "summary": { "zh": "新增一章(默认带一个 VR 节)。", "en": "Adds a chapter (default one VR section)." } },
+      "summary": { "zh": "新增一章(默认带一个 VR 节);需老师明确要求(requested_by_teacher),上一章全空时拒绝。", "en": "Adds a chapter (default one VR section); requires an explicit teacher request and refuses when the last chapter is still blank." } },
     { "name": "outline_add_section", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
-      "summary": { "zh": "在指定章下新增小节;测验建议放章末。", "en": "Adds a section under a chapter; prefer quiz at chapter end." } },
+      "summary": { "zh": "在指定章下新增小节;需老师明确要求,已有同型空节时拒绝,且不抢活动节。", "en": "Adds a section under a chapter; requires an explicit teacher request, refuses when a blank section of that type exists, and never steals the active section." } },
+    { "name": "outline_remove_section", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
+      "summary": { "zh": "删除尚无内容的空小节(清理误加);有内容的节拒绝删除。", "en": "Removes a blank section (cleanup); refuses sections that already have content." } },
     { "name": "reading_set_chunks", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",
       "summary": { "zh": "覆盖 reading 节知识块(富文本 HTML + 可选追问测验)。", "en": "Overwrites reading-section knowledge chunks (rich HTML + optional follow-up quiz)." } },
     { "name": "h5_set_content", "group": { "zh": "大纲 outline", "en": "Outline" }, "file": "js/agent/tools/outline-tools.js",

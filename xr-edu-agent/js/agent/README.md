@@ -1,4 +1,4 @@
-# js/agent — Agent directory & maintenance rules
+﻿# js/agent — Agent directory & maintenance rules
 
 This directory is the product’s “brain.” **Anyone (including AI assistants) who changes agent / skills / tools must sync the visualization data per the last section**, or `agent-viewer*.html` will show a stale architecture.
 
@@ -19,7 +19,7 @@ js/agent/
 │   ├── manifest.js           File list for the skills viewer (keep order aligned with index.js imports)
 │   └── *.js                  (globalThis.XR_AGENT_SKILLS ??= []).push({id,name,description,prompt,…})
 ├── tools/                    🔧 Tool library (grouped by role)
-│   ├── index.js              Aggregate: TOOLS / toolDefsForAPI / execTool / toolCallLabel (39 tools)
+│   ├── index.js              Aggregate: TOOLS / toolDefsForAPI / execTool / toolCallLabel (40 tools)
 │   ├── shared.js             ok/fail helpers
 │   ├── build-tools.js        Create: add_asset / create_custom_object / set_behavior / build_template / clear_scene
 │   ├── edit-tools.js         Edit: update_object / remove_object / select_object

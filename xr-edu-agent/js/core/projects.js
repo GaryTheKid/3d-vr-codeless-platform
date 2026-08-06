@@ -1,20 +1,31 @@
 // ═══════════════════════════════════════════════════════════════
-//  项目管理:本地项目库(localStorage)+ 场景序列化/还原 + HTML 导入
+//  Projects + course packages (.xrcourse)
 //
-//  · 数据格式(ProjectData,同时也是导出 HTML 内嵌数据块的格式):
-//      { magic:'XR-EDU-SCENE', version:1, name, scene:<sceneRoot.toJSON()>, cfg:{locomotion} }
-//  · 保存:剥离 userData 里不可序列化的值(函数/THREE 对象)→ toJSON;
-//    面板文字靠 panelSpec(JSON 安全镜像)随场景走,载入后重建可编辑面板
-//  · 载入:ObjectLoader 解析 → 面板 rehydrate → 行为代码重新编译
-//    (builderCode 对象整体重建,live 面板降级为静态快照 —— 与导出播放器同一套边界)
-//  · 导入校验门:文件大小上限 / 魔数+版本 / 结构形状校验 / 用户确认(含代码风险提示)
+//  Canonical single-file format (download / folder / HTML embed):
+//    {
+//      magic: 'XR-EDU-COURSE',   // legacy 'XR-EDU-SCENE' still loads
+//      version: 1,
+//      kind: 'course',
+//      name: string,
+//      exportedAt: number,
+//      scene: <THREE.ObjectLoader JSON of live/active viewport>,
+//      cfg: {
+//        locomotion: { mode, allowedRadius, turnMode },
+//        outline: { version, course, chapters[], progress, activeSectionId },
+//          // each section carries type-specific payload:
+//          //   reading.chunks[] | h5.{html,prompt} | quiz.items[] | vr.{scene,camera}
+//        knowledgeGraph: { nodes, edges, ahaKeys, ... } | null,
+//      }
+//    }
+//  · Save flushes the live VR section into outline before serialize
+//  · Load restores outline + KG + all section contents, then binds active VR
 // ═══════════════════════════════════════════════════════════════
 import * as THREE from 'three';
 import { sceneRoot, resetOrbitCamera } from './three-setup.js';
 import { state } from './state.js';
 import { emit } from './events.js';
 import { toast } from './utils.js';
-import { t } from './i18n.js';
+import { t, L } from './i18n.js';
 import { clearScene } from '../scene/manager.js';
 import { syncPanelSpec, rehydratePanel } from '../panels/panel3d.js';
 import { runBuilderCode, compileUpdate, compileClick, compileHandler } from '../agent/sandbox.js';
@@ -23,10 +34,21 @@ import { ensureStudentRig } from '../scene/student-rig.js';
 import * as projectFs from './project-fs.js';
 import { getOutline, setOutline, normalizeOutline } from './outline.js';
 import { setKnowledgeGraph, clearKnowledgeGraph } from './knowledge-graph.js';
-import { resetVrSceneBinding, getLiveVrSectionId, saveLiveSceneToSection } from './section-scene.js';
+import {
+  resetVrSceneBinding, getLiveVrSectionId, saveLiveSceneToSection,
+  syncLiveVrSceneWithOutline, parseSceneChildren, slimSnapshot,
+} from './section-scene.js';
 
+/** @deprecated Prefer COURSE_MAGIC for new packages; still accepted on import. */
 export const SCENE_MAGIC = 'XR-EDU-SCENE';
+export const COURSE_MAGIC = 'XR-EDU-COURSE';
 export const SCENE_VERSION = 1;
+export const COURSE_VERSION = 1;
+export const COURSE_FILE_EXT = '.xrcourse';
+
+function isKnownMagic(magic) {
+  return magic === COURSE_MAGIC || magic === SCENE_MAGIC;
+}
 /** Auto-stash slot for the course that would otherwise be wiped by open/new/import. */
 export const WORKING_DRAFT_ID = '__working_draft__';
 const LS_KEY = 'xr-projects';
@@ -77,9 +99,49 @@ export function listProjects() {
   try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
   catch { return []; }
 }
-function writeProjects(list) {
-  localStorage.setItem(LS_KEY, JSON.stringify(list));
-  emit('projects-changed');
+function isQuotaError(e) {
+  return e?.name === 'QuotaExceededError'
+    || e?.name === 'NS_ERROR_DOM_QUOTA_REACHED'
+    || /quota/i.test(e?.message || '');
+}
+
+/**
+ * localStorage holds every project in one key, so a few 3D-heavy courses fill
+ * it. On overflow drop what is recoverable — the auto-stash draft first, then
+ * the oldest projects — and keep the save the teacher just asked for.
+ */
+function writeProjects(list, { keepId = null } = {}) {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(list));
+    emit('projects-changed');
+    return;
+  } catch (e) {
+    if (!isQuotaError(e)) throw e;
+  }
+
+  const evictable = () => list
+    .filter(p => p.id !== keepId)
+    .sort((a, b) => (a.id === WORKING_DRAFT_ID ? -1 : b.id === WORKING_DRAFT_ID ? 1 : (a.updatedAt || 0) - (b.updatedAt || 0)));
+
+  const dropped = [];
+  let pool = [...list];
+  while (true) {
+    const victim = evictable().find(p => pool.includes(p));
+    if (!victim) break;
+    pool = pool.filter(p => p !== victim);
+    dropped.push(victim.name || victim.id);
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(pool));
+      list.length = 0;
+      list.push(...pool);
+      emit('projects-changed');
+      toast(t('proj.quotaEvicted', { names: dropped.join(', ') }));
+      return;
+    } catch (e) {
+      if (!isQuotaError(e)) throw e;
+    }
+  }
+  throw new Error(t('proj.quotaFull'));
 }
 export function currentProjectId() { return localStorage.getItem(LS_CURRENT) || null; }
 export function setCurrentProject(id) {
@@ -111,24 +173,76 @@ export function stripUserData(root) {
   return () => stash.forEach(([o, saved]) => Object.assign(o.userData, saved));
 }
 
-export function serializeScene(name) {
+/** Flush live VR edits into the active section, then build a course package. */
+/**
+ * @param {{slim?: boolean}} [opts]  slim=false keeps panel textures and
+ *   code-built meshes in the JSON — the standalone HTML export needs them
+ *   because its player has no panelSpec rehydration.
+ */
+export function serializeScene(name, { slim = true } = {}) {
+  const liveId = getLiveVrSectionId();
+  if (liveId) {
+    try { saveLiveSceneToSection(liveId); } catch (e) {
+      console.warn('[project] flush live VR before serialize failed:', e);
+    }
+  }
   // 面板内容镜像刷新(直接改过 pd.lines 的代码路径也能存到最新内容)
   sceneRoot.traverse(o => { if (o.userData.panelData) syncPanelSpec(o); });
   const restore = stripUserData(sceneRoot);
   let scene;
-  try { scene = sceneRoot.toJSON(); }
-  finally { restore(); }
+  try {
+    const full = sceneRoot.toJSON();
+    scene = slim ? slimSnapshot(full) : full;
+  } finally { restore(); }
+  const outline = getOutline();
   return {
-    magic: SCENE_MAGIC,
-    version: SCENE_VERSION,
-    name,
+    magic: COURSE_MAGIC,
+    version: COURSE_VERSION,
+    kind: 'course',
+    name: name || outline?.course?.title || L('未命名课程', 'Untitled course'),
+    exportedAt: Date.now(),
     scene,
     cfg: {
-      locomotion: { mode: locomotion.mode, allowedRadius: locomotion.allowedRadius, turnMode: locomotion.turnMode },
-      outline: getOutline(),
+      locomotion: {
+        mode: locomotion.mode,
+        allowedRadius: locomotion.allowedRadius,
+        turnMode: locomotion.turnMode,
+      },
+      outline,
       knowledgeGraph: state.knowledgeGraph || null,
     },
   };
+}
+
+/** Alias — serializeScene already emits the course package. */
+export function serializeCourse(name) {
+  return serializeScene(name);
+}
+
+function safeCourseFilename(name) {
+  const base = String(name || 'course')
+    .replace(/\.(xrcourse|xrscene|html|htm)$/i, '')
+    .trim()
+    .replace(/[<>:"/\\|?*\x00-\x1f]/g, '')
+    .replace(/\s+/g, ' ')
+    .slice(0, 80) || 'course';
+  return `${base}${COURSE_FILE_EXT}`;
+}
+
+/** Download current course as a single `.xrcourse` JSON file. */
+export function downloadCoursePackage(name) {
+  const data = serializeCourse(name);
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = safeCourseFilename(data.name);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  return data;
 }
 
 // ── ProjectData → 场景 ──
@@ -163,12 +277,41 @@ function reviveObject(old, root) {
 }
 
 export function loadSceneData(data) {
+  validateCourseData(data);
   resetVrSceneBinding();
   resetOrbitCamera(null);
-  const parsed = new THREE.ObjectLoader().parse(data.scene);
+
+  const outlineRaw = data.cfg?.outline ?? data.outline;
+  const kgRaw = data.cfg?.knowledgeGraph ?? data.knowledgeGraph;
+  const loco = data.cfg?.locomotion ?? data.locomotion;
+  const outline = normalizeOutline(outlineRaw, data.name || '');
+
+  // Prefer active VR section snapshot when present; else top-level scene
+  const activeId = outline.activeSectionId;
+  let activeVrScene = null;
+  for (const ch of outline.chapters || []) {
+    const sec = (ch.sections || []).find(s => s.id === activeId);
+    if (sec?.type === 'vr' && sec.vr?.scene) {
+      activeVrScene = sec.vr.scene;
+      break;
+    }
+  }
+  const sceneJson = activeVrScene || data.scene;
+  if (!sceneJson?.object) {
+    throw new Error(t('proj.importBadSchema', { detail: 'missing scene' }));
+  }
+
+  // One object ObjectLoader cannot read must not fail the whole course import
+  let loaded;
+  try {
+    loaded = [...new THREE.ObjectLoader().parse(sceneJson).children];
+  } catch (e) {
+    console.warn('[projects] scene parse failed — recovering object by object:', e);
+    loaded = parseSceneChildren(sceneJson).objects;
+  }
   clearScene(false);   // 载入项目 = 整体替换,系统对象也由项目数据接管
   let hadLive = false;
-  for (const child of [...parsed.children]) sceneRoot.add(child);
+  for (const child of loaded) sceneRoot.add(child);
   for (const child of [...sceneRoot.children]) reviveObject(child, sceneRoot);
   // 学生视角代表物:多个只留一个(旧数据叠加时),没有则补建
   const rigs = sceneRoot.children.filter(o => o.userData.studentRig);
@@ -187,12 +330,25 @@ export function loadSceneData(data) {
     if (m) maxOid = Math.max(maxOid, +m[1]);
   });
   state.objCounter = Math.max(state.objCounter, maxOid);
-  if (data.cfg?.locomotion) configureLocomotion(data.cfg.locomotion, true);
-  setOutline(normalizeOutline(data.cfg?.outline, data.name || ''), { silent: false });
-  if (data.cfg?.knowledgeGraph) setKnowledgeGraph(data.cfg.knowledgeGraph, { silent: true });
+  if (loco) configureLocomotion(loco, true);
+
+  // Populate learning outline + ALL section contents (reading/h5/quiz/vr)
+  setOutline(outline, { silent: false });
+  if (kgRaw) setKnowledgeGraph(kgRaw, { silent: true });
   else clearKnowledgeGraph();
+
+  // Bind live viewport to the active outline VR section (if any)
+  try { syncLiveVrSceneWithOutline(); } catch (e) {
+    console.warn('[project] sync VR after load:', e);
+  }
+
   emit('hierarchy-changed');
   if (hadLive) toast(t('proj.liveDegrade'));
+}
+
+/** Alias for clarity in call sites. */
+export function loadCourseData(data) {
+  return loadSceneData(data);
 }
 
 // ── 项目 CRUD ──
@@ -232,7 +388,7 @@ export async function saveToProject(id, name) {
   proj.updatedAt = now;
   proj.objects = objects;
   proj.data = data;
-  try { writeProjects(list); }
+  try { writeProjects(list, { keepId: proj.id }); }
   catch (e) { toast(t('proj.saveFailed', { err: e.message })); return null; }
   setCurrentProject(proj.id);
   return proj;
@@ -348,7 +504,7 @@ export function openProject(id) {
   }
 }
 
-// ── HTML 导入(带校验门)──
+// ── Import: .xrcourse / .xrscene JSON, or HTML with embedded course block ──
 // 导出 HTML 内嵌 <script type="application/json" id="xr-scene-source">…</script>
 export function extractSceneFromHTML(html) {
   const m = html.match(/<script\s+type="application\/json"\s+id="xr-scene-source"\s*>([\s\S]*?)<\/script>/);
@@ -356,36 +512,106 @@ export function extractSceneFromHTML(html) {
   let data;
   try { data = JSON.parse(m[1]); }
   catch { throw new Error(t('proj.importBadSchema', { detail: 'JSON parse error' })); }
-  validateSceneData(data);
+  validateCourseData(data);
   return data;
 }
 
+/** @deprecated use validateCourseData */
 export function validateSceneData(data) {
+  return validateCourseData(data);
+}
+
+function outlineHasVrScene(outline) {
+  for (const ch of outline?.chapters || []) {
+    for (const s of ch.sections || []) {
+      if (s?.type === 'vr' && s.vr?.scene?.object) return true;
+    }
+  }
+  return false;
+}
+
+export function validateCourseData(data) {
   const bad = detail => { throw new Error(t('proj.importBadSchema', { detail })); };
   if (!data || typeof data !== 'object') bad('not an object');
-  if (data.magic !== SCENE_MAGIC) throw new Error(t('proj.importNotOurs'));
-  if (data.version !== SCENE_VERSION) bad(`version ${data.version}`);
+  if (!isKnownMagic(data.magic)) throw new Error(t('proj.importNotOurs'));
+  if (data.version !== COURSE_VERSION && data.version !== SCENE_VERSION) {
+    bad(`version ${data.version}`);
+  }
   if (typeof data.name !== 'string') bad('name');
+
+  const outline = data.cfg?.outline ?? data.outline;
+  const hasOutline = !!(outline && Array.isArray(outline.chapters));
   const s = data.scene;
-  if (!s?.object || s.object.type !== 'Group') bad('scene root');
-  if (!Array.isArray(s.object.children)) bad('scene children');
-  if (s.object.children.length > 500) bad('too many objects');
+  const hasTopScene = !!(s?.object && s.object.type === 'Group' && Array.isArray(s.object.children));
+  const hasSectionVr = outlineHasVrScene(outline);
+
+  if (!hasTopScene && !hasSectionVr && !hasOutline) {
+    bad('missing course outline / scene');
+  }
+  if (hasTopScene && s.object.children.length > 500) bad('too many objects');
+  if (hasOutline) {
+    let nSec = 0;
+    for (const ch of outline.chapters) nSec += (ch.sections || []).length;
+    if (nSec > 200) bad('too many sections');
+  }
   return true;
 }
 
-export async function importHTMLFile(file) {
+function countCourseObjects(data) {
+  const s = data.scene?.object?.children;
+  if (Array.isArray(s)) return s.length;
+  let n = 0;
+  const outline = data.cfg?.outline ?? data.outline;
+  for (const ch of outline?.chapters || []) {
+    for (const sec of ch.sections || []) {
+      n += sec.vr?.scene?.object?.children?.length || 0;
+    }
+  }
+  return n;
+}
+
+function countCourseSections(data) {
+  const outline = data.cfg?.outline ?? data.outline;
+  if (!outline?.chapters) return 0;
+  return outline.chapters.reduce((n, c) => n + (c.sections?.length || 0), 0);
+}
+
+/** Parse .xrcourse / .xrscene JSON or exported HTML into validated course data. */
+export function parseCourseFileText(text, filename = '') {
+  const trimmed = String(text || '').trim();
+  if (!trimmed) throw new Error(t('proj.importBadSchema', { detail: 'empty file' }));
+  const looksHtml = /\.html?$/i.test(filename) || /^<!DOCTYPE|^<html[\s>]/i.test(trimmed);
+  if (looksHtml) return extractSceneFromHTML(trimmed);
+  let data;
+  try { data = JSON.parse(trimmed); }
+  catch { throw new Error(t('proj.importBadSchema', { detail: 'JSON parse error' })); }
+  validateCourseData(data);
+  return data;
+}
+
+/**
+ * Import a course package (.xrcourse / .xrscene / exported HTML).
+ * Replaces the current course after confirm; saves into the project library.
+ */
+export async function importCourseFile(file) {
+  if (!file) return;
   if (file.size > MAX_IMPORT_BYTES) { toast(t('proj.importTooBig')); return; }
   let data;
-  try { data = extractSceneFromHTML(await file.text()); }
+  try { data = parseCourseFileText(await file.text(), file.name); }
   catch (e) { toast(t('proj.importBad', { err: e.message })); return; }
-  const n = data.scene.object.children.length;
+  const n = countCourseObjects(data);
+  const nSec = countCourseSections(data);
   const name = data.name || t('proj.defaultName');
-  // 场景可能携带 AI 生成的行为代码(载入即编译执行)→ 明确请用户确认
-  if (!confirm(t('proj.importConfirm', { name, n }))) return;
+  if (!confirm(t('proj.importCourseConfirm', { name, n, sections: nSec }))) return;
   try {
-    loadSceneData(data);
+    loadCourseData(data);
   } catch (e) { toast(t('proj.importBad', { err: e.message })); return; }
   const proj = await saveToProject(null, name);
   if (proj) document.getElementById('scene-tab-name').textContent = proj.name;
-  toast(t('proj.importOk', { name, n }));
+  toast(t('proj.importCourseOk', { name, sections: nSec, n }));
+}
+
+/** @deprecated use importCourseFile */
+export async function importHTMLFile(file) {
+  return importCourseFile(file);
 }

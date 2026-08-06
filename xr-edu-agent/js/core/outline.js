@@ -282,13 +282,18 @@ export function addChapter(partial = {}) {
   return ch;
 }
 
-export function addSection(chapterId, partial = {}) {
+/**
+ * @param {{activate?: boolean}} opts  activate=false keeps the teacher on the
+ *   section they are working on — an agent-added section stealing focus made
+ *   the live 3D viewport swap to an empty scene mid-conversation.
+ */
+export function addSection(chapterId, partial = {}, { activate = true } = {}) {
   const outline = getOutline();
   const ch = outline.chapters.find(c => c.id === chapterId);
   if (!ch) return null;
   const sec = createSection(partial);
   ch.sections.push(sec);
-  outline.activeSectionId = sec.id;
+  if (activate) outline.activeSectionId = sec.id;
   emit('outline-changed', outline);
   return sec;
 }
@@ -493,7 +498,16 @@ export function ensureDocCourseMinimum(opts = {}) {
   const ch = outline.chapters[0];
   if (!ch) return null;
 
-  const findType = type => ch.sections.find(s => s.type === type);
+  // Course-wide lookup. Scanning only chapter 1 meant a multi-chapter course
+  // built by the pipeline got a blank 3D + quiz section injected into chapter 1
+  // after every agent turn, which also broke "course complete".
+  const findType = type => {
+    for (const c of outline.chapters) {
+      const hit = c.sections.find(s => s.type === type);
+      if (hit) return hit;
+    }
+    return null;
+  };
   let vr = findType('vr');
   let reading = findType('reading');
   let quiz = findType('quiz');
@@ -518,7 +532,8 @@ export function ensureDocCourseMinimum(opts = {}) {
       purpose: L('梳理上传材料中的核心概念', 'Cover core concepts from the uploaded material'),
     });
     const vrIdx = ch.sections.indexOf(vr);
-    ch.sections.splice(vrIdx + 1, 0, reading);
+    if (vrIdx >= 0) ch.sections.splice(vrIdx + 1, 0, reading);
+    else ch.sections.unshift(reading);
     changed = true;
   }
   if (!quiz) {
@@ -539,6 +554,9 @@ export function ensureDocCourseMinimum(opts = {}) {
         title: L('背景与核心概念', 'Background & core concepts'),
         html: markdownToReadingHtml(md),
       })];
+      // Seeded content counts as built, otherwise this safety net would leave
+      // the course permanently "incomplete" and block Start Learning
+      reading.buildStatus = 'done';
       changed = true;
     }
     if (!quiz.quiz.items?.length) {
@@ -559,6 +577,7 @@ export function ensureDocCourseMinimum(opts = {}) {
           explanation: L('开放作答：能点出材料中的核心术语或机制即可。', 'Open response: naming a core term or mechanism from the material is enough.'),
         }),
       ];
+      quiz.buildStatus = 'done';
       changed = true;
     }
   }

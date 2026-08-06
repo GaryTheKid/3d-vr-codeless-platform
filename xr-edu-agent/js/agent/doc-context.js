@@ -272,7 +272,7 @@ export async function summarizeDocWithLLM(doc, { model } = {}) {
   return text;
 }
 
-/** Upload a File to POST /__doc/convert (base64 JSON). */
+/** Upload a File to POST /__doc/convert (base64 JSON). Requires local python server.py (not GitHub Pages). */
 export async function convertDocumentFile(file, { onProgress } = {}) {
   if (!file) throw new Error(L('未选择文件', 'No file selected'));
   onProgress?.(L('正在读取文件…', 'Reading file…'));
@@ -286,14 +286,35 @@ export async function convertDocumentFile(file, { onProgress } = {}) {
   }
   const data_b64 = btoa(bin);
   onProgress?.(L('正在解析文档(Docling)…', 'Parsing document (Docling)…'));
-  const res = await fetch('/__doc/convert', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ filename: file.name, data_b64 }),
-  });
+  let res;
+  try {
+    res = await fetch('/__doc/convert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: file.name, data_b64 }),
+    });
+  } catch (e) {
+    throw new Error(L(
+      `无法连接文档转换服务(${e.message || 'network'})。PDF 上传需要本地 python server.py(含 Docling),GitHub Pages 静态托管不支持。`,
+      `Cannot reach the document converter (${e.message || 'network'}). PDF upload needs local python server.py (with Docling); GitHub Pages static hosting cannot run it.`
+    ));
+  }
+  const raw = await res.text();
+  // GitHub Pages / static hosts: POST often → 405/404 HTML, not our JSON API
+  if (res.status === 405 || res.status === 404 || /^\s*</.test(raw)) {
+    throw new Error(L(
+      '文档转换不可用(HTTP ' + res.status + ')。GitHub Pages 是静态站,没有 Docling 后端。请在本机仓库根目录运行 python server.py 后打开 http://localhost:8000/ 再上传 PDF。',
+      `Document conversion unavailable (HTTP ${res.status}). GitHub Pages is static-only and has no Docling backend. Run python server.py from the repo root and open http://localhost:8000/ to upload PDFs.`
+    ));
+  }
   let data;
-  try { data = await res.json(); }
-  catch { throw new Error(L('服务器返回了无效响应', 'Server returned an invalid response')); }
+  try { data = JSON.parse(raw); }
+  catch {
+    throw new Error(L(
+      '服务器返回了无效响应(非 JSON)。请确认用 python server.py 打开本站,而不是纯静态托管。',
+      'Server returned a non-JSON response. Open the app via python server.py, not a static host alone.'
+    ));
+  }
   if (!res.ok || !data.ok) {
     throw new Error(data?.error || L(`转换失败 (HTTP ${res.status})`, `Conversion failed (HTTP ${res.status})`));
   }

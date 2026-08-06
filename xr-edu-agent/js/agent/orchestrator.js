@@ -18,7 +18,8 @@ import { hasLLM, callClaude, MODELS, BUDGETS, estimateCost, isRetryableLLMError,
 import { generatePedagogyImage, buildPedagogyImagePrompt } from './openai-images.js';
 import { buildContextMessage, buildLearningContextMessage } from './context.js';
 import { getUploadedDoc } from './doc-context.js';
-import { ensureDocCourseMinimum } from '../core/outline.js';
+import { ensureDocCourseMinimum, getActiveSection } from '../core/outline.js';
+import { getLiveVrSectionId, getFillingVrSectionId, saveLiveSceneToSection } from '../core/section-scene.js';
 import { studyFlag } from '../core/study-test-flags.js';
 import { toolDefsForAPI, execTool, toolCallLabel } from './tools/index.js';
 import { skillCatalogForLLM, skillPrompts } from './skills/index.js';
@@ -161,6 +162,7 @@ You work inside a Three.js / WebXR 3D editor with a Learning Outline (Chapter �
 Rules:
 1. Decide the teaching intent (subject / grade / concept) first; you are building a lesson, not a pile of models.
 2. Respect the active outline section: vr → 3D scene tools; reading → reading_set_chunks or course_fill_section; h5 → h5_set_content or course_fill_section; quiz → quiz_set_items or course_fill_section. Reshape the tree with outline_*; from uploaded material prefer course_tag_figures → course_build_outline_from_doc → course_fill_section per section. Each VR section stores its own scene snapshot — do not assume shared objects across VR sections.
+2a. HARD RULE — never restructure the course uninvited. "Change / improve / redo this section" means EDIT THE SECTION IN PLACE (outline_update_section + reading_set_chunks / h5_set_content / quiz_set_items / 3D scene tools on the active section). Only call outline_add_section / outline_add_chapter when the teacher explicitly asked for a NEW section or chapter, and quote their words in requested_by_teacher. Never create a section as a place to "put" a rewrite, and never leave a blank section behind.
 2b. HARD RULE when an uploaded teaching PDF/doc is in context: the course MUST include ≥1 reading section AND ≥1 quiz section filled from that material (even if the PDF is tiny). Never deliver only a 3D scene.
 3. Asset choice (3D sections): if a preset template is a close match → build_template; if the library has a fit → add_asset; otherwise → create_custom_object and write Three.js code. Prefer quality over crude primitives.
 4. Quality bar = the built-in oxygen-prep lab: refined models + step-by-step interaction + intentional failure branches + live data panels.
@@ -174,6 +176,7 @@ Rules:
 原则:
 1. 先想清楚教学意图(学科/学段/知识点),再动手;搭的不是"模型堆",是"一节课"。
 2. 对齐当前大纲节类型:vr → 3D 场景工具;reading → reading_set_chunks 或 course_fill_section;h5 → h5_set_content 或 course_fill_section;quiz → quiz_set_items 或 course_fill_section。改课程树用 outline_*;从上传材料备课优先 course_tag_figures → course_build_outline_from_doc → 逐节 course_fill_section。每个 VR 节有独立场景快照,不要假设跨 VR 节共享对象。
+2a. 硬性规则:绝不擅自改课程结构。老师说「改这一节/重做这一节/优化一下」= 就地修改当前小节(outline_update_section + reading_set_chunks / h5_set_content / quiz_set_items / 3D 场景工具),不是新建小节。只有老师明确要求「新增一节/新增一章」时才可调用 outline_add_section / outline_add_chapter,并在 requested_by_teacher 里引用老师原话。禁止为了放改写结果而新建小节,也禁止留下空节。
 2b. 硬性规则:只要上下文里有上传的教学 PDF/文档,课程必须包含 ≥1 个 reading 节和 ≥1 个 quiz 节,并根据材料填满内容(即使 PDF 很短)。禁止只交一个 3D 场景。
 3. 3D 节资源选型:需求与预置模板高度吻合 → build_template;资源库有合适资源 → add_asset;两者都没有或不够精致 → create_custom_object 直接写 Three.js 代码现场造。你有完整的编程能力,不要因为没有现成资源就用简陋几何将就。
 4. 质量标准对标内置的"制取氧气"实验:精细的模型(车削玻璃器皿/弯管/粒子效果)+ 分步点击交互 + 故意设计的考点错误分支 + 实时数据面板。老师要的是能直接上课的作品。
@@ -392,6 +395,23 @@ function extractJSON(raw) {
   return null;  // 花括号未闭合 = 被截断
 }
 
+/**
+ * Chat edits used to live only in the viewport — the section snapshot stayed
+ * stale until the teacher switched sections, so any outline re-render could
+ * drop them. Persist into the active VR section after every chat tool call.
+ */
+function persistLiveVrEdit() {
+  if (getFillingVrSectionId()) return;   // the pipeline owns the graph during a fill
+  const active = getActiveSection();
+  const id = active?.section?.type === 'vr' ? active.section.id : null;
+  if (!id || getLiveVrSectionId() !== id) return;
+  try {
+    saveLiveSceneToSection(id, { includeCamera: false });
+  } catch (e) {
+    console.warn('[agent] could not persist live 3D edit', e);
+  }
+}
+
 // ── Executor 工具循环(文本流式输出 + 推理摘要可见)──
 async function runExecutor(userText, plan, ui, complexity = null, ctxMsg = '') {
   const messages = [
@@ -470,6 +490,7 @@ async function runExecutor(userText, plan, ui, complexity = null, ctxMsg = '') {
       const r = await execTool(tu.name, tu.input);
       logEvent('tool_call', { name: tu.name, input: summarizeToolInput(tu.input), ok: r.ok, msg: summarize(r.msg), ms: Math.round(performance.now() - t0) });
       if (card) ui.finishToolCard(card, `${toolCallLabel(tu.name, tu.input)}${r.ok ? '' : ' ⚠ ' + r.msg}`, r.ok);
+      if (!isProgress && r.ok) persistLiveVrEdit();
       results.push({ type: 'tool_result', tool_use_id: tu.id, content: r.msg, is_error: !r.ok });
     }
     messages.push({ role: 'user', content: results });
@@ -565,9 +586,8 @@ export async function runTurn(userText, ui) {
   if (state.learnMode) agent.mode = 'ask';
   try {
     const doc = getUploadedDoc();
-    if (doc && !state.learnMode) {
-      ensureDocCourseMinimum({ silent: false });
-    }
+    // No pre-turn structural pass: it only created empty shells (which break
+    // "course complete"). The post-turn call below both adds and fills them.
     if (!hasLLM()) {
       await runOffline(userText, ui);
       if (doc && !state.learnMode) {

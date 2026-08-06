@@ -20,4 +20,5 @@ globalThis.XR_SKILL_FILES = [
   'course-h5.js',
   'course-quiz.js',
   'course-pipeline.js',
+  'course-live-edit.js',
 ];

@@ -27,7 +27,7 @@ import { emit } from './events.js';
 import { toast } from './utils.js';
 import { t, L } from './i18n.js';
 import { clearScene } from '../scene/manager.js';
-import { syncPanelSpec, rehydratePanel } from '../panels/panel3d.js';
+import { syncPanelSpec, ensurePanelVisuals } from '../panels/panel3d.js';
 import { runBuilderCode, compileUpdate, compileClick, compileHandler } from '../agent/sandbox.js';
 import { locomotion, configureLocomotion } from './locomotion.js';
 import { ensureStudentRig } from '../scene/student-rig.js';
@@ -318,11 +318,9 @@ export function loadSceneData(data) {
   for (const extra of rigs.slice(0, -1)) sceneRoot.remove(extra);
   ensureStudentRig();
   sceneRoot.traverse(o => {
-    if (o.userData.panelSpec) {
-      if (o.userData.panelSpec.live) hadLive = true;
-      rehydratePanel(o);                       // live 面板降级为静态快照
-    }
+    if (o.userData.panelSpec?.live) hadLive = true;
   });
+  ensurePanelVisuals(sceneRoot);               // rebuild canvas panels (live → static snapshot)
   // oid 计数器对齐,避免新对象与载入对象撞号
   let maxOid = 0;
   sceneRoot.traverse(o => {

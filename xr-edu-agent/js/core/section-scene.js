@@ -7,7 +7,7 @@ import { sceneRoot, camera, orbit, resize, sanitizeOrbitCamera, resetOrbitCamera
 import { state } from './state.js';
 import { emit } from './events.js';
 import { clearScene } from '../scene/manager.js';
-import { syncPanelSpec, rehydratePanel } from '../panels/panel3d.js';
+import { syncPanelSpec, ensurePanelVisuals, isUsablePanelData } from '../panels/panel3d.js';
 import { runBuilderCode, compileUpdate, compileClick, compileHandler } from '../agent/sandbox.js';
 import { findAssetSkill } from '../assets/registry.js';
 import { ensureStudentRig } from '../scene/student-rig.js';
@@ -144,14 +144,29 @@ export function slimSnapshot(json) {
 
 /** Capture live sceneRoot → Three.js ObjectLoader JSON (no outline/KG). */
 export function captureSceneGraph() {
-  sceneRoot.traverse(o => { if (o.userData.panelData) syncPanelSpec(o); });
+  sceneRoot.traverse(o => {
+    if (isUsablePanelData(o.userData?.panelData)) {
+      try { syncPanelSpec(o); }
+      catch (e) { console.warn('[section-scene] syncPanelSpec failed', e); }
+    } else if (o.userData?.panelData && o.userData?.panelSpec) {
+      // Zombie panelData from an older save — drop before serialize
+      delete o.userData.panelData;
+    }
+  });
   // Never persist a broken root transform into section snapshots
   sceneRoot.position.set(0, 0, 0);
   sceneRoot.rotation.set(0, 0, 0);
   sceneRoot.scale.set(1, 1, 1);
   const restore = stripUserData(sceneRoot);
   try {
-    return slimSnapshot(sceneRoot.toJSON());
+    const json = slimSnapshot(sceneRoot.toJSON());
+    // Belt-and-suspenders: never persist zombie panelData into section snapshots
+    const scrub = node => {
+      if (node?.userData?.panelData) delete node.userData.panelData;
+      for (const c of node?.children || []) scrub(c);
+    };
+    scrub(json?.object);
+    return json;
   } finally {
     restore();
   }
@@ -299,9 +314,8 @@ export function restoreSceneGraph(sceneJson) {
     const rigs = sceneRoot.children.filter(o => o.userData.studentRig);
     for (const extra of rigs.slice(0, -1)) sceneRoot.remove(extra);
     ensureStudentRig();
-    sceneRoot.traverse(o => {
-      if (o.userData.panelSpec) rehydratePanel(o);
-    });
+    // Repair panels one-by-one (zombie panelData from JSON must not abort the rest)
+    ensurePanelVisuals(sceneRoot);
     let maxOid = 0;
     sceneRoot.traverse(o => {
       const m = /^o(\d+)$/.exec(o.userData.oid || '');

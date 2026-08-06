@@ -115,9 +115,10 @@ export function drawPanel(pd) {
     ctx.beginPath(); ctx.moveTo(34, y); ctx.lineTo(w - 34, y); ctx.stroke();
     y += 10;
   }
-  const lines = pd.live ? pd.live() : pd.lines;
+  const lines = (typeof pd.live === 'function' ? pd.live() : pd.lines) || [];
   const centered = !pd.title && lines.length === 1;
   lines.forEach(line => {
+    if (line == null) return;
     if (typeof line === 'string') {
       ctx.fillStyle = '#c8cfd8';
       ctx.font = `${PANEL_BODY_PX}px ${PANEL_FONT}`;
@@ -195,41 +196,116 @@ export function updatePanelContent(mesh, { title, lines }) {
   drawPanel(pd);
 }
 
+/**
+ * True only for a panelData that can actually draw (real canvas + texture).
+ * JSON round-trips leave a zombie `{ canvas:{}, tex:{uuid…} }` that is truthy
+ * but useless — treating it as live used to skip rehydrate and left white planes
+ * after section switches (slimSnapshot strips the PNG material).
+ */
+export function isUsablePanelData(pd) {
+  return !!(pd
+    && typeof HTMLCanvasElement !== 'undefined'
+    && pd.canvas instanceof HTMLCanvasElement
+    && pd.ctx
+    && pd.tex
+    && (pd.tex.isTexture || pd.tex.isCanvasTexture));
+}
+
+function bindPanelMaterial(mesh, pd) {
+  if (!mesh?.isMesh || !pd?.tex) return;
+  if (mesh.material?.map === pd.tex) {
+    pd.tex.needsUpdate = true;
+    return;
+  }
+  const prev = mesh.material;
+  if (prev?.map && prev.map !== pd.tex) {
+    try { prev.map.dispose(); } catch { /* already disposed */ }
+  }
+  if (prev && typeof prev.dispose === 'function') {
+    try { prev.dispose(); } catch { /* ignore */ }
+  }
+  mesh.material = new THREE.MeshBasicMaterial({
+    map: pd.tex, transparent: true, side: THREE.DoubleSide, depthWrite: false,
+  });
+  mesh.renderOrder = 10;
+}
+
 // panelSpec:面板内容的 JSON 安全镜像,存在 mesh.userData 里随场景序列化
 export function syncPanelSpec(mesh) {
   const pd = mesh.userData.panelData;
-  if (!pd) return;
+  if (!isUsablePanelData(pd)) return;
+  let lines = pd.lines || [];
+  if (typeof pd.live === 'function') {
+    try { lines = pd.live() || lines; }
+    catch (e) { console.warn('[panel3d] live() failed during sync', e); }
+  }
   mesh.userData.panelSpec = {
     title: pd.title,
-    lines: pd.live ? pd.live() : pd.lines,
+    lines,
     accent: pd.accent,
-    width: mesh.geometry.parameters.width,
-    live: !!pd.live,
+    width: mesh.geometry?.parameters?.width || DEFAULT_PANEL_WIDTH,
+    live: typeof pd.live === 'function',
   };
 }
 
-// 从序列化的 panelSpec 重建 panelData
+/**
+ * Rebuild (or repair) a panel mesh from panelSpec.
+ * Always safe to call after ObjectLoader / section restore.
+ */
 export function rehydratePanel(mesh) {
   const spec = mesh.userData.panelSpec;
-  if (!spec || mesh.userData.panelData) return;
-  const canvas = document.createElement('canvas');
-  const lines = spec.lines || [];
-  canvas.width = computePanelCanvasWidth(spec.title, lines);
-  canvas.height = panelCanvasHeight(spec.title, Math.max(lines.length, 1));
-  const ctx = canvas.getContext('2d');
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.anisotropy = 4;
-  const pd = { canvas, ctx, tex, title: spec.title, lines, accent: spec.accent, live: null };
-  drawPanel(pd);
-  const width = fitPanelWorldWidth(spec.width || DEFAULT_PANEL_WIDTH, canvas.width);
-  const panelH = width * canvas.height / canvas.width;
-  if (mesh.geometry) mesh.geometry.dispose();
-  mesh.geometry = new THREE.PlaneGeometry(width, panelH);
-  if (mesh.material?.map) mesh.material.map.dispose();
-  mesh.material = new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide, depthWrite: false });
-  mesh.renderOrder = 10;
-  mesh.userData.panelData = pd;
-  mesh.userData.panelH = panelH;
+  if (!spec) return false;
+
+  // Healthy panel from makePanel / builderCode — just re-bind + redraw
+  if (isUsablePanelData(mesh.userData.panelData)) {
+    bindPanelMaterial(mesh, mesh.userData.panelData);
+    try { drawPanel(mesh.userData.panelData); }
+    catch (e) { console.warn('[panel3d] redraw failed', spec.title, e); }
+    return true;
+  }
+
+  // Drop zombie panelData left by JSON serialization
+  delete mesh.userData.panelData;
+
+  try {
+    const canvas = document.createElement('canvas');
+    const lines = Array.isArray(spec.lines) ? spec.lines.filter(l => l != null) : [];
+    canvas.width = computePanelCanvasWidth(spec.title, lines);
+    canvas.height = panelCanvasHeight(spec.title, Math.max(lines.length, 1));
+    const ctx = canvas.getContext('2d');
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.anisotropy = 4;
+    const pd = {
+      canvas, ctx, tex,
+      title: spec.title || '',
+      lines,
+      accent: spec.accent || '#4a9eff',
+      live: null,
+    };
+    drawPanel(pd);
+    const width = fitPanelWorldWidth(spec.width || DEFAULT_PANEL_WIDTH, canvas.width);
+    const panelH = width * canvas.height / canvas.width;
+    if (mesh.geometry) {
+      try { mesh.geometry.dispose(); } catch { /* ignore */ }
+    }
+    mesh.geometry = new THREE.PlaneGeometry(width, panelH);
+    bindPanelMaterial(mesh, pd);
+    mesh.userData.panelData = pd;
+    mesh.userData.panelH = panelH;
+    mesh.userData.isBillboard = mesh.userData.isBillboard !== false;
+    return true;
+  } catch (e) {
+    console.warn('[panel3d] rehydrate failed:', spec.title, e);
+    return false;
+  }
+}
+
+/** After loading a scene graph: repair every panel that has panelSpec. */
+export function ensurePanelVisuals(root) {
+  if (!root) return;
+  root.traverse(o => {
+    if (o.userData?.panelSpec) rehydratePanel(o);
+  });
 }
 
 // 生成一块 3D 面板;live 传入函数则每 150ms 重绘一次(实时参数)

@@ -33,7 +33,7 @@ git push origin main
 
 Root already has `index.html` and `.nojekyll`. App code lives under `xr-edu-agent/` — you do **not** need to move everything to root.
 
-Keep `pre-built-samples/` at the repo root: it holds the ready-made `.xrcourse` packages the Projects panel lists, fetched only when a participant opens one. To add or replace a sample, drop the `.xrcourse` in that folder and run `python pre-built-samples/build_manifest.py`.
+Keep `pre-built-samples/` at the repo root: it holds the ready-made `.xrcourse` packages the Projects panel lists, fetched only when a participant opens one. To add or replace a sample, drop the `.xrcourse` in that folder and run `python pre-built-samples/build_manifest.py`. If the package still references local Docling paths (`/uploads/...` or `localhost`), run `python pre-built-samples/embed_sample_images.py` first so reading/H5 figures become self-contained data URIs (required for GitHub Pages).
 
 ### 3. Client tips
 

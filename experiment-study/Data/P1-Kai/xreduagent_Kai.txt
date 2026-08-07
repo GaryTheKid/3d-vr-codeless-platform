@@ -1,0 +1,27 @@
+XR EduAgent — Questionnaire responses
+
+participant_code: Kai
+material: VSEPR Theory: Predicting Molecular Shape
+age: 24
+field: Computer science
+tlx_mental: 75
+tlx_physical: 10
+tlx_temporal: 30
+tlx_performance: 10
+tlx_effort: 50
+tlx_frustration: 75
+best: 3D. It makes abstract concepts easier to understand and allows student to experience situations that are hard to access in real life.
+worst: 3D. I still have some concern about whether AI can truly understand real-word physics or chemistry rules and represent them accurately on the virtual world
+role: Working / other
+ai_use: Weekly or more
+s1: 6
+s2: 7
+s3: 7
+a1: 6
+a2: 6
+a3: 5
+a4: 5
+l1: 5
+l2: 6
+l3: 7
+l4: 6

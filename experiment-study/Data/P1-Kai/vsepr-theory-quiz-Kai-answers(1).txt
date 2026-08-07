@@ -1,0 +1,125 @@
+VSEPR Theory Quiz
+Student: Kai
+Generated: 2026/8/8 00:13:35
+
+PART I: MULTIPLE CHOICE
+1. What does VSEPR stand for?
+   A. Valence-Shell Electron-Pair Repulsion
+   B. Variable-State Electron Position Rotation
+   C. Valence Structure Electron Proton Rule
+   D. Vector Shell Electron Pair Reaction
+   Student answer: [blank]
+
+2. What is the main purpose of the VSEPR model?
+   A. To calculate atomic mass
+   B. To predict three-dimensional molecular geometry
+   C. To determine reaction rate
+   D. To identify isotopes
+   Student answer: [blank]
+
+3. Which of the following counts as one electron domain?
+   A. A lone pair
+   B. A single bond
+   C. A double bond
+   D. All of the above
+   Student answer: [blank]
+
+4. What must usually be drawn before applying VSEPR theory?
+   A. A phase diagram
+   B. A Lewis structure
+   C. A heating curve
+   D. An orbital-energy diagram
+   Student answer: [blank]
+
+5. Electron-domain geometry describes:
+   A. Only the positions of atoms
+   B. The arrangement of all electron domains around the central atom
+   C. Only the shape made by lone pairs
+   D. The mass of each atom
+   Student answer: [blank]
+
+6. Molecular geometry describes:
+   A. The arrangement of atoms, excluding nonbonding domains from the name
+   B. The number of valence electrons only
+   C. The energy of bonds
+   D. The color of a compound
+   Student answer: [blank]
+
+7. What is a bond angle?
+   A. The angle between two adjacent bonds around the same atom
+   B. The angle between two molecules
+   C. The angle between nuclei in different compounds
+   D. The angle formed by electron spin
+   Student answer: [blank]
+
+8. A central atom with two bonding domains and no lone pairs has what molecular geometry?
+   A. Bent
+   B. Linear
+   C. Trigonal pyramidal
+   D. Tetrahedral
+   Student answer: [blank]
+
+9. What is the ideal bond angle for a linear molecule?
+   A. 90°
+   B. 109.5°
+   C. 120°
+   D. 180°
+   Student answer: [blank]
+
+10. Three electron domains around a central atom produce what electron-domain geometry?
+   A. Linear
+   B. Trigonal planar
+   C. Tetrahedral
+   D. Octahedral
+   Student answer: [blank]
+
+11. Four electron domains around a central atom produce what electron-domain geometry?
+   A. Trigonal planar
+   B. Tetrahedral
+   C. Trigonal bipyramidal
+   D. Square planar
+   Student answer: [blank]
+
+12. NH3 has tetrahedral electron-domain geometry but what molecular geometry?
+   A. Linear
+   B. Bent
+   C. Trigonal pyramidal
+   D. Square planar
+   Student answer: [blank]
+
+13. CO2 has how many electron domains around carbon?
+   A. 1
+   B. 2
+   C. 3
+   D. 4
+   Student answer: [blank]
+
+14. Why can lone pairs change molecular shape?
+   A. They add atomic mass
+   B. They occupy electron domains and repel other electron pairs
+   C. They remove protons
+   D. They make all bond angles 180°
+   Student answer: [blank]
+
+15. Which sequence correctly describes using VSEPR?
+   A. Count protons → identify isotope → predict shape
+   B. Draw Lewis structure → count domains → determine geometries and bond angles
+   C. Measure density → heat sample → draw graph
+   D. Name molecule → count neutrons → assign color
+   Student answer: [blank]
+
+PART II: SHORT ANSWER
+Short Answer 1. Explain the difference between electron-domain geometry and molecular geometry.
+Student answer: [blank]
+
+Short Answer 2. Describe the three main steps used to predict a molecule’s shape with VSEPR theory.
+Student answer: [blank]
+
+Short Answer 3. Explain why a double bond counts as one electron domain in the VSEPR model.
+Student answer: [blank]
+
+Short Answer 4. Describe the geometry and bond angle of CO2 and explain how its Lewis structure leads to that prediction.
+Student answer: [blank]
+
+Short Answer 5. Explain how one or more lone pairs can make molecular geometry differ from electron-domain geometry.
+Student answer: [blank]

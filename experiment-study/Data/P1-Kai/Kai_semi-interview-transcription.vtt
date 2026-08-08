@@ -1,0 +1,1537 @@
+WEBVTT
+
+02140466-5b0f-4734-ba61-67abce8d0b9c-0
+00:00:04.560 --> 00:00:08.892
+Hello,
+so today we're going to do a learning
+
+02140466-5b0f-4734-ba61-67abce8d0b9c-1
+00:00:08.892 --> 00:00:10.240
+related study.
+
+dd7cdb50-d375-4b26-aad3-220c4526b74b-0
+00:00:10.400 --> 00:00:16.952
+So we build A and we build an AI agent
+that can parse an original learning
+
+dd7cdb50-d375-4b26-aad3-220c4526b74b-1
+00:00:16.952 --> 00:00:21.320
+material into an interactive learning
+experience.
+
+de40a829-4ff6-430d-bbdd-c05a36e1f02f-0
+00:00:22.520 --> 00:00:26.864
+In this experience you can,
+you can not only like to see,
+
+de40a829-4ff6-430d-bbdd-c05a36e1f02f-1
+00:00:26.864 --> 00:00:30.535
+you can not only see reading text based
+content,
+
+de40a829-4ff6-430d-bbdd-c05a36e1f02f-2
+00:00:30.535 --> 00:00:35.480
+but also 2D animations and interactions
+and sometimes even in 3D.
+
+cb90bd63-2c0f-4137-9fb8-f9e5a378328a-0
+00:00:36.320 --> 00:00:39.480
+So we won't start today's, we won't start.
+
+36581cb2-b38b-4a37-adec-58c5c1cba58b-0
+00:00:39.680 --> 00:00:46.186
+We won't use this study to evaluate how
+good the system is currently and what are
+
+36581cb2-b38b-4a37-adec-58c5c1cba58b-1
+00:00:46.186 --> 00:00:49.360
+the things we can improve in the future.
+
+45d49d4e-dd4e-4a51-8377-80228cf9cb6d-0
+00:00:49.960 --> 00:00:50.640
+Is that OK?
+
+bf62a988-1da9-406b-9007-773cd7109ff5-0
+00:00:51.840 --> 00:00:52.200
+Yep.
+
+a527f810-bff1-431d-950a-6e4f80f951a0-0
+00:00:53.440 --> 00:00:54.120
+OK, cool.
+
+9b483523-44a5-44f5-aa60-14fb89dcd5c5-0
+00:00:54.560 --> 00:00:57.880
+So next I'm gonna pick a random learning
+material.
+
+b30a98f9-3207-485a-986b-16d9e8149a8c-0
+00:00:57.880 --> 00:00:59.880
+Yeah, I first I'm gonna send you the URL.
+
+f49105bf-a32a-4080-a81a-00db0bcd35f5-0
+00:01:00.920 --> 00:01:02.160
+I already sent it to you.
+
+876d61d1-2049-4f78-b267-a286054ce01b-0
+00:01:02.480 --> 00:01:03.400
+Can you can you open it?
+
+590b1f71-3e1c-4884-aa7c-d4c82b7d054d-0
+00:01:04.800 --> 00:01:05.120
+Yep.
+
+7ee9870d-1d0b-4428-b5a3-dd75b3002ece-0
+00:01:11.790 --> 00:01:12.510
+It's the quiz.
+
+a9174a01-588b-4a14-99c2-be67ea4d169c-0
+00:01:12.870 --> 00:01:13.270
+This one.
+
+2342f34a-1148-42ef-ab66-4aca967bfba6-0
+00:01:13.950 --> 00:01:15.390
+Yeah, you can do the quiz 1st.
+
+f8969413-1a36-4c72-84b7-46f343d29484-0
+00:01:15.510 --> 00:01:17.510
+And then we just we started learning.
+
+804e573f-968b-4745-b16b-012a506d9c02-0
+00:01:17.990 --> 00:01:18.270
+Yeah.
+
+acbd9c01-7bff-4aac-8412-576d58f03965-0
+00:01:18.270 --> 00:01:24.622
+So in this quiz, in student name,
+actually you can, you can put like member,
+
+acbd9c01-7bff-4aac-8412-576d58f03965-1
+00:01:24.622 --> 00:01:27.510
+not just name, but but also member.
+
+189a2e23-3bd9-4eee-8ae9-830fd8ce167d-0
+00:01:27.510 --> 00:01:28.520
+I think so.
+
+6bce7e98-7d90-4a14-96a4-435fd637649d-0
+00:01:28.520 --> 00:01:29.360
+Your study ID.
+
+3d019798-a956-4b77-a5e6-e108471270a0-0
+00:01:30.920 --> 00:01:32.080
+Yeah, your study ID.
+
+53879e9d-c562-4c26-acd0-da836661612c-0
+00:01:32.560 --> 00:01:33.000
+Never mind.
+
+14413d4c-7b93-49fb-892d-297833eab25e-0
+00:01:33.000 --> 00:01:34.360
+I think you can just put your name there.
+
+dd426875-f5cb-4187-8149-221426fa3657-0
+00:01:34.360 --> 00:01:34.760
+We can.
+
+0652c077-0d97-489c-88bd-03bd3689016b-0
+00:01:34.760 --> 00:01:36.360
+We can arrange a study ID later.
+
+936e9304-dd1f-4b65-a01a-0806b7e45c56-0
+00:01:36.920 --> 00:01:37.120
+Yeah.
+
+a48a9114-c620-496e-b3a5-09d9da1cb095-0
+00:01:37.120 --> 00:01:38.440
+Your your tag, your tag.
+
+ea726228-1aab-4376-8fd3-bddc4de47aef-0
+00:01:38.440 --> 00:01:39.160
+Name it.
+
+42c67a5f-51d4-45d9-885d-3272a0f92c67-0
+00:01:39.440 --> 00:01:40.280
+It has to be.
+
+ac2bdf34-0417-4fdd-a17b-bc204a30bd7c-0
+00:01:40.760 --> 00:01:42.160
+It has not to be your.
+
+9e38ff07-07d6-4be8-ab8f-a3f9a94a46dc-0
+00:01:42.560 --> 00:01:44.640
+It must not be your real name.
+
+799d9f4e-0918-418e-a49d-492ece88259d-0
+00:01:44.840 --> 00:01:45.080
+Yeah.
+
+e02d3100-5e9a-4e12-9fce-af8e407e13d0-0
+00:01:45.080 --> 00:01:46.360
+Just put your tag there.
+
+b87a3dc9-57ca-4821-85f5-ba0d87e7db92-0
+00:01:47.440 --> 00:01:47.720
+All right.
+
+91c7a9c5-2ed2-4d90-8b00-1276751ac876-0
+00:01:48.480 --> 00:01:48.800
+OK.
+
+a35f453a-705a-44fe-b9bf-e27362568840-0
+00:01:48.800 --> 00:01:51.957
+Next,
+you will run this entire quiz whenever
+
+a35f453a-705a-44fe-b9bf-e27362568840-1
+00:01:51.957 --> 00:01:56.800
+you encounter any question you do not
+know or you're not sure about.
+
+3bf5c98b-3395-42d4-ac53-b1f3d5432be2-0
+00:01:57.640 --> 00:01:58.640
+Yeah, just like you.
+
+ce5ffaa1-0625-42b6-a7a5-f51119ba2e30-0
+00:01:58.720 --> 00:01:59.120
+You do not.
+
+0826c16a-e5c3-4e3d-8798-d39dc0052e93-0
+00:01:59.120 --> 00:02:00.720
+You read the answer you have complete.
+
+bafef89f-60c7-4538-af13-d8c1d02991ec-0
+00:02:00.720 --> 00:02:01.840
+You're completely clueless.
+
+ca15b6b1-9192-4765-8675-2e34c5e2f168-0
+00:02:01.840 --> 00:02:02.760
+You have no idea.
+
+a5bb40f5-7a04-4f0b-851a-ce554912ccd1-0
+00:02:03.000 --> 00:02:03.920
+Then you just skip it.
+
+d3ad1863-3fe9-46ef-b07a-6c7c653f6429-0
+00:02:04.880 --> 00:02:08.781
+Once you finish the entire quiz,
+just click the download answer shift and
+
+d3ad1863-3fe9-46ef-b07a-6c7c653f6429-1
+00:02:08.781 --> 00:02:09.520
+send it to me.
+
+e8e60b52-7733-44d0-a47f-24c87b764763-0
+00:02:09.640 --> 00:02:11.680
+OK, OK, I got it.
+
+f51d5d68-0b91-4743-9931-577f6913d2df-0
+00:02:13.240 --> 00:02:13.560
+OK.
+
+65b64e3f-51f9-4240-a838-a6d57136755a-0
+00:03:48.200 --> 00:03:51.680
+I actually have no idea about chemistry,
+so.
+
+7b7de7fe-b42e-45d0-bec8-70d4655e04e5-0
+00:03:54.040 --> 00:03:56.120
+So I think I just leave this question.
+
+8a921b11-2b6a-4b28-be01-0d41db098917-0
+00:03:59.320 --> 00:04:00.160
+That's no problem.
+
+e6351d4e-6334-4c36-93f8-4d897732be00-0
+00:04:00.240 --> 00:04:01.080
+Thank you so much.
+
+7e651c70-a391-4b10-bebf-704e868b6a5a-0
+00:04:01.400 --> 00:04:04.840
+Then you can just download the empty
+sheet just with your name on it.
+
+6ebfb5ed-a10b-45e2-a785-d00bbcc68ada-0
+00:04:05.920 --> 00:04:09.840
+Yeah, Yeah,
+You can just send this later to me.
+
+761425e7-a799-41dd-948f-4b8b6672b1f5-0
+00:04:10.200 --> 00:04:10.520
+OK.
+
+ec9c8152-c380-45f7-a89d-99d7a5d01276-0
+00:04:10.800 --> 00:04:11.080
+All right.
+
+543ce85f-8e0f-4210-8a5a-b6757a912964-0
+00:04:11.440 --> 00:04:12.640
+Yeah, OK.
+
+bfa6b6f1-ec12-4a44-9027-2f3580809c8f-0
+00:04:12.760 --> 00:04:13.440
+Thank you so much.
+
+fde74192-348b-4740-a32f-8a981e64d74f-0
+00:04:13.720 --> 00:04:17.421
+OK,
+so next I send you the URL of our
+
+fde74192-348b-4740-a32f-8a981e64d74f-1
+00:04:17.421 --> 00:04:22.000
+learning website so that you can just
+open it.
+
+abe464ba-ea2c-423a-94d9-980c05afc887-0
+00:04:25.000 --> 00:04:27.080
+Yep,
+it's saying it's currently in the chat.
+
+95426963-3234-4d0b-91bf-5389fb4e1faa-0
+00:04:40.390 --> 00:04:45.430
+Yep, on the left, top left,
+there's little folder icon.
+
+64953ad9-78c0-484a-ae54-7ff487a9bd5b-0
+00:04:46.870 --> 00:04:48.230
+This one, yes.
+
+540acbd2-c711-469f-93d6-100f290a9afb-0
+00:04:50.190 --> 00:04:53.750
+Now you pick the second one,
+the chemistry one.
+
+c407bc3b-9d70-4669-9f8a-5d87d54e8edc-0
+00:04:56.080 --> 00:04:56.400
+Yep.
+
+033981d6-1528-477f-a4d7-02a0dac95e47-0
+00:04:56.880 --> 00:05:00.246
+Now on the right top,
+on the top top right,
+
+033981d6-1528-477f-a4d7-02a0dac95e47-1
+00:05:00.246 --> 00:05:03.920
+there's a little gear icon,
+which is a setting.
+
+39fbc895-7959-4286-8b2f-173ba4dcc08d-0
+00:05:04.080 --> 00:05:08.881
+You can, you can change your,
+you can change the font if you want,
+
+39fbc895-7959-4286-8b2f-173ba4dcc08d-1
+00:05:08.881 --> 00:05:10.960
+change the front if you want.
+
+5cb5ba89-4620-479f-a2a4-dfb3c26201cb-0
+00:05:10.960 --> 00:05:12.360
+It's already a large one.
+
+f73a7e0d-d059-476a-9b30-03f7ebb4b354-0
+00:05:12.960 --> 00:05:13.320
+OK.
+
+e68c88a8-3036-40fa-968e-b22326f919a6-0
+00:05:13.440 --> 00:05:17.023
+You can also like use control and the
+screwing Yeah,
+
+e68c88a8-3036-40fa-968e-b22326f919a6-1
+00:05:17.023 --> 00:05:19.120
+to adjust the size as you wish.
+
+bf4b37af-fb86-41ef-a445-381716fafbdb-0
+00:05:22.320 --> 00:05:22.520
+Yeah.
+
+61cc5898-3759-420b-b963-82dac721a1f8-0
+00:05:22.520 --> 00:05:27.339
+If once you no problem with anything,
+you can just click Start learning Yeah,
+
+61cc5898-3759-420b-b963-82dac721a1f8-1
+00:05:27.339 --> 00:05:30.119
+make sure you are you are in the first
+Yeah,
+
+61cc5898-3759-420b-b963-82dac721a1f8-2
+00:05:30.119 --> 00:05:35.000
+make sure you are in the 1st chapter
+first first section on on the left panel.
+
+6455e8c4-3b11-4ce3-b187-9bddcae3c527-0
+00:05:36.000 --> 00:05:37.600
+OK, Yeah.
+
+6a6f1cab-d10a-4a68-9443-4ef266488caf-0
+00:05:37.600 --> 00:05:38.640
+Now you can Start learning.
+
+88a2db43-1175-43c5-959f-4bf4816c1003-0
+00:05:41.600 --> 00:05:44.040
+So for how many minutes?
+
+fd52e883-a9e0-43bc-9c0a-b922ef584716-0
+00:05:45.560 --> 00:05:48.527
+No time limit,
+just just whenever you feel you're ready,
+
+fd52e883-a9e0-43bc-9c0a-b922ef584716-1
+00:05:48.527 --> 00:05:49.360
+you're finished.
+
+796cb159-5a75-43cd-b767-1c6d7a30270e-0
+00:05:49.360 --> 00:05:50.120
+Just let me know.
+
+35789501-5a10-4100-b2ff-863f58a72f54-0
+00:06:01.800 --> 00:06:05.440
+Can you click Start learning,
+Start learning where?
+
+28fbfe56-eadd-4429-84d7-05b17691faf5-0
+00:06:05.440 --> 00:06:07.600
+Where's the Oh, this one?
+
+7a56be5e-bd9f-429e-9b3d-cc20fa02ddde-0
+00:06:08.040 --> 00:06:08.440
+Yes.
+
+4138f018-ebd8-4ae9-9c0d-f9ef5f70715f-0
+00:06:10.480 --> 00:06:12.400
+And just let me briefly introduce.
+
+24314205-d864-4a53-bff3-7d698f4041ee-0
+00:06:12.400 --> 00:06:16.260
+So on the left hand side,
+these are all the chapters and sections
+
+24314205-d864-4a53-bff3-7d698f4041ee-1
+00:06:16.260 --> 00:06:17.840
+you're going to go through.
+
+a69947a9-f814-4102-9baa-354c281d18f5-0
+00:06:18.560 --> 00:06:22.640
+And in the middle you can see the
+learning content.
+
+a358cccb-af18-40e4-ac1b-51d46f711616-0
+00:06:22.720 --> 00:06:26.682
+Sometimes it's reading,
+sometimes it require you to do a mini
+
+a358cccb-af18-40e4-ac1b-51d46f711616-1
+00:06:26.682 --> 00:06:28.600
+quit mini mini follow up quiz.
+
+302d3302-c80c-4870-9074-3fd6ff20b258-0
+00:06:29.040 --> 00:06:33.183
+Sometimes there will be like a 2D
+interactions or animation,
+
+302d3302-c80c-4870-9074-3fd6ff20b258-1
+00:06:33.183 --> 00:06:36.920
+sometimes it would be 3D interactions or
+realizations.
+
+8c94daab-49aa-40a8-b77c-7827507d73f9-0
+00:06:37.640 --> 00:06:41.662
+You can just do whatever you want until
+you feel confident about the current
+
+8c94daab-49aa-40a8-b77c-7827507d73f9-1
+00:06:41.662 --> 00:06:42.080
+chapter.
+
+04e98f84-22a4-41a0-8549-ef6b3c8e8951-0
+00:06:43.880 --> 00:06:44.160
+OK.
+
+81a401ee-05e6-4b47-9c45-d74b5799371e-0
+00:06:44.240 --> 00:06:47.843
+And on the yeah and on the right,
+the right, on the right hand side,
+
+81a401ee-05e6-4b47-9c45-d74b5799371e-1
+00:06:47.843 --> 00:06:49.880
+you can see there's learning companion.
+
+ff7762e1-85ca-4ddc-acc9-f02550a92e1d-0
+00:06:49.920 --> 00:06:53.480
+So whenever you encounter any question
+problem, you can just leave.
+
+34bc4de5-0469-4e6b-a059-612f5937eea5-0
+00:06:53.880 --> 00:06:54.600
+You can just ask.
+
+753037ec-fe71-45dc-b36c-270f30e19682-0
+00:06:54.920 --> 00:06:58.440
+Just leave your question there, OK?
+
+13debc8f-e439-4906-83f7-de2f7e580d63-0
+00:06:59.240 --> 00:06:59.560
+OK.
+
+2da7dc7c-b489-4609-b5e8-30672b8b7a25-0
+00:07:00.480 --> 00:07:00.720
+Yep.
+
+a1642534-4a1a-442b-b900-d6f6cf1ab8d5-0
+00:07:00.760 --> 00:07:03.600
+Now you can just screw to the top and
+start start your learning.
+
+a1aeb8f9-3aaf-47cf-a551-f0e03e08203d-0
+00:07:04.480 --> 00:07:04.760
+Ready.
+
+7a7ed1e0-88f8-4980-aa71-b5d6f3eec889-0
+00:07:05.760 --> 00:07:06.160
+Yeah.
+
+65f32e31-e29e-40cb-8369-b9545639c8da-0
+00:07:06.840 --> 00:07:07.080
+OK.
+
+945bd430-ee2c-4c2c-af89-ab724950e5eb-0
+00:27:06.800 --> 00:27:09.120
+Gary, I had a question.
+
+7b75aef8-6a7a-4513-b1f6-8845dcea3d0c-0
+00:27:09.880 --> 00:27:11.520
+How do you use this one?
+
+12b874f1-d712-4d63-8831-795f30e0b306-0
+00:27:16.720 --> 00:27:17.160
+Hello.
+
+7d82b114-4b2f-4c63-868a-92ec8aa3035f-0
+00:27:18.400 --> 00:27:18.640
+Yeah.
+
+b616dce5-7439-4697-b5cb-614edf49395e-0
+00:27:18.640 --> 00:27:19.640
+What do you mean by far?
+
+c8d0f58e-59ba-4ab3-83d5-d2f4bace698c-0
+00:27:20.000 --> 00:27:21.320
+I think you just show tips.
+
+9cf0405c-8fd2-4070-9c5b-91a837fe0f28-0
+00:27:22.480 --> 00:27:25.560
+Just show tips and go through this one.
+
+28018ebf-5959-4715-ab21-73f0cff5f8f9-0
+00:27:26.440 --> 00:27:26.880
+All of this.
+
+4055190a-b203-4ac4-9c4f-3649245cd2df-0
+00:27:28.360 --> 00:27:33.868
+Yeah,
+I think this is a pre generated learning
+
+4055190a-b203-4ac4-9c4f-3649245cd2df-1
+00:27:33.868 --> 00:27:38.440
+content, So I would assume any quality.
+
+5ff9b618-6708-4b39-beec-a8d3dcd0c5b8-0
+00:27:38.440 --> 00:27:41.890
+So if the quality is low,
+you can just put a columns in at the end
+
+5ff9b618-6708-4b39-beec-a8d3dcd0c5b8-1
+00:27:41.890 --> 00:27:42.560
+of the study.
+
+143dce02-f86d-47c0-9069-4bd663c01fa0-0
+00:27:42.680 --> 00:27:43.240
+That's fine.
+
+55d8236b-608f-4094-8faa-7ca2a9754e50-0
+00:27:44.600 --> 00:27:44.800
+All right.
+
+04625fab-8678-4e3c-917d-341fbaf6e6b0-0
+00:29:56.800 --> 00:29:58.440
+And how to play this one.
+
+bd61c4c8-fcc5-4188-a640-ae0df9046aad-0
+00:30:05.230 --> 00:30:05.550
+Yeah.
+
+ac4fa3c3-61bf-4945-b33e-3f9cea093531-0
+00:30:05.550 --> 00:30:06.870
+I think you just hit play.
+
+09ca9d6e-858c-4f06-b53d-ddcf8c0dea14-0
+00:30:08.030 --> 00:30:11.430
+And hello, Hello.
+
+8271fac2-f9ff-4cc8-b298-3c30a2da1738-0
+00:30:11.470 --> 00:30:13.870
+Yeah, yeah, I think you just hit play.
+
+13837a7c-91c5-47cf-b7dd-649e979f5235-0
+00:30:13.870 --> 00:30:16.150
+And in the middle,
+that's actually instruction.
+
+77c87582-921f-43d7-adbe-20835929e4db-0
+00:30:16.350 --> 00:30:17.470
+I think this is that.
+
+ce462b49-c5f6-47dc-9bdd-eb5f5a63d7ff-0
+00:30:17.790 --> 00:30:17.990
+Yeah.
+
+5242b0a1-5a10-451c-9af4-f3eeb4f831d6-0
+00:30:17.990 --> 00:30:21.070
+You can just click on this and to see how
+the structure change.
+
+4a77ff90-1662-4b49-93b1-0ffafde19e81-0
+00:30:21.830 --> 00:30:25.699
+Yeah,
+I think I already clicked the play button,
+
+4a77ff90-1662-4b49-93b1-0ffafde19e81-1
+00:30:25.699 --> 00:30:27.990
+but there's nothing happened.
+
+25cca9b6-1df0-4521-8423-9a259565f7c4-0
+00:30:32.200 --> 00:30:33.080
+Can you click it?
+
+4bb965df-51ea-4f68-b3e5-2cf0155b07ad-0
+00:30:35.080 --> 00:30:35.440
+This one?
+
+f5d3befb-42e5-4e2a-9ea1-1be37e8648a8-0
+00:30:37.000 --> 00:30:37.600
+The ball.
+
+9f95d926-84ea-44ac-8069-a23d4d109a69-0
+00:30:38.400 --> 00:30:38.880
+The ball.
+
+e8601de0-aa55-4d94-be97-00f841ee31d0-0
+00:30:39.560 --> 00:30:39.840
+Yeah.
+
+ad4b42ca-0eaf-4a74-950c-3136d78204eb-0
+00:30:41.600 --> 00:30:44.760
+OK, there's probably a buck then,
+but that's no problem.
+
+39471d7f-8daf-477e-a1f2-9dc3e9b3fe20-0
+00:30:44.760 --> 00:30:46.360
+You can just we can just go through it.
+
+5c1b64f4-de5e-4c9f-a108-f6e5e61b6063-0
+00:30:47.120 --> 00:30:47.600
+We can just.
+
+ba110c25-e633-4150-a7bb-9bf0ca6ad60d-0
+00:30:48.720 --> 00:30:51.200
+Yeah, just just go another one.
+
+a54e675a-bf41-4f9a-8e86-dd3376c6fbe8-0
+00:43:37.160 --> 00:43:40.720
+Hey, Gary,
+I think there's a wrong answer here.
+
+f35f3ef4-cbb4-400e-b3bc-7aeb88e26c4b-0
+00:43:46.620 --> 00:43:47.260
+Hey, Gary.
+
+f3615041-e5f7-4f1d-a9ae-3aa876a4c04c-0
+00:43:50.860 --> 00:43:51.380
+Hello.
+
+e4b476d3-3c30-4783-90f2-6cd756fa3380-0
+00:43:52.940 --> 00:43:55.940
+Yeah, I think there's a OK.
+
+b1a11fa0-26da-4158-91ad-5916f1ebe8d0-0
+00:43:55.940 --> 00:43:57.820
+So, yeah, total number is 2.
+
+6f5680e9-b845-4546-8e02-7cc066e3ee8a-0
+00:43:59.740 --> 00:44:00.860
+OK, so there's some.
+
+ec64f752-d84e-4887-bc0a-4b2cf8bf2d94-0
+00:44:01.740 --> 00:44:06.306
+So you believe the question,
+the answer provided by the question is
+
+ec64f752-d84e-4887-bc0a-4b2cf8bf2d94-1
+00:44:06.306 --> 00:44:07.180
+wrong, right?
+
+d1a2fcd8-3ec7-490d-926c-18c2109e0e8a-0
+00:44:07.940 --> 00:44:08.340
+Yep.
+
+7e5a33e8-8ca3-4bd2-a191-59edc3809149-0
+00:44:09.840 --> 00:44:10.120
+OK.
+
+086489bc-3bbe-4fb7-a415-7e47ad253df4-0
+00:44:10.120 --> 00:44:10.600
+Just skip.
+
+440b5bf2-2c08-4114-a562-1f316c473e9c-0
+00:44:10.600 --> 00:44:12.320
+Yeah, 'cause yeah.
+
+69ff5bdc-4bdc-47b1-a75c-3ae629b2050b-0
+00:44:12.960 --> 00:44:13.560
+Mm, hmm.
+
+4ab987a0-7b87-46d3-8c5c-010ac97439eb-0
+00:44:13.840 --> 00:44:14.120
+Thank you.
+
+b51b66cb-5e6c-4de4-aa23-d83b4cc25d6f-0
+00:44:14.160 --> 00:44:15.320
+Thank you for supporting that.
+
+14d6d9be-bdbf-4b26-8426-ae9416883fb6-0
+00:51:57.800 --> 00:52:01.320
+Hey Gary,
+I think I finished all the steps.
+
+75f25aa0-0b09-4538-86b0-867db59ff5cd-0
+00:52:03.280 --> 00:52:03.760
+Nice.
+
+f31e6395-54bd-4795-bd5a-b099750c058f-0
+00:52:04.160 --> 00:52:08.960
+Now you can open the quiz again and just
+do everything from the start.
+
+f8485e91-eb9f-4e2b-b976-3e29a084a903-0
+00:52:10.600 --> 00:52:13.480
+OK, this one, yes.
+
+0eec249d-4958-47c8-912f-851fc6687d7c-0
+00:52:15.040 --> 00:52:19.193
+Oh,
+and also in the student name you can add,
+
+0eec249d-4958-47c8-912f-851fc6687d7c-1
+00:52:19.193 --> 00:52:24.160
+you can add one more,
+one more synthesize preferences.
+
+e9aa7e2b-3c8a-40a3-bd4f-4f6b525a5c21-0
+00:52:26.600 --> 00:52:27.440
+Just add one more thing.
+
+de940ce0-245c-4120-b660-1d1a69d4fa12-0
+00:52:27.440 --> 00:52:29.440
+Just post, post test.
+
+e0938dc7-6cae-4219-b138-fa4e0ffa1f66-0
+00:52:37.350 --> 00:52:38.630
+No post test.
+
+9a42f8e5-2e30-42ce-9c36-e0b92d36cabc-0
+00:52:38.870 --> 00:52:39.670
+Post test.
+
+5ffe8692-e470-4ef5-b7df-1f1042fc0ad8-0
+00:52:42.710 --> 00:52:44.590
+Yeah, at the end, at the end.
+
+9ad8fc36-b9f8-425b-8584-a268248e3ffe-0
+00:52:54.100 --> 00:52:55.780
+No, no, no, not coding free.
+
+890ccc4c-e25e-44a1-80e4-df24643501a7-0
+00:52:55.820 --> 00:52:57.420
+I mean post test.
+
+f891e590-73d5-413b-92d3-592cbf9968d6-0
+00:52:57.420 --> 00:52:59.060
+Just type this post test.
+
+0bb27b03-5758-4076-83fa-ba854c465130-0
+00:52:59.260 --> 00:52:59.980
+Just type it.
+
+7a7275f3-61e9-49ca-9508-99f12583b20f-0
+00:53:00.580 --> 00:53:10.200
+Yeah, post test, test, Yep, thank you.
+
+fcbd51f9-a008-4465-90d8-e6ee07380939-0
+00:53:11.120 --> 00:53:12.360
+And now you can just do it.
+
+c6a2ca2c-88d2-49cd-822d-bb66c2529832-0
+01:09:49.560 --> 01:09:50.120
+Hey, Gary.
+
+ffb6a404-6c94-4de6-949e-761dfcfdde5e-0
+01:09:50.120 --> 01:09:52.120
+I think I finished all the quizzes.
+
+b5370745-9791-4f1a-b0fd-ce4564c69f4a-0
+01:09:55.400 --> 01:09:55.800
+Thank you.
+
+2333cb53-3402-4833-931b-313cc50c22f0-0
+01:09:55.920 --> 01:10:01.640
+Now you can just download this and later
+just send it to me, OK?
+
+9110ddbf-0133-402c-a3d2-85aff8697198-0
+01:10:02.480 --> 01:10:02.840
+OK.
+
+9f23c668-14c0-40a4-a1ca-bd33f7478ef5-0
+01:10:03.840 --> 01:10:04.560
+Thank you so much.
+
+7b18eff7-0e33-4634-952a-52ac843067b4-0
+01:10:04.960 --> 01:10:11.185
+Next,
+I'm going to send you a question here to
+
+7b18eff7-0e33-4634-952a-52ac843067b4-1
+01:10:11.185 --> 01:10:15.160
+just ask your experience here.
+
+40585687-8489-4e1f-b043-fc4d3614e8fc-0
+01:10:15.160 --> 01:10:20.680
+Is it, it's kind of kind of similar stuff,
+You just put your feedback there.
+
+8eb20c0a-e70e-4959-9514-8f76dbb26e51-0
+01:10:20.680 --> 01:10:21.560
+OK, thank you.
+
+a58bb0d3-5218-4c30-9990-c189a8b708bd-0
+01:10:22.040 --> 01:10:41.910
+OK, what is my participation code?
+
+2389cc97-02ea-409c-a1f6-75ef57075d4c-0
+01:10:45.470 --> 01:10:48.910
+I think that you can just type your name
+there or not.
+
+abc91232-6421-4fe4-987c-4bbd7b3906d9-0
+01:10:49.310 --> 01:10:53.390
+OK, material.
+
+d2ea0862-bea2-4e11-8f69-aef6b3142f47-0
+01:11:00.520 --> 01:11:02.584
+Yeah,
+you can just copy the title from the
+
+d2ea0862-bea2-4e11-8f69-aef6b3142f47-1
+01:11:02.584 --> 01:11:02.920
+sample.
+
+7951b9f7-695d-4365-9bab-267e09c6807a-0
+01:11:03.320 --> 01:11:03.680
+Thank you.
+
+c605e0ec-0335-44e7-82e5-91e35b886ac6-0
+01:13:28.880 --> 01:13:33.092
+Gary,
+I haven't used the PDF feature for
+
+c605e0ec-0335-44e7-82e5-91e35b886ac6-1
+01:13:33.092 --> 01:13:34.120
+uploading.
+
+b4efe620-a8df-4045-bf60-34e01de92942-0
+01:13:34.480 --> 01:13:38.724
+So, oh,
+here let me show you the original PDF so
+
+b4efe620-a8df-4045-bf60-34e01de92942-1
+01:13:38.724 --> 01:13:44.962
+you don't have to use it because since
+this is just like a preliminary,
+
+b4efe620-a8df-4045-bf60-34e01de92942-2
+01:13:44.962 --> 01:13:49.640
+preliminary usability study,
+it's not a formal study.
+
+d62ca30f-4338-4463-97ea-133f6c399d52-0
+01:13:50.840 --> 01:13:57.358
+I sent the the original PDF to you,
+so you can just briefly take a look and
+
+d62ca30f-4338-4463-97ea-133f6c399d52-1
+01:13:57.358 --> 01:14:02.761
+just give you our opinions,
+suggestions like like for example,
+
+d62ca30f-4338-4463-97ea-133f6c399d52-2
+01:14:02.761 --> 01:14:07.478
+like which one,
+which learning experience you think is
+
+d62ca30f-4338-4463-97ea-133f6c399d52-3
+01:14:07.478 --> 01:14:09.280
+better or you prefer?
+
+017fdf8b-e2c5-447e-83d0-8cce1c50d35f-0
+01:14:10.680 --> 01:14:12.800
+Yeah, this is the original thing, yeah.
+
+58b44422-94c3-4487-8ccc-325f8e0ae447-0
+01:15:28.160 --> 01:15:30.280
+Do I need to write down the reason?
+
+21fa00b3-01ba-4448-9f96-dc65566635c4-0
+01:15:35.960 --> 01:15:36.400
+Yes.
+
+a2b1d95a-c2f2-438f-a2d7-9dc47d4788a8-0
+01:15:47.520 --> 01:15:48.320
+OK, you finished.
+
+61de2607-f98e-43bd-924c-29e3903b9559-0
+01:15:50.240 --> 01:15:53.320
+Wait, I haven't write down the reason yet.
+
+c92120d3-2087-43ae-9b4b-118558debebf-0
+01:15:55.000 --> 01:15:55.280
+OK.
+
+7bb97abe-1aed-463d-b62f-20195e95f63e-0
+01:15:58.280 --> 01:16:00.160
+The second is most frustrated part.
+
+d615fb4e-3039-46d5-80eb-f20594a7c00f-0
+01:16:00.280 --> 01:16:04.480
+Like what part you think is is not that
+good actually.
+
+9001486f-8ef1-477e-a1fb-52baf462a315-0
+01:16:10.920 --> 01:16:17.020
+Yeah, I think 3D is the best part,
+but also is the most frustrating part
+
+9001486f-8ef1-477e-a1fb-52baf462a315-1
+01:16:17.020 --> 01:16:20.280
+cause can you write your reasons there?
+
+21c3c9ac-26c3-4216-af28-b48eabbc52be-0
+01:16:21.000 --> 01:16:21.280
+Yep.
+
+4441cb6d-25c9-4070-9041-d86257796553-0
+01:19:00.920 --> 01:19:02.360
+OK, I finished the feedback.
+
+16ed3000-34d3-43d5-95c4-f7651e910fab-0
+01:19:05.560 --> 01:19:06.000
+Thank you.
+
+1727c95c-099c-4764-a59f-b7ffd574614c-0
+01:19:07.040 --> 01:19:10.880
+You can download this and send it to me
+later.
+
+ffafd9a2-7057-42d1-a864-0d1e4bf66935-0
+01:19:11.880 --> 01:19:23.110
+OK, Can you download this and send it?
+
+8d427b50-d419-40e3-840b-348b2a0a584e-0
+01:19:23.990 --> 01:19:24.950
+Have you download this?
+
+63ff2393-c1f0-43c8-a3cb-608fb288e9c0-0
+01:19:26.030 --> 01:19:26.230
+Yeah.
+
+364887a5-1106-453b-8001-31995ac9833a-0
+01:19:26.230 --> 01:19:26.950
+OK, wait a second.
+
+c9e58257-c002-4187-bf72-98452e7bbd62-0
+01:19:36.240 --> 01:19:37.880
+OK, I already send you.
+
+0ed87bc3-9639-4acb-b56e-e30446f22227-0
+01:19:39.680 --> 01:19:40.920
+OK, thank you so much.
+
+ead2a30b-e102-4922-a352-9d6fff72eff3-0
+01:19:42.200 --> 01:19:46.467
+All right,
+so next I'll give you a short interview
+
+ead2a30b-e102-4922-a352-9d6fff72eff3-1
+01:19:46.467 --> 01:19:49.480
+and after this we can end the study.
+
+93bfdbf2-feb9-4c57-b10b-b3a650129cca-0
+01:19:49.640 --> 01:19:50.000
+OK.
+
+c818f1cf-f2df-4d2e-a0ed-530b579d20b2-0
+01:19:51.280 --> 01:19:51.560
+Yep.
+
+8cfc7d2f-1529-44c2-830b-c79123a5977c-0
+01:19:54.560 --> 01:19:57.155
+OK,
+so I think right now let's let's start
+
+8cfc7d2f-1529-44c2-830b-c79123a5977c-1
+01:19:57.155 --> 01:19:58.000
+the interview.
+
+c530016c-64cc-4fcd-b49e-e0fda4fea590-0
+01:19:58.000 --> 01:20:03.560
+OK,
+so first question is so in one sentence.
+
+7b3f3576-c82a-4c3d-bc47-c02f659e0b19-0
+01:20:04.160 --> 01:20:05.560
+What does this tool do?
+
+10742927-d71c-4f64-895b-35ceaca7ef31-0
+01:20:06.360 --> 01:20:07.760
+So what do you think this is for?
+
+64c702a0-bff9-4562-bb2f-d5e0b2f22045-0
+01:20:09.800 --> 01:20:15.975
+I think it can let teachers to describe
+their course ideas in natural language,
+
+64c702a0-bff9-4562-bb2f-d5e0b2f22045-1
+01:20:15.975 --> 01:20:21.996
+and the system can help teachers to
+create an interactive learning experience
+
+64c702a0-bff9-4562-bb2f-d5e0b2f22045-2
+01:20:21.996 --> 01:20:23.000
+for students.
+
+94877681-9892-4fd5-984b-531b1b96c3f7-0
+01:20:25.360 --> 01:20:25.520
+Cool.
+
+5d87b778-38a6-41f6-bce4-24f7138cab36-0
+01:20:26.680 --> 01:20:30.520
+And how did how did reading and loading
+feel like?
+
+55df50b6-1989-4e20-b658-3916032f6a1d-0
+01:20:31.040 --> 01:20:33.480
+Have you ever experienced any lag or
+something?
+
+08894ced-f993-4a35-a2f2-26600860a6e3-0
+01:20:34.320 --> 01:20:38.208
+Well,
+I think the waiting time was pretty
+
+08894ced-f993-4a35-a2f2-26600860a6e3-1
+01:20:38.208 --> 01:20:45.244
+normal and acceptable and consider
+considering the quality of the generated
+
+08894ced-f993-4a35-a2f2-26600860a6e3-2
+01:20:45.244 --> 01:20:50.800
+generated concept,
+I think the waiting time was works well.
+
+285e8d45-8b95-43c2-8f4c-60a0f8f2ed0d-0
+01:20:52.720 --> 01:20:56.068
+OK,
+so which part do you find that helps the
+
+285e8d45-8b95-43c2-8f4c-60a0f8f2ed0d-1
+01:20:56.068 --> 01:20:56.440
+most?
+
+1735173f-582f-4993-9df6-0b416a366187-0
+01:20:57.080 --> 01:21:02.744
+We have reading, quiz,
+interactive 2D or 3D and the entire
+
+1735173f-582f-4993-9df6-0b416a366187-1
+01:21:02.744 --> 01:21:07.160
+workflow and also the learning agent and
+why?
+
+01b807eb-f951-429d-b5c2-b7970b544617-0
+01:21:08.080 --> 01:21:15.233
+Yeah, as I mentioned in the feedback,
+I think the 3D helps the most because it
+
+01b807eb-f951-429d-b5c2-b7970b544617-1
+01:21:15.233 --> 01:21:21.571
+makes the abstract concept easier to
+understand and allow students to
+
+01b807eb-f951-429d-b5c2-b7970b544617-2
+01:21:21.571 --> 01:21:28.000
+experience the situations that aren't
+hard to assess in the real life.
+
+a461d5bb-0fd4-4279-b426-2c88f57cde5b-0
+01:21:29.440 --> 01:21:31.640
+Yeah, OK.
+
+5d2f6203-5ea3-4bd8-9be2-cd8073615cb1-0
+01:21:33.000 --> 01:21:38.451
+So have you, have you,
+have you encountered any confusion or
+
+5d2f6203-5ea3-4bd8-9be2-cd8073615cb1-1
+01:21:38.451 --> 01:21:44.440
+annoying things and where,
+where did you feel confused or annoyed?
+
+ac1e3527-c080-4487-9878-477310ae9a48-0
+01:21:48.320 --> 01:21:52.175
+So I'm,
+I'm a little bit confused that well,
+
+ac1e3527-c080-4487-9878-477310ae9a48-1
+01:21:52.175 --> 01:21:58.773
+the AI truly understand the real real
+world rules like chemistry or physical
+
+ac1e3527-c080-4487-9878-477310ae9a48-2
+01:21:58.773 --> 01:22:05.285
+rules and how can AI represent these
+rules accurately on the in the virtual
+
+ac1e3527-c080-4487-9878-477310ae9a48-3
+01:22:05.285 --> 01:22:05.800
+world.
+
+79e3f64c-3ab7-42cb-98cf-838f4cc1839c-0
+01:22:06.640 --> 01:22:14.904
+And I still have some concerns regarding
+the reading part 'cause I think there
+
+79e3f64c-3ab7-42cb-98cf-838f4cc1839c-1
+01:22:14.904 --> 01:22:22.960
+there's a mostly short experience and the
+concepts, so they're easy to read.
+
+cdb34c57-feb6-44b4-96d2-a0da0668c2a6-0
+01:22:22.960 --> 01:22:30.289
+But sometimes I feel I might I,
+I won't thought deeply enough about these
+
+cdb34c57-feb6-44b4-96d2-a0da0668c2a6-1
+01:22:30.289 --> 01:22:31.280
+knowledge.
+
+92cd6a09-5c3e-4f14-ae06-aa5351c535dc-0
+01:22:34.600 --> 01:22:39.835
+OK, so you mentioned,
+you mentioned like sometimes you're not
+
+92cd6a09-5c3e-4f14-ae06-aa5351c535dc-1
+01:22:39.835 --> 01:22:42.200
+it's not feel deeply enough.
+
+866440be-0020-4043-87f2-21961635a4e7-0
+01:22:42.640 --> 01:22:45.400
+Can you illustrate this a little bit,
+a little bit more?
+
+f2b118e2-444b-4e56-a106-f35fe184712e-0
+01:22:47.480 --> 01:22:52.200
+Because in the because in the reading
+part, there are only a few sentences.
+
+ad1d6dac-6d53-49d1-aebe-d3e032668791-0
+01:22:52.440 --> 01:22:58.600
+I think it might just two or three
+sentence to introduce 1 concept.
+
+6734ccd6-8dcb-4e61-b3b1-2ddf6e67ec7d-0
+01:22:59.680 --> 01:23:07.226
+So basically there are all,
+there are all the definitions of these
+
+6734ccd6-8dcb-4e61-b3b1-2ddf6e67ec7d-1
+01:23:07.226 --> 01:23:08.240
+concepts.
+
+d56a017f-2777-4987-b0ca-02a9ca047f37-0
+01:23:08.240 --> 01:23:15.459
+So I might just spend like 3 minutes to
+go through this sentence,
+
+d56a017f-2777-4987-b0ca-02a9ca047f37-1
+01:23:15.459 --> 01:23:23.444
+but I think 30 seconds not enough for
+student to to accept a totally new
+
+d56a017f-2777-4987-b0ca-02a9ca047f37-2
+01:23:23.444 --> 01:23:24.319
+concept.
+
+dd949ed3-a20c-4e2a-99ea-0446fc5930c0-0
+01:23:24.320 --> 01:23:36.000
+So I think it's I think we can like it's
+10 the like we, we can, we can't, it's 10.
+
+f9482e92-444f-4fd9-b551-2d2420433a2e-0
+01:23:36.000 --> 01:23:44.313
+The like the number of number of words in
+the reading part and give students more
+
+f9482e92-444f-4fd9-b551-2d2420433a2e-1
+01:23:44.313 --> 01:23:50.600
+time and more concept to let them
+understand the definitions.
+
+d8c19ec0-e403-47b5-aa76-17f43815be03-0
+01:23:54.160 --> 01:23:54.960
+OK, thank you.
+
+ad5da96e-07af-4f5e-bea1-322f0e3dda20-0
+01:23:55.400 --> 01:23:59.720
+And did the course match the topic?
+
+6c462c6a-64fd-4db7-bece-32209024eada-0
+01:24:01.440 --> 01:24:05.040
+So I also showed you the the PDF at the
+end.
+
+f44a88ce-8f66-46fb-82ad-71ea0677b2e5-0
+01:24:05.040 --> 01:24:09.280
+So, so how,
+how do you think that the course is?
+
+db47d408-dcdc-43e6-8e2d-cd53c8ef7e68-0
+01:24:10.800 --> 01:24:15.537
+It's matched and yeah,
+does does the some part of the of our
+
+db47d408-dcdc-43e6-8e2d-cd53c8ef7e68-1
+01:24:15.537 --> 01:24:20.120
+course on the website too shallow about
+right or too much?
+
+80c6322e-d989-4f92-b702-43adea22c968-0
+01:24:21.280 --> 01:24:25.253
+Yeah,
+I think the overall level is pretty good
+
+80c6322e-d989-4f92-b702-43adea22c968-1
+01:24:25.253 --> 01:24:28.720
+and I think it matched the PDF very well.
+
+ef5bde89-2918-43ff-bc7f-d521c773c04c-0
+01:24:31.840 --> 01:24:32.400
+Yeah, that's it.
+
+5f159ecb-9282-442e-b7b6-63cb623a00be-0
+01:24:34.600 --> 01:24:42.114
+And would you use for the study like for
+the website I sent or for teaching
+
+5f159ecb-9282-442e-b7b6-63cb623a00be-1
+01:24:42.114 --> 01:24:43.400
+someone else?
+
+7fd93bb4-5c47-4c38-9420-5e03b19e4571-0
+01:24:44.120 --> 01:24:44.400
+Yeah, sure.
+
+1474d5f3-b5d2-4c54-8880-6a559d3a5931-0
+01:24:44.400 --> 01:24:44.840
+Of course.
+
+2ceb3cee-4e8a-40b4-8ce5-52f9a70db6ed-0
+01:24:46.120 --> 01:24:55.003
+Yeah, because I think like this,
+this platform include H5 and 3D like
+
+2ceb3cee-4e8a-40b4-8ce5-52f9a70db6ed-1
+01:24:55.003 --> 01:25:00.080
+these different type of learning method.
+
+74686994-c27f-4b7a-85c0-0ba93b75ba6e-0
+01:25:00.600 --> 01:25:07.360
+And it's a very good new way for learning
+and it can explore like many situations
+
+74686994-c27f-4b7a-85c0-0ba93b75ba6e-1
+01:25:07.360 --> 01:25:11.400
+that I can't that I can't access in
+normal life.
+
+582766c8-03ab-460d-b9dc-f7e09dacfc94-0
+01:25:12.280 --> 01:25:15.320
+So I think it's a very good experience
+using this tool.
+
+ca4d3c02-d17b-44a0-9042-535474cb04dc-0
+01:25:15.880 --> 01:25:22.825
+And as a teacher, I think I also, yeah,
+I did this, this,
+
+ca4d3c02-d17b-44a0-9042-535474cb04dc-1
+01:25:22.825 --> 01:25:31.448
+this tool can help me quickly,
+like help me to turn my course idea into
+
+ca4d3c02-d17b-44a0-9042-535474cb04dc-2
+01:25:31.448 --> 01:25:35.520
+a real into a real actual lessons.
+
+fb274c54-80be-4751-b72f-0c00373b5e2c-0
+01:25:35.520 --> 01:25:40.480
+So I think I will also use these tools to
+teach.
+
+4bb31752-dc44-40b7-89c3-02b372505166-0
+01:25:43.640 --> 01:25:47.983
+OK,
+so if we about to fix only one thing for
+
+4bb31752-dc44-40b7-89c3-02b372505166-1
+01:25:47.983 --> 01:25:52.520
+the current system we have,
+what it what what?
+
+e22020f1-33da-499c-85c1-9ac8d64a88e3-0
+01:25:52.520 --> 01:25:53.960
+What will that be?
+
+9e9fd31d-f432-4ca6-98d6-61d0f661bc62-0
+01:26:01.760 --> 01:26:03.320
+Yeah, I think we can.
+
+0b8cd2e1-4b1e-4f42-aaa1-6e10687455d3-0
+01:26:04.480 --> 01:26:11.102
+I think we can improve the AI tutor
+feature because for me and I think
+
+0b8cd2e1-4b1e-4f42-aaa1-6e10687455d3-1
+01:26:11.102 --> 01:26:18.564
+probably many learners that concepts are
+easier to understand and remember when
+
+0b8cd2e1-4b1e-4f42-aaa1-6e10687455d3-2
+01:26:18.564 --> 01:26:25.000
+someone explains the explains and
+explains the concept step by step.
+
+11d928b7-0930-41e1-939a-b87055d56fa0-0
+01:26:25.000 --> 01:26:30.600
+So I think it's very worthy to improve
+the AI tutor feature.
+
+cbf4ce81-6686-44ea-b1d9-59b1b172d1f5-0
+01:26:32.360 --> 01:26:37.640
+OK, so just one more add on questions,
+a follow up question.
+
+1f4ef145-e584-46b8-a617-7374314d4281-0
+01:26:37.640 --> 01:26:40.960
+So you mentioned the AI tutor helpful
+help a lot.
+
+28002824-57b4-4480-9458-99366d3b6d4c-0
+01:26:41.360 --> 01:26:45.040
+So can you tell me, can you tell us now?
+
+b2736e2f-c50f-4601-8ee3-c1e5fc84863f-0
+01:26:46.840 --> 01:26:49.320
+So why do you think the current 1 is not
+good enough?
+
+e37fca71-a9c1-448a-bed7-2da17c954023-0
+01:26:49.360 --> 01:26:51.280
+Like or what, what what else?
+
+ad01eeac-d71c-442a-82ad-5085ca50ff53-0
+01:26:51.280 --> 01:26:55.668
+You you can you could imagine like we
+could add to this to the current learning
+
+ad01eeac-d71c-442a-82ad-5085ca50ff53-1
+01:26:55.668 --> 01:26:57.040
+agents to make it better.
+
+e38e5376-15f6-41ab-94da-c33b3fd7c730-0
+01:26:57.640 --> 01:26:58.000
+Thank you.
+
+d4313eab-a481-4ffd-bace-165527928d6f-0
+01:26:59.120 --> 01:27:04.376
+Yeah,
+because the currently AI tutor because
+
+d4313eab-a481-4ffd-bace-165527928d6f-1
+01:27:04.376 --> 01:27:13.720
+because the generated concepts are all
+right in in like all all writes in Word.
+
+aa65dd90-e1c8-44c4-97c6-f1cceacbc32e-0
+01:27:13.720 --> 01:27:19.120
+But some people are more interested in
+like sounds or more interesting in videos.
+
+575f02c5-7c12-4e8d-b375-98f9fdd85420-0
+01:27:20.160 --> 01:27:30.882
+So So personally I prefer the AI that can
+can talk to me and to explain these
+
+575f02c5-7c12-4e8d-b375-98f9fdd85420-1
+01:27:30.882 --> 01:27:32.120
+concepts.
+
+da5d135a-2642-4a9f-9d20-3fb2b84292dc-0
+01:27:38.630 --> 01:27:42.575
+OK,
+so you mean you prefer it can just
+
+da5d135a-2642-4a9f-9d20-3fb2b84292dc-1
+01:27:42.575 --> 01:27:49.960
+gradually unbox a complex concept instead
+of like giving you everything?
+
+74d5efe1-7c71-477f-a0be-2a74621e2fac-0
+01:27:50.520 --> 01:27:51.480
+Is that what you mean?
+
+6aa4181f-7458-4d23-9729-f4601272353b-0
+01:27:52.720 --> 01:27:56.687
+OK, OK,
+so another thing I would ask it is if in
+
+6aa4181f-7458-4d23-9729-f4601272353b-1
+01:27:56.687 --> 01:28:02.113
+the future we also equipped our learning
+agents with, for example,
+
+6aa4181f-7458-4d23-9729-f4601272353b-2
+01:28:02.113 --> 01:28:08.105
+draw you a diagram or generate image or
+even generate some 3D or just the
+
+6aa4181f-7458-4d23-9729-f4601272353b-3
+01:28:08.105 --> 01:28:12.640
+contents like you see in the real lecture
+in real time.
+
+b97aa5fc-e587-45ed-9fce-1db1c68f5585-0
+01:28:12.840 --> 01:28:15.840
+But it's but it's in in the learning
+agent.
+
+86971f24-4d75-4568-bea3-c4c063939a1f-0
+01:28:16.200 --> 01:28:19.002
+So, So what do you think about this,
+for example,
+
+86971f24-4d75-4568-bea3-c4c063939a1f-1
+01:28:19.002 --> 01:28:21.972
+or there could be like another feature,
+for example,
+
+86971f24-4d75-4568-bea3-c4c063939a1f-2
+01:28:21.972 --> 01:28:26.119
+when you're exploring the 3D sayings,
+you asking your own question to the
+
+86971f24-4d75-4568-bea3-c4c063939a1f-3
+01:28:26.119 --> 01:28:26.959
+learning agent.
+
+3f44b917-4b48-46dc-9703-1c27b9368bf0-0
+01:28:26.960 --> 01:28:32.600
+The learning agent can in real time just
+make some modification to the 3D things.
+
+8419a435-294b-4ca6-b150-d7ac0306e7e2-0
+01:28:32.600 --> 01:28:37.110
+For example, add memo,
+add one more UI panels to help please
+
+8419a435-294b-4ca6-b150-d7ac0306e7e2-1
+01:28:37.110 --> 01:28:42.729
+explain these things or just generate
+some 3D stuff in real time to further
+
+8419a435-294b-4ca6-b150-d7ac0306e7e2-2
+01:28:42.729 --> 01:28:44.799
+illustrate another 3D stuff.
+
+e7f30bc7-902a-41f4-b82d-0ce14536b67f-0
+01:28:45.400 --> 01:28:48.440
+So So what do you think about these
+features?
+
+d72496b8-74ce-4fd7-8241-deef0cf22e56-0
+01:28:49.440 --> 01:28:54.059
+Oh,
+I think a pretty cool feature that it can
+
+d72496b8-74ce-4fd7-8241-deef0cf22e56-1
+01:28:54.059 --> 01:28:59.883
+help students to explore more things in
+in this platform,
+
+d72496b8-74ce-4fd7-8241-deef0cf22e56-2
+01:28:59.883 --> 01:29:03.800
+like literally everything in the world.
+
+18f9083b-e24c-4e92-90f4-174b77b482a0-0
+01:29:03.800 --> 01:29:08.440
+You can just put it into the system and
+they can explore,
+
+18f9083b-e24c-4e92-90f4-174b77b482a0-1
+01:29:08.440 --> 01:29:10.600
+explore them in the system.
+
+2d91b484-0e59-42c0-8314-bce97d8ff0e6-0
+01:29:12.160 --> 01:29:13.400
+I think it's pretty cool.
+
+040d597b-d902-45ed-b4ff-1ed9a669b9ff-0
+01:29:16.160 --> 01:29:17.240
+All right, thank you so much.
+
+663eb0a7-192b-4a52-ac1f-4d02301e7603-0
+01:29:19.120 --> 01:29:21.440
+Anything else you want to share or you
+want to add?
+
+a1b25a04-251f-4c7a-be6b-ff3c7e2a9400-0
+01:29:24.760 --> 01:29:25.480
+No, that's all.
+
+e0f8da6c-024b-4d6d-b352-8f9a6269df05-0
+01:29:25.600 --> 01:29:25.960
+Thank you.
+
+39ebf48c-483d-4cc5-80c9-60914e8c721e-0
+01:29:27.000 --> 01:29:27.240
+All right.
+
+b679e23c-183f-4427-b000-f28ad8ffbb18-0
+01:29:27.240 --> 01:29:27.960
+Thank you so much.
+
+7b5839ec-5696-4a86-b2e6-1a30db9d3789-0
+01:29:29.000 --> 01:29:29.160
+Yeah.
+
+5b06f9f9-9f10-47e0-9b26-328b9fa84d12-0
+01:29:29.200 --> 01:29:29.520
+Thank you.

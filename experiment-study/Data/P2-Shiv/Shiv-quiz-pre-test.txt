@@ -1,0 +1,125 @@
+Gears and Gear Ratios Quiz
+Student: shiv
+Generated: 8/8/2026, 9:08:03 pm
+
+PART I: MULTIPLE CHOICE
+1. The gear that supplies the input motion is called the:
+   A. Driven gear
+   B. Driver gear
+   C. Rack gear
+   D. Idler gear
+   Student answer: [blank]
+
+2. The output gear is called the:
+   A. Driver gear
+   B. Driven gear
+   C. Pinion only
+   D. Axle gear
+   Student answer: [blank]
+
+3. Two meshing spur gears rotate in:
+   A. The same direction
+   B. Opposite directions
+   C. No fixed relationship
+   D. Only clockwise
+   Student answer: [blank]
+
+4. A gear ratio in the handout is calculated as:
+   A. Driver teeth ÷ driven teeth
+   B. Driven teeth ÷ driver teeth
+   C. Sum of all teeth
+   D. Difference in diameters
+   Student answer: [blank]
+
+5. A small driver turning a larger driven gear generally causes the driven gear to rotate:
+   A. Faster
+   B. Slower
+   C. At the same speed
+   D. Randomly
+   Student answer: [blank]
+
+6. An idler gear placed between driver and driven gears mainly changes:
+   A. The overall ratio only
+   B. The direction of rotation
+   C. The material of the gears
+   D. The number of teeth on the driver
+   Student answer: [blank]
+
+7. Adding ordinary idler gears between the first and last gears changes the overall ratio:
+   A. Always
+   B. Usually not
+   C. Only when there are two idlers
+   D. Only with bevel gears
+   Student answer: [blank]
+
+8. A compound gear consists of:
+   A. One gear with no teeth
+   B. Two or more gears on the same shaft or connected as one piece
+   C. A rack and spring
+   D. Two gears that never touch
+   Student answer: [blank]
+
+9. For compound gear trains, the overall ratio is found by:
+   A. Adding the stage ratios
+   B. Multiplying the stage ratios
+   C. Subtracting tooth counts
+   D. Using only the largest gear
+   Student answer: [blank]
+
+10. Which gear converts rotational motion into linear motion?
+   A. Rack and pinion
+   B. Worm gear only
+   C. Bevel gear
+   D. Compound gear
+   Student answer: [blank]
+
+11. Which gear is commonly used to change the direction of rotating shafts, often by 90°?
+   A. Spur gear
+   B. Rack gear
+   C. Bevel gear
+   D. Pinion gear
+   Student answer: [blank]
+
+12. Which gear has a locking quality that can help hold robot arms in position?
+   A. Worm gear
+   B. Rack gear
+   C. Spur gear
+   D. Idler gear
+   Student answer: [blank]
+
+13. A pinion gear is usually:
+   A. A large driven gear
+   B. A small driver gear
+   C. A straight rack
+   D. A gear with no axle
+   Student answer: [blank]
+
+14. The handout challenge asks for a compound gear train with at least what ratio?
+   A. 2:1
+   B. 4:1
+   C. 8:1
+   D. 20:1
+   Student answer: [blank]
+
+15. One practical limitation of extremely high or low gear ratios is that:
+   A. Gears may need to be impractically large or small
+   B. All gears rotate in the same direction
+   C. Teeth disappear
+   D. Ratios stop being measurable
+   Student answer: [blank]
+
+PART II: SHORT ANSWER
+Short Answer 1. Explain how the number of teeth on driver and driven gears affects speed.
+Student answer: [blank]
+
+Short Answer 2. Describe the role of an idler gear and what it does and does not change.
+Student answer: [blank]
+
+Short Answer 3. Explain what a compound gear is and why compound gear trains are useful.
+Student answer: [blank]
+
+Short Answer 4. Describe how to calculate the overall ratio of a two-stage compound gear train.
+Student answer: [blank]
+
+Short Answer 5. Compare a rack-and-pinion, worm gear, and bevel gear in terms of the motion or function each provides.
+Student answer: [blank]

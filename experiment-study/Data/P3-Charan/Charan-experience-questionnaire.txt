@@ -1,0 +1,27 @@
+XR EduAgent — Questionnaire responses
+
+participant_code: Charan
+material: Projectile Motion: Two Independent Motions in One Flight
+age: 24
+field: Computer Science
+tlx_mental: 75
+tlx_physical: 60
+tlx_temporal: 10
+tlx_performance: 80
+tlx_effort: 70
+tlx_frustration: 20
+best: The 2D and 3D visualizations made concepts click faster and felt more engaging to explore than just reading about them.
+worst: The reading sections were too short, some concepts only had two or three lines, which wasn't enough for the trickier topics.
+role: Grad student
+ai_use: Weekly or more
+s1: 6
+s2: 6
+s3: 7
+a1: 5
+a2: 4
+a3: 6
+a4: 6
+l1: 6
+l2: 7
+l3: 6
+l4: 7

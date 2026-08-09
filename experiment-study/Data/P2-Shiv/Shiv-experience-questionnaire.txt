@@ -1,0 +1,27 @@
+XR EduAgent — Questionnaire responses
+
+participant_code: Shiv
+material: Gears and More Gears: Building Drive Trains
+age: 24
+field: Data Science
+tlx_mental: 80
+tlx_physical: 65
+tlx_temporal: 15
+tlx_performance: 90
+tlx_effort: 70
+tlx_frustration: 30
+best: The organized version of learning a new topic through interactive learning. 
+worst: Sometimes the generation is still not conveying the proper information, could be fine-tuned a bit.
+role: Grad student
+ai_use: Weekly or more
+s1: 7
+s2: 6
+s3: 7
+a1: 5
+a2: 5
+a3: 6
+a4: 7
+l1: 6
+l2: 6
+l3: 6
+l4: 6

@@ -6,7 +6,7 @@
 //  · compileUpdate(code)           编译每帧行为 (dt, t, obj) => void
 //  · compileClick(code)            编译点击行为 (obj) => void
 //  · 代码里可用 T(工具箱)与 THREE;沙盒 = new Function 作用域隔离,
-//    仅适用于本地原型(正式产品需 Worker/iframe 级隔离,见 TODO.md)
+//    仅适用于本地原型(正式产品需 Worker/iframe 级隔离,见 /general/overview.md roadmap)
 // ═══════════════════════════════════════════════════════════════
 import * as THREE from 'three';
 import { mat, mesh, bond, at, toast } from '../core/utils.js';

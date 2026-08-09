@@ -80,7 +80,7 @@ allowed_radius 限定活动半径(米,防学生走丢,0=不限);turn_mode 转向
       },
     },
     exec(inp) {
-      // Study TEMP — see STUDY_TEST_FLAGS.md
+      // Study TEMP — see js/core/study-test-flags.js
       if (studyFlag('disableVrPlayerController')) {
         return ok(L('试学模式:已跳过 VR 移动配置(当前为普通 3D 场景)', 'Study mode: skipped VR locomotion (normal 3D scene)'));
       }
@@ -114,7 +114,7 @@ allowed_radius 限定活动半径(米,防学生走丢,0=不限);turn_mode 转向
       },
     },
     exec(inp) {
-      // Study TEMP — see STUDY_TEST_FLAGS.md
+      // Study TEMP — see js/core/study-test-flags.js
       if (studyFlag('disableVrPlayerController')) {
         return ok(L('试学模式:已跳过学生出生点设置(当前为普通 3D 场景)', 'Study mode: skipped student spawn (normal 3D scene)'));
       }

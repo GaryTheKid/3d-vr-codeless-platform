@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 //  XR EduAgent — 入口(Bootstrap)
-//  模块结构见 AGENTS.md;此文件只做装配与开场
+//  模块结构见 /Agent.md 与 /general/overview.md;此文件只做装配与开场
 // ═══════════════════════════════════════════════════════════════
 import { applyDomI18n, lang, L } from './js/core/i18n.js';
 applyDomI18n();                    // 静态 DOM 文案先就位,再装配各模块
@@ -50,7 +50,7 @@ bindTopbar();
 startLoop();
 setupXR();
 
-// Study TEMP: force stationary 3D (no VR player / walk) — see STUDY_TEST_FLAGS.md
+// Study TEMP: force stationary 3D (no VR player / walk) — see js/core/study-test-flags.js + /general/technical-stack/06-learn-mode-and-companion.md
 if (studyFlag('disableVrPlayerController')) {
   configureLocomotion({ mode: 'static' }, true);
   ensureStudentRig(); // syncVisual hides the gizmo when the flag is on

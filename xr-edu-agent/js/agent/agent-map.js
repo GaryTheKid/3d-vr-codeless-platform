@@ -8,7 +8,7 @@ globalThis.XR_AGENT_MAP =
   "meta": {
     "version": 5,
     "updated": "2026-08-05",
-    "note": "Agent 工作流有向图 + 工具目录(v5: 教学设计资产 pedagogy/ + 已落地材料→KG→大纲→分节填充流水线 + Outline/Docling/非VR工作区/大纲与 course_* 工具 + 课程技能)。相对最初纯 3D/VR 产品的差异见 EVOLUTION.md。全部文案 zh/en。维护见 js/agent/README.md。"
+    "note": "Agent 工作流有向图 + 工具目录(v5: 教学设计资产 pedagogy/ + 已落地材料→KG→大纲→分节填充流水线 + Outline/Docling/非VR工作区/大纲与 course_* 工具 + 课程技能)。相对最初纯 3D/VR 产品的差异见 /general/overview.md。全部文案 zh/en。维护见 js/agent/README.md。"
   },
 
   "workflow": {
@@ -56,7 +56,7 @@ globalThis.XR_AGENT_MAP =
           "en": "Versioned read-only assets under js/agent/pedagogy/: pattern_library_v1.0_en.md (24 patterns P00–P23, lookup by K1–K7 × section role); action_vocab_master_v2_en.json (sole editable source, 18 families) + 3 level views (generated — never hand-edit); pdf_course_pipeline_v1.0_en.md (reference pipeline from sibling product). Iron rule: actions only via pattern slot moves_from — never a free block-type picker. Remap here: interactive_3d→vr / interactive_2d→h5 / prose→reading / quiz_*→quiz section or follow-up."
         },
         "uses": { "skills": [], "tools": [] },
-        "file": "js/agent/pedagogy/* + EVOLUTION.md"
+        "file": "js/agent/pedagogy/* + /general/theories/pedagogical-foundations.md"
       },
       {
         "id": "knowledge-graph",

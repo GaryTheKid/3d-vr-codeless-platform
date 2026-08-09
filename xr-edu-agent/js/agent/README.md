@@ -37,7 +37,7 @@ js/agent/
 └── README.md                 This file
 ```
 
-Product evolution vs original pure 3D/VR: **`../EVOLUTION.md`**.
+Project docs now live at the repo root: **`/Agent.md`** (coding-agent master guide) + **`/general/`** (per-feature docs). Aha Keys / KG portable manual: **`/assets-recyclable/aha-keys-and-knowledge-graph.md`**.
 
 **Open the viewers locally by double-clicking any `agent-viewer*.html`** (no server). Data sources are plain scripts, not JSON/ESM, because `file://` blocks fetch and module imports. The same skill files are imported as ESM by the app.
 
@@ -84,6 +84,6 @@ Each tool: `{ name, label(input), description, input_schema, exec(input) }`
 | Edit skill content | Update Chinese **and** English fields together |
 | Add/remove **tool** | Update `agent-map.js` `tools` (+ bilingual group/summary) and tool-exec / executor tool counts |
 | Change **workflow** | Update `workflow.nodes` / `edges` (bilingual title/desc/uses). New group colors → `GROUP_COLOR` / `GROUP_NAME` in `agent-viewer.html`. Current graph includes `progress` (`pipeline` group) and course-design nodes (`course` group: `pedagogy` / `knowledge-graph` / `course-pipeline`) |
-| Any change | Bump `meta.updated` (+ `meta.version` on major graph changes); verify both languages in all three viewers; if product shape changed vs pure 3D/VR, update `EVOLUTION.md` |
+| Any change | Bump `meta.updated` (+ `meta.version` on major graph changes); verify both languages in all three viewers; if product shape changed, update `/general/overview.md` |
 
 Checklist: no dangling edges; node desc matches code; tool count = `TOOLS.length`; skills viewer lists every skill; EN mode has no leftover Chinese in bilingual data fields.

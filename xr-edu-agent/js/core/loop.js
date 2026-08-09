@@ -120,7 +120,7 @@ function syncVrButton() {
 }
 
 export function enterVrPreview({ toastMsg = true } = {}) {
-  // Study TEMP: keep normal orbit 3D play (see STUDY_TEST_FLAGS.md)
+  // Study TEMP: keep normal orbit 3D play (see js/core/study-test-flags.js)
   if (studyFlag('disableVrPlayerController')) return;
   if (state.vrPreview) return;
   state.vrPreview = true;

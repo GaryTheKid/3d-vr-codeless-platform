@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 //  Study-test TEMPORARY flags (NOT permanent product decisions)
-//  · Documented in ../STUDY_TEST_FLAGS.md — flip flags there + here to restore
+//  · Documented in /general/technical-stack/06-learn-mode-and-companion.md — this file is the source of truth; flip flags here to restore
 //  · When the user asks for "just for this study / test round" features,
 //    add a flag here instead of deleting the old path
 // ═══════════════════════════════════════════════════════════════

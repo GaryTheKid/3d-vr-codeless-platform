@@ -245,7 +245,7 @@ export function getVirtualObjects() {
         'Global clock driving all animations / experiments / dialogue; linked to the viewport ▶ Play button, can also pause independently'),
     }]),
   });
-  // Study TEMP: hide VR player / locomotion designer (STUDY_TEST_FLAGS.md)
+  // Study TEMP: hide VR player / locomotion designer (see js/core/study-test-flags.js)
   if (!studyFlag('disableVrPlayerController')) {
     list.push({
       id: 'xr', icon: '🥽', name: L('XR 会话管理器', 'XR Session Manager'), comps: wrap('xr', [

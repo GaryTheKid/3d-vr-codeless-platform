@@ -9,10 +9,10 @@ Versioned instructional-design assets shared with (adapted from) a sibling PDF-t
 | `action_vocab_elementary_en.json` | Elementary view | Regenerated from master — never hand-edit |
 | `action_vocab_middle_en.json` | Middle-school view | Regenerated from master — never hand-edit |
 | `action_vocab_high_en.json` | High / advanced view | Regenerated from master — never hand-edit |
-| `pdf_course_pipeline_v1.0_en.md` | Reference pipeline (sibling product) | Read for design; our remap is in `EVOLUTION.md` |
+| `pdf_course_pipeline_v1.0_en.md` | Reference pipeline (sibling product) | Read for design; our remap is in `/general/theories/pedagogical-foundations.md` |
 
 **Iron rules**
 
 1. Actions are selected **only** through a pattern slot’s `moves_from` (× learner level × subject bias). Never use the vocabulary as a free “block type picker.”
 2. Our section-type remap: `interactive_3d` → `vr`, `interactive_2d` → `h5`, prose → `reading`, `quiz_*` → `quiz` / follow-up.
-3. Runtime wiring (KG → Outline → pattern pick → fill) is **planned**; see agent-map v5 nodes `knowledge-graph` / `course-pipeline` and repo `EVOLUTION.md`.
+3. Runtime wiring status: KG → Outline → fill **shipped** (`js/agent/course-pipeline.js`; v1 approximates pattern pick with spatiality heuristics in the planning prompt). The pattern-lookup engine + Critic pass remain open — see `/general/overview.md` roadmap.

@@ -6,9 +6,9 @@
 globalThis.XR_AGENT_MAP =
 {
   "meta": {
-    "version": 5,
-    "updated": "2026-08-05",
-    "note": "Agent 工作流有向图 + 工具目录(v5: 教学设计资产 pedagogy/ + 已落地材料→KG→大纲→分节填充流水线 + Outline/Docling/非VR工作区/大纲与 course_* 工具 + 课程技能)。相对最初纯 3D/VR 产品的差异见 /general/overview.md。全部文案 zh/en。维护见 js/agent/README.md。"
+    "version": 6,
+    "updated": "2026-08-08",
+    "note": "Agent 工作流有向图 + 工具目录(v6: 20 skills / 40 tools; 材料→Aha Keys→KG→大纲→分节填充已落地; course-live-edit; VR 独立快照。相对最初纯 3D/VR 见 /general/overview.md。全部文案 zh/en。维护见 js/agent/README.md)。"
   },
 
   "workflow": {
@@ -21,8 +21,8 @@ globalThis.XR_AGENT_MAP =
         "group": "input",
         "title": { "zh": "老师发送输入", "en": "Teacher sends input" },
         "desc": {
-          "zh": "一轮对话的起点。输入入口:① 右栏聊天;② 快捷 chips;③ 检查器对象级 AI;④ 计划确认卡反馈;⑤ 📎「据此备课」;⑥ 学习大纲改结构;⑦(规划)材料→KG→大纲备课流水线。汇到 chat.js → runTurn。",
-          "en": "Start of a turn. Entries: ① chat; ② chips; ③ inspector AI; ④ plan-card feedback; ⑤ “Build from this”; ⑥ Outline edits; ⑦ (planned) material→KG→outline pipeline. All → chat.js → runTurn."
+          "zh": "一轮对话的起点。输入入口:① 右栏聊天;② 快捷 chips;③ 检查器对象级 AI;④ 计划确认卡反馈;⑤ 📎「据此备课」(已落地 runCoursePipeline);⑥ 学习大纲改结构;⑦ 学习模式学伴 Ask。汇到 chat.js → runTurn。",
+          "en": "Start of a turn. Entries: ① chat; ② chips; ③ inspector AI; ④ plan-card feedback; ⑤ “Build from this” (shipped runCoursePipeline); ⑥ Outline edits; ⑦ learn-mode companion Ask. All → chat.js → runTurn."
         },
         "uses": { "skills": [], "tools": [] },
         "file": "js/ui/chat.js"
@@ -34,8 +34,8 @@ globalThis.XR_AGENT_MAP =
         "group": "input",
         "title": { "zh": "文档上传 Docling", "en": "Document ingest (Docling)" },
         "desc": {
-          "zh": "📎 上传 PDF/Word/PPT → POST /__doc/convert → Markdown + 抽图。doc-context.js 挂载;摘要语言跟 UI。材料本身不改课——规划路径:先过知识图谱,再写 Outline / 填内容。",
-          "en": "📎 Upload PDF/Word/PPT → POST /__doc/convert → Markdown + images. Held in doc-context.js; summary follows UI language. Material alone does not build the course — planned path: Knowledge Graph first, then Outline / content fill."
+          "zh": "📎 上传 PDF/Word/PPT → POST /__doc/convert → Markdown + 抽图。doc-context.js 挂载;摘要语言跟 UI。材料本身不改课——「据此备课」先 course_tag_figures,再抽 Aha Keys+KG+Outline,再分节填充。",
+          "en": "📎 Upload PDF/Word/PPT → POST /__doc/convert → Markdown + images. Held in doc-context.js; summary follows UI language. Material alone does not build the course — “Build from this” runs course_tag_figures → Aha Keys+KG+Outline → per-section fill."
         },
         "uses": {
           "skills": [],
@@ -65,8 +65,8 @@ globalThis.XR_AGENT_MAP =
         "group": "course",
         "title": { "zh": "知识图谱 / 思维导图", "en": "Knowledge Graph / MindMap" },
         "desc": {
-          "zh": "【已落地】从文档+用户意图抽出概念/原理/技能节点与依赖边、贯穿主例、学段。经 course_build_outline_from_doc / extractKgAndOutlinePlan 写入 state.knowledgeGraph 与项目 cfg;后续大纲 covers[] 与分节填充必须对齐 KG。",
-          "en": "[Shipped] Mines concept/principle/skill nodes + edges, anchor example, learner level from doc + intent via course_build_outline_from_doc / extractKgAndOutlinePlan into state.knowledgeGraph + project cfg. Outline covers[] and section fill must align to the KG."
+          "zh": "【已落地】STEP-0 先蒸馏 ahaKeys(顿悟点),再抽概念/原理/技能节点与依赖边、贯穿主例、学段。经 course_build_outline_from_doc / extractKgAndOutlinePlan 写入 state.knowledgeGraph 与项目 cfg;大纲 covers[] / installsAha[] 与分节填充必须对齐 KG。",
+          "en": "[Shipped] STEP-0 distills ahaKeys first, then concept/principle/skill nodes + edges, anchor example, learner level via course_build_outline_from_doc / extractKgAndOutlinePlan into state.knowledgeGraph + project cfg. Outline covers[] / installsAha[] and section fill must align to the KG."
         },
         "uses": {
           "skills": [{ "zh": "course-outline / course-pipeline", "en": "course-outline / course-pipeline" }],
@@ -83,12 +83,12 @@ globalThis.XR_AGENT_MAP =
         "group": "course",
         "title": { "zh": "备课流水线", "en": "Course authoring pipeline" },
         "desc": {
-          "zh": "【已落地】raw→Docling md →① course_tag_figures →②③ course_build_outline_from_doc(KG+Outline) →④ 逐节 course_fill_section / runCoursePipeline(阅读+gpt-image 软性≥1图;H5 自适应高度;测验;VR 每节独立场景快照)。技能 course-pipeline / course-outline / course-reading / course-h5 / course-quiz 引导弱模型调工具。",
-          "en": "[Shipped] raw→Docling md →① course_tag_figures →②③ course_build_outline_from_doc (KG+Outline) →④ per-section course_fill_section / runCoursePipeline (reading + soft ≥1 gpt-image; auto-height H5; quiz; isolated VR scene per section). Skills course-pipeline / course-outline / course-reading / course-h5 / course-quiz guide weaker models to tools."
+          "zh": "【已落地】raw→Docling md →① course_tag_figures →②③ course_build_outline_from_doc(Aha Keys+KG+Outline) →④ 逐节 course_fill_section / runCoursePipeline(阅读+gpt-image 软性≥1图;H5 自适应高度;测验;VR 每节独立场景快照)。技能 course-pipeline / course-outline / course-reading / course-h5 / course-quiz 引导弱模型;course-live-edit 管已有课的局部改。",
+          "en": "[Shipped] raw→Docling md →① course_tag_figures →②③ course_build_outline_from_doc (Aha Keys+KG+Outline) →④ per-section course_fill_section / runCoursePipeline (reading + soft ≥1 gpt-image; auto-height H5; quiz; isolated VR scene per section). Skills course-pipeline / course-outline / course-reading / course-h5 / course-quiz guide weaker models; course-live-edit covers local edits to existing courses."
         },
         "uses": {
           "skills": [
-            { "zh": "course-pipeline + course-outline + course-reading / course-h5 / course-quiz", "en": "course-pipeline + course-outline + course-reading / course-h5 / course-quiz" }
+            { "zh": "course-pipeline + course-outline + course-reading / course-h5 / course-quiz + course-live-edit", "en": "course-pipeline + course-outline + course-reading / course-h5 / course-quiz + course-live-edit" }
           ],
           "tools": [
             { "zh": "course_* + outline_* / reading_set_chunks / h5_set_content / quiz_set_items + 场景工具", "en": "course_* + outline_* / reading_set_chunks / h5_set_content / quiz_set_items + scene tools" }
@@ -134,13 +134,13 @@ globalThis.XR_AGENT_MAP =
         "group": "context",
         "title": { "zh": "学习大纲 Outline", "en": "Learning Outline" },
         "desc": {
-          "zh": "【已落地】Chapter→Section;类型 vr|reading|h5|quiz。左栏大纲 Tab:课程/章/节/目的灰色 ✎ 与选中分离。vr=3D;reading/h5/quiz=中心工作区。非 VR 隐藏变换工具栏与顶栏 VR。工具:outline_* / reading_set_chunks / h5_set_content / quiz_set_items。规划中由 KG 驱动生成并绑 covers[]。",
-          "en": "[Shipped] Chapter→Section; types vr|reading|h5|quiz. Outline tab: grey ✎ for course/chapter/section/purpose vs select. vr=3D; reading/h5/quiz=center editors. Non-VR hides gizmos & VR button. Tools: outline_* / reading_set_chunks / h5_set_content / quiz_set_items. Planned: KG-driven generation with covers[]."
+          "zh": "【已落地】Chapter→Section;类型 vr|reading|h5|quiz。左栏大纲 Tab:课程/章/节/目的灰色 ✎ 与选中分离。vr=3D;reading/h5/quiz=中心工作区。非 VR 隐藏变换工具栏与顶栏 VR。KG 驱动生成并绑 covers[] / installsAha[];结构守卫:非老师明确要求不增删章/节,空同型节拒加。",
+          "en": "[Shipped] Chapter→Section; types vr|reading|h5|quiz. Outline tab: grey ✎ for course/chapter/section/purpose vs select. vr=3D; reading/h5/quiz=center editors. Non-VR hides gizmos & VR button. KG-driven with covers[] / installsAha[]; structural guards: no add/remove chapter/section without explicit teacher request; refuse blank same-type duplicates."
         },
         "uses": {
-          "skills": [],
+          "skills": [{ "zh": "course-outline / course-live-edit", "en": "course-outline / course-live-edit" }],
           "tools": [
-            { "zh": "outline_get / outline_set_active / outline_update_* / outline_add_* / reading_set_chunks / h5_set_content / quiz_set_items", "en": "outline_get / outline_set_active / outline_update_* / outline_add_* / reading_set_chunks / h5_set_content / quiz_set_items" }
+            { "zh": "outline_get / outline_set_active / outline_update_* / outline_add_* / outline_remove_section / reading_set_chunks / h5_set_content / quiz_set_items", "en": "outline_get / outline_set_active / outline_update_* / outline_add_* / outline_remove_section / reading_set_chunks / h5_set_content / quiz_set_items" }
           ]
         },
         "file": "js/core/outline.js + js/ui/outline.js + js/ui/section-workspaces.js + js/agent/tools/outline-tools.js"
@@ -152,8 +152,8 @@ globalThis.XR_AGENT_MAP =
         "group": "context",
         "title": { "zh": "构建输入上下文", "en": "Build the input context" },
         "desc": {
-          "zh": "buildContextMessage(userText)。组成(v5):① Outline 全局树+当前节;② 选中对象高细节;③ 场景 JSON/大场景摘要;④ 全局状态;⑤ 上传文档块;⑥(规划)知识图谱摘要+coverage。上下文锁定:runTurn 开头构建一次整轮复用。",
-          "en": "buildContextMessage(userText). Parts (v5): ① Outline tree + active section; ② pinned selection; ③ scene JSON / large-scene summary; ④ global state; ⑤ uploaded doc block; ⑥ (planned) KG digest + coverage. Context lock: built once at runTurn start."
+          "zh": "buildContextMessage(userText)。组成(v6):① Outline 全局树+当前节;② 选中对象高细节;③ 场景 JSON/大场景摘要;④ 全局状态;⑤ 上传文档块;⑥【已落地】知识图谱摘要(ahaKeys+nodes+coverage)。上下文锁定:runTurn 开头构建一次整轮复用。",
+          "en": "buildContextMessage(userText). Parts (v6): ① Outline tree + active section; ② pinned selection; ③ scene JSON / large-scene summary; ④ global state; ⑤ uploaded doc block; ⑥ [shipped] KG digest (ahaKeys+nodes+coverage). Context lock: built once at runTurn start."
         },
         "uses": {
           "skills": [],
@@ -266,7 +266,7 @@ globalThis.XR_AGENT_MAP =
             { "zh": "查询类 query-tools:get_scene / find_objects / get_object_detail", "en": "Query group query-tools: get_scene / find_objects / get_object_detail" },
             { "zh": "环境类 env-tools:report_progress / set_environment / configure_locomotion / set_student_view", "en": "Environment group env-tools: report_progress / set_environment / configure_locomotion / set_student_view" },
             { "zh": "空间引导类 space-tools:add_arrow / add_path / build_room / build_stairs", "en": "Space & guidance group space-tools: add_arrow / add_path / build_room / build_stairs" },
-            { "zh": "大纲类 outline-tools:outline_get / outline_set_active / outline_update_* / outline_add_* / reading_set_chunks / h5_set_content / quiz_set_items", "en": "Outline group outline-tools: outline_get / outline_set_active / outline_update_* / outline_add_* / reading_set_chunks / h5_set_content / quiz_set_items" },
+            { "zh": "大纲类 outline-tools:outline_get / outline_set_active / outline_update_* / outline_add_* / outline_remove_section / reading_set_chunks / h5_set_content / quiz_set_items", "en": "Outline group outline-tools: outline_get / outline_set_active / outline_update_* / outline_add_* / outline_remove_section / reading_set_chunks / h5_set_content / quiz_set_items" },
             { "zh": "备课类 course-pipeline-tools:course_tag_figures / course_build_outline_from_doc / course_fill_section / course_kg_digest / course_enrich_reading_images / course_generate_image", "en": "Course group course-pipeline-tools: course_tag_figures / course_build_outline_from_doc / course_fill_section / course_kg_digest / course_enrich_reading_images / course_generate_image" }
           ]
         },
@@ -324,13 +324,13 @@ globalThis.XR_AGENT_MAP =
       { "from": "input", "to": "turn", "label": "" },
       { "from": "doc-ingest", "to": "turn", "label": { "zh": "据此备课 / 发指令", "en": "Build from this / typed ask" } },
       { "from": "doc-ingest", "to": "context", "label": { "zh": "材料挂载(md+图+摘要)", "en": "Material attached (md+imgs+summary)" } },
-      { "from": "doc-ingest", "to": "knowledge-graph", "label": { "zh": "规划:先抽图谱", "en": "Planned: mine KG first" } },
+      { "from": "doc-ingest", "to": "knowledge-graph", "label": { "zh": "先抽 Aha+KG", "en": "Mine Aha+KG first" } },
       { "from": "pedagogy", "to": "course-pipeline", "label": { "zh": "pattern + vocab", "en": "pattern + vocab" } },
       { "from": "pedagogy", "to": "knowledge-graph", "label": { "zh": "学段/K 类型参考", "en": "level / K-type hints" } },
       { "from": "knowledge-graph", "to": "course-pipeline", "label": { "zh": "硬锚点", "en": "Hard anchor" } },
-      { "from": "knowledge-graph", "to": "outline", "label": { "zh": "规划:驱动大纲", "en": "Planned: drive outline" } },
-      { "from": "knowledge-graph", "to": "context", "label": { "zh": "规划:注入上下文", "en": "Planned: inject context" } },
-      { "from": "course-pipeline", "to": "outline", "label": { "zh": "规划:写骨架+选型", "en": "Planned: skeleton + strategy" } },
+      { "from": "knowledge-graph", "to": "outline", "label": { "zh": "驱动大纲 covers/aha", "en": "Drive outline covers/aha" } },
+      { "from": "knowledge-graph", "to": "context", "label": { "zh": "注入 KG 摘要", "en": "Inject KG digest" } },
+      { "from": "course-pipeline", "to": "outline", "label": { "zh": "写骨架+选型", "en": "Skeleton + strategy" } },
       { "from": "outline", "to": "context", "label": { "zh": "全局树 + 当前节", "en": "Global tree + active section" } },
       { "from": "turn", "to": "offline", "label": { "zh": "无 API Key(离线演示)", "en": "No API key (offline demo)" } },
       { "from": "turn", "to": "context", "label": { "zh": "已接入 LLM", "en": "LLM configured" } },
@@ -425,7 +425,7 @@ globalThis.XR_AGENT_MAP =
     { "name": "course_tag_figures", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",
       "summary": { "zh": "标注上传材料插图的教学用途与 visualSummary。", "en": "Tags uploaded figures for pedagogy + visualSummary." } },
     { "name": "course_build_outline_from_doc", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",
-      "summary": { "zh": "从材料抽取 KG 并生成 Learning Outline(会覆盖大纲树)。", "en": "Extracts KG and builds Learning Outline from the doc (overwrites outline)." } },
+      "summary": { "zh": "从材料蒸馏 Aha Keys + 抽取 KG 并生成 Learning Outline(会覆盖大纲树)。", "en": "Distills Aha Keys + extracts KG and builds Learning Outline from the doc (overwrites outline)." } },
     { "name": "course_fill_section", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",
       "summary": { "zh": "按节类型自动填充 reading/h5/quiz/vr(VR 独立场景快照)。", "en": "Auto-fills reading/h5/quiz/vr by section type (isolated VR scenes)." } },
     { "name": "course_kg_digest", "group": { "zh": "备课 course", "en": "Course" }, "file": "js/agent/tools/course-pipeline-tools.js",

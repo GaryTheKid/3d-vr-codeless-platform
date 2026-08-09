@@ -7,7 +7,7 @@ This directory is the product’s “brain.” **Anyone (including AI assistants
 ```
 js/agent/
 ├── orchestrator.js           Orchestrator: runTurn entry, Planner → confirm → Executor tool loop
-├── context.js                Context build: Outline + scene / large-scene + selection + uploaded doc (+ planned KG)
+├── context.js                Context build: Outline + scene / large-scene + selection + uploaded doc + KG digest
 ├── doc-context.js            Docling upload mount + summary UI + context block
 ├── llm.js                    Proxy Claude API: stream, thinking, prompt caching, pricing
 ├── sandbox.js                AI code sandbox: T toolbox + compile update/click/grab handlers
@@ -29,7 +29,7 @@ js/agent/
 │   ├── space-tools.js        Space: add_arrow / add_path / build_room / build_stairs
 │   ├── outline-tools.js      Outline: outline_* / reading_set_chunks / h5_set_content / quiz_set_items
 │   └── course-pipeline-tools.js  Course: course_tag_figures / course_build_outline_from_doc / course_fill_section / …
-├── agent-map.js              📊 Workflow digraph + tool catalog (**v5**; viewer data; sync manually)
+├── agent-map.js              📊 Workflow digraph + tool catalog (**v6**; viewer data; sync manually)
 ├── agent-viewer.html         🧭 Workflow viewer (group `course` = pedagogy / KG / pipeline)
 ├── agent-viewer-skills.html  🧭 Skills viewer (loads skills/ registry scripts)
 ├── agent-viewer-tools.html   🧭 Tools viewer (reads agent-map.js)

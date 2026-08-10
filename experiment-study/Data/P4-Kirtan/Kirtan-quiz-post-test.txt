@@ -1,0 +1,125 @@
+Virus Structure and Function Quiz
+Student: kirtan barot
+Generated: 8/9/2026, 8:40:08 AM
+
+PART I: MULTIPLE CHOICE
+1. An individual virus particle is called a:
+   A. Cell
+   B. Virion
+   C. Capsule
+   D. Ribosome
+   Student answer: B
+
+2. Viruses are generally:
+   A. Larger than prokaryotic cells
+   B. Smaller than prokaryotic cells
+   C. The same size as animal cells
+   D. Made of many tissues
+   Student answer: B
+
+3. Viruses cannot make proteins on their own because they lack:
+   A. Genetic material
+   B. Cellular structures such as ribosomes and cytoplasm
+   C. A capsid
+   D. Any molecules
+   Student answer: B
+
+4. A virus must depend on what to reproduce?
+   A. A mineral crystal
+   B. A host cell
+   C. Sunlight alone
+   D. Another capsid
+   Student answer: B
+
+5. A virus particle contains:
+   A. Both DNA and RNA in every case
+   B. DNA or RNA
+   C. Only proteins
+   D. Only phospholipids
+   Student answer: B
+
+6. The protective protein coat of a virus is the:
+   A. Envelope
+   B. Capsid
+   C. Cell wall
+   D. Cytoplasm
+   Student answer: B
+
+7. Some viruses have an outer layer called an:
+   A. Organelle
+   B. Envelope
+   C. Nucleus
+   D. Flagellum
+   Student answer: B
+
+8. A viral envelope is made from portions of the host’s:
+   A. Cell membrane
+   B. DNA
+   C. Cell wall only
+   D. Ribosome
+   Student answer: A
+
+9. One function of a viral envelope is to:
+   A. Make ATP independently
+   B. Help protect the virus from the host immune system
+   C. Perform photosynthesis
+   D. Replace the viral genome
+   Student answer: B
+
+10. Receptor molecules on an envelope can help a virus:
+   A. Bind to host cells
+   B. Make its own proteins
+   C. Become a bacterium
+   D. Eliminate its capsid
+   Student answer: A
+
+11. Viruses are classified partly by:
+   A. Capsid shape
+   B. Presence or absence of an envelope
+   C. Type of nucleic acid
+   D. All of the above
+   Student answer: D
+
+12. Which family in the reading has a helical capsid?
+   A. Adenovirus
+   B. Herpes viruses
+   C. Orthomyxo viruses
+   D. Coronaviruses
+   Student answer: C
+
+13. Which virus family listed has no envelope?
+   A. Adenovirus
+   B. Herpes viruses
+   C. Orthomyxo viruses
+   D. Coronaviruses
+   Student answer: D
+
+14. Which trait do viruses share with living things according to the reading?
+   A. They all consist of cells
+   B. They can evolve
+   C. They reproduce independently
+   D. They have organelles
+   Student answer: B
+
+15. Why is the classification of viruses as living or nonliving controversial?
+   A. They have no structure
+   B. They lack cells and independent reproduction but possess genetic material and evolve
+   C. They are all harmless
+   D. They are made only of water
+   Student answer: B
+
+PART II: SHORT ANSWER
+Short Answer 1. Describe the basic structure of a virion.
+Student answer: Genetic material wrapped in protein coats
+
+Short Answer 2. Explain why viruses cannot reproduce or make proteins independently.
+Student answer: They lack the machinery to do that.
+
+Short Answer 3. Describe how a viral envelope may help a virus infect a host cell.
+Student answer: skip
+
+Short Answer 4. Identify the main traits used in the reading to classify viruses.
+Student answer: skip
+
+Short Answer 5. Using evidence from the reading, explain why viruses are difficult to classify as clearly living or nonliving.
+Student answer: They can evolve in order to survive. They have genetic materials like DNA. Yet they need host cells in order to reproduce. They lack cell membranes and cell structure. So they possess both living and non-living traits, and that's why it's a judgment call.

@@ -3,7 +3,7 @@
 > **Document type.** ACM-style *course project report* (not a formal ACM submission).  
 > **Audience for this file.** A writing agent (or human) who must produce a polished paper / presentation narrative **without reading the codebase**, without missing system details, and with enough pedagogy + engineering history to tell a progress story.  
 > **Sources consolidated.** `/general/**`, `/assets-recyclable/**`, `/experiment-study/**`, `/logs/**`, plus a structure skim of `xr-edu-agent/`, `server.py`, `pre-built-samples/`.  
-> **Study status.** Preliminary usability study, target **n ≤ 6**; completed so far **n = 3**. Write as **n = 3 (of ≤6 planned)** and leave room to update when more participants finish.
+> **Study status.** Preliminary usability study **N = 6 (complete)**. Detailed scores, TLX/Likert, and interview coding live in [`N6-Study-Analysis.md`](./N6-Study-Analysis.md) — **prefer that file for Results numbers** (this report’s §6–7 still contain an older n=3 snapshot).
 
 ---
 

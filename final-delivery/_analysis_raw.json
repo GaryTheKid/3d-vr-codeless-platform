@@ -1,0 +1,1866 @@
+[
+  {
+    "id": "P1-Kai",
+    "pack": "vsepr",
+    "pack_label": "2 Chem-VSEPR",
+    "pre": {
+      "file": "Kai_quiz-pre-test.txt",
+      "is_pdf": false,
+      "mcq": 0,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 2,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 3,
+          "got": "[blank]",
+          "key": "D",
+          "ok": false
+        },
+        {
+          "q": 4,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 5,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 6,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 7,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 8,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 9,
+          "got": "[blank]",
+          "key": "D",
+          "ok": false
+        },
+        {
+          "q": 10,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 11,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 12,
+          "got": "[blank]",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 13,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 14,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 15,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        }
+      ],
+      "sa": 0,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 2,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 3,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 4,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 5,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        }
+      ],
+      "total": 0,
+      "answered_mcq_n": 0,
+      "blank": true,
+      "text_preview": "VSEPR Theory Quiz | Student: Kai | Generated: 2026/8/8 00:13:35 |  | PART I: MULTIPLE CHOICE | 1. What does VSEPR stand for? |    A. Valence-Shell Electron-Pair Repulsion |    B. Variable-State Electron Position Ro"
+    },
+    "post": {
+      "file": "Kai-quiz-post-test.txt",
+      "is_pdf": false,
+      "mcq": 15,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 2,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 3,
+          "got": "D",
+          "key": "D",
+          "ok": true
+        },
+        {
+          "q": 4,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 5,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 6,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 7,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 8,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 9,
+          "got": "D",
+          "key": "D",
+          "ok": true
+        },
+        {
+          "q": 10,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 11,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 12,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 13,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 14,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 15,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        }
+      ],
+      "sa": 13,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 2,
+          "why": "partial: Electron-domain geometry includes all bonding and nonbonding; Molecular geometry describes only the arrangement of atoms",
+          "answer": "Electron-domain geometry describes the arrangement of all electron domains around the central atom. While the molecular geometry describes the arrangement of the atoms without the lone pairs."
+        },
+        {
+          "q": 2,
+          "score": 3,
+          "why": "complete (~3 points): Draw a valid Lewis structure; Count bonding and nonbonding electron domains; Use the domain count to determine electron geometry, molecul",
+          "answer": "1. Draw the Lewis structure 2. count the electron domain around the central atom 3. determine the electron-domain geometry, molecular geometry and bond angles."
+        },
+        {
+          "q": 3,
+          "score": 3,
+          "why": "complete (~3 points): A double bond is one region of electron density; VSEPR counts regions/domains rather than individual electron; Connects this to shape prediction around the central atom",
+          "answer": "A double bond counts as one electron domain because it is one region of electron density around the central atom."
+        },
+        {
+          "q": 4,
+          "score": 3,
+          "why": "complete (~3 points): CO2 has two electron domains around carbon; Its electron-domain and molecular geometry are linear; Its bond angle is 180° and the Lewis structure has two C=O d",
+          "answer": "CO2 is linear with a 180 bond angle because the central carbon has two double bonds, which is count as two electron domains, and no lone pairs."
+        },
+        {
+          "q": 5,
+          "score": 2,
+          "why": "partial: Lone pairs count as electron domains and repel bonding domai; They are included in electron-domain geometry but omitted fr",
+          "answer": "Lone pairs repel bonding pairs, and changing the molecular geometry while electron-domain geometry still includes all electron domains."
+        }
+      ],
+      "total": 28,
+      "answered_mcq_n": 15,
+      "blank": false,
+      "text_preview": "VSEPR Theory Quiz | Student: Kai-PostTest | Generated: 2026/8/8 01:19:31 |  | PART I: MULTIPLE CHOICE | 1. What does VSEPR stand for? |    A. Valence-Shell Electron-Pair Repulsion |    B. Variable-State Electron Po"
+    },
+    "questionnaire": {
+      "participant_code": "Kai",
+      "material": "VSEPR Theory: Predicting Molecular Shape",
+      "age": "24",
+      "field": "Computer science",
+      "tlx_mental": "75",
+      "tlx_physical": "10",
+      "tlx_temporal": "30",
+      "tlx_performance": "10",
+      "tlx_effort": "50",
+      "tlx_frustration": "75",
+      "best": "3D. It makes abstract concepts easier to understand and allows student to experience situations that are hard to access in real life.",
+      "worst": "3D. I still have some concern about whether AI can truly understand real-word physics or chemistry rules and represent them accurately on the virtual world",
+      "role": "Working / other",
+      "ai_use": "Weekly or more",
+      "s1": "6",
+      "s2": "7",
+      "s3": "7",
+      "a1": "6",
+      "a2": "6",
+      "a3": "5",
+      "a4": "5",
+      "l1": "5",
+      "l2": "6",
+      "l3": "7",
+      "l4": "6"
+    },
+    "interview": {
+      "kind": "vtt",
+      "start_line": 991,
+      "text": "the interview.\nc530016c-64cc-4fcd-b49e-e0fda4fea590-0\nOK,\nso first question is so in one sentence.\n7b3f3576-c82a-4c3d-bc47-c02f659e0b19-0\nWhat does this tool do?\n10742927-d71c-4f64-895b-35ceaca7ef31-0\nSo what do you think this is for?\n64c702a0-bff9-4562-bb2f-d5e0b2f22045-0\nI think it can let teachers to describe\ntheir course ideas in natural language,\n64c702a0-bff9-4562-bb2f-d5e0b2f22045-1\nand the system can help teachers to\ncreate an interactive learning experience\n64c702a0-bff9-4562-bb2f-d5e0b2f22045-2\nfor students.\n94877681-9892-4fd5-984b-531b1b96c3f7-0\nCool.\n5d87b778-38a6-41f6-bce4-24f7138cab36-0\nAnd how did how did reading and loading\nfeel like?\n55df50b6-1989-4e20-b658-3916032f6a1d-0\nHave you ever experienced any lag or\nsomething?\n08894ced-f993-4a35-a2f2-26600860a6e3-0\nWell,\nI think the waiting time was pretty\n08894ced-f993-4a35-a2f2-26600860a6e3-1\nnormal and acceptable and consider\nconsidering the quality of the generated\n08894ced-f993-4a35-a2f2-26600860a6e3-2\ngenerated concept,\nI think the waiting time was works well.\n285e8d45-8b95-43c2-8f4c-60a0f8f2ed0d-0\nOK,\nso which part do you find that helps the\n285e8d45-8b95-43c2-8f4c-60a0f8f2ed0d-1\nmost?\n1735173f-582f-4993-9df6-0b416a366187-0\nWe have reading, quiz,\ninteractive 2D or 3D and the entire\n1735173f-582f-4993-9df6-0b416a366187-1\nworkflow and also the learning agent and\nwhy?\n01b807eb-f951-429d-b5c2-b7970b544617-0\nYeah, as I mentioned in the feedback,\nI think the 3D helps the most because it\n01b807eb-f951-429d-b5c2-b7970b544617-1\nmakes the abstract concept easier to\nunderstand and allow students to\n01b807eb-f951-429d-b5c2-b7970b544617-2\nexperience the situations that aren't\nhard to assess in the real life.\na461d5bb-0fd4-4279-b426-2c88f57cde5b-0\nYeah, OK.\n5d2f6203-5ea3-4bd8-9be2-cd8073615cb1-0\nSo have you, have you,\nhave you encountered any confusion or\n5d2f6203-5ea3-4bd8-9be2-cd8073615cb1-1\nannoying things and where,\nwhere did you feel confused or annoyed?\nac1e3527-c080-4487-9878-477310ae9a48-0\nSo I'm,\nI'm a little bit confused that well,\nac1e3527-c080-4487-9878-477310ae9a48-1\nthe AI truly understand the real real\nworld rules like chemistry or physical\nac1e3527-c080-4487-9878-477310ae9a48-2\nrules and how can AI represent these\nrules accurately on the in the virtual\nac1e3527-c080-4487-9878-477310ae9a48-3\nworld.\n79e3f64c-3ab7-42cb-98cf-838f4cc1839c-0\nAnd I still have some concerns regarding\nthe reading part 'cause I think there\n79e3f64c-3ab7-42cb-98cf-838f4cc1839c-1\nthere's a mostly short experience and the\nconcepts, so they're easy to read.\ncdb34c57-feb6-44b4-96d2-a0da0668c2a6-0\nBut sometimes I feel I might I,\nI won't thought deeply enough about these\ncdb34c57-feb6-44b4-96d2-a0da0668c2a6-1\nknowledge.\n92cd6a09-5c3e-4f14-ae06-aa5351c535dc-0\nOK, so you mentioned,\nyou mentioned like sometimes you're not\n92cd6a09-5c3e-4f14-ae06-aa5351c535dc-1\nit's not feel deeply enough.\n866440be-0020-4043-87f2-21961635a4e7-0\nCan you illustrate this a little bit,\na little bit more?\nf2b118e2-444b-4e56-a106-f35fe184712e-0\nBecause in the because in the reading\npart, there are only a few sentences.\nad1d6dac-6d53-49d1-aebe-d3e032668791-0\nI think it might just two or three\nsentence to introduce 1 concept.\n6734ccd6-8dcb-4e61-b3b1-2ddf6e67ec7d-0\nSo basically there are all,\nthere are all the definitions of these\n6734ccd6-8dcb-4e61-b3b1-2ddf6e67ec7d-1\nconcepts.\nd56a017f-2777-4987-b0ca-02a9ca047f37-0\nSo I might just spend like 3 minutes to\ngo through this sentence,\nd56a017f-2777-4987-b0ca-02a9ca047f37-1\nbut I think 30 seconds not enough for\nstudent to to accept a totally new\nd56a017f-2777-4987-b0ca-02a9ca047f37-2\nconcept.\ndd949ed3-a20c-4e2a-99ea-0446fc5930c0-0\nSo I think it's I think we can like it's\n10 the like we, we can, we can't, it's 10.\nf9482e92-444f-4fd9-b551-2d2420433a2e-0\nThe like the number of number of words in\nthe reading part and give students more\nf9482e92-444f-4fd9-b551-2d2420433a2e-1\ntime and more concept to let them\nunderstand the definitions.\nd8c19ec0-e403-47b5-aa76-17f43815be03-0\nOK, thank you.\nad5da96e-07af-4f5e-bea1-322f0e3dda20-0\nAnd did the course match the topic?\n6c462c6a-64fd-4db7-bece-32209024eada-0\nSo I also showed you the the PDF at the\nend.\nf44a88ce-8f66-46fb-82ad-71ea0677b2e5-0\nSo, so how,\nhow do you think that the course is?\ndb47d408-dcdc-43e6-8e2d-cd53c8ef7e68-0\nIt's matched and yeah,\ndoes does the some part of the of our\ndb47d408-dcdc-43e6-8e2d-cd53c8ef7e68-1\ncourse on the website too shallow about\nright or too much?\n80c6322e-d989-4f92-b702-43adea22c968-0\nYeah,\nI think the overall level is pretty good\n80c6322e-d989-4f92-b702-43adea22c968-1\nand I think it matched the PDF very well.\nef5bde89-2918-43ff-bc7f-d521c773c04c-0\nYeah, that's it.\n5f159ecb-9282-442e-b7b6-63cb623a00be-0\nAnd would you use for the study like for\nthe website I sent or for teaching\n5f159ecb-9282-442e-b7b6-63cb623a00be-1\nsomeone else?\n7fd93bb4-5c47-4c38-9420-5e03b19e4571-0\nYeah, sure.\n1474d5f3-b5d2-4c54-8880-6a559d3a5931-0\nOf course.\n2ceb3cee-4e8a-40b4-8ce5-52f9a70db6ed-0\nYeah, because I think like this,\nthis platform include H5 and 3D like\n2ceb3cee-4e8a-40b4-8ce5-52f9a70db6ed-1\nthese different type of learning method.\n74686994-c27f-4b7a-85c0-0ba93b75ba6e-0\nAnd it's a very good new way for learning\nand it can explore like many situations\n74686994-c27f-4b7a-85c0-0ba93b75ba6e-1\nthat I can't that I can't access in\nnormal life.\n582766c8-03ab-460d-b9dc-f7e09dacfc94-0\nSo I think it's a very good experience\nusing this tool.\nca4d3c02-d17b-44a0-9042-535474cb04dc-0\nAnd as a teacher, I think I also, yeah,\nI did this, this,\nca4d3c02-d17b-44a0-9042-535474cb04dc-1\nthis tool can help me quickly,\nlike help me to turn my course idea into\nca4d3c02-d17b-44a0-9042-535474cb04dc-2\na real into a real actual lessons.\nfb274c54-80be-4751-b72f-0c00373b5e2c-0\nSo I think I will also use these tools to\nteach.\n4bb31752-dc44-40b7-89c3-02b372505166-0\nOK,\nso if we about to fix only one thing for\n4bb31752-dc44-40b7-89c3-02b372505166-1\nthe current system we have,\nwhat it what what?\ne22020f1-33da-499c-85c1-9ac8d64a88e3-0\nWhat will that be?\n9e9fd31d-f432-4ca6-98d6-61d0f661bc62-0\nYeah, I think we can.\n0b8cd2e1-4b1e-4f42-aaa1-6e10687455d3-0\nI think we can improve the AI tutor\nfeature because for me and I think\n0b8cd2e1-4b1e-4f42-aaa1-6e10687455d3-1\nprobably many learners that concepts are\neasier to understand and remember when\n0b8cd2e1-4b1e-4f42-aaa1-6e10687455d3-2\nsomeone explains the explains and\nexplains the concept step by step.\n11d928b7-0930-41e1-939a-b87055d56fa0-0\nSo I think it's very worthy to improve\nthe AI tutor feature.\ncbf4ce81-6686-44ea-b1d9-59b1b172d1f5-0\nOK, so just one more add on questions,\na follow up question.\n1f4ef145-e584-46b8-a617-7374314d4281-0\nSo you mentioned the AI tutor helpful\nhelp a lot.\n28002824-57b4-4480-9458-99366d3b6d4c-0\nSo can you tell me, can you tell us now?\nb2736e2f-c50f-4601-8ee3-c1e5fc84863f-0\nSo why do you think the current 1 is not\ngood enough?\ne37fca71-a9c1-448a-bed7-2da17c954023-0\nLike or what, what what else?\nad01eeac-d71c-442a-82ad-5085ca50ff53-0\nYou you can you could imagine like we\ncould add to this to the current learning\nad01eeac-d71c-442a-82ad-5085ca50ff53-1\nagents to make it better.\ne38e5376-15f6-41ab-94da-c33b3fd7c730-0\nThank you.\nd4313eab-a481-4ffd-bace-165527928d6f-0\nYeah,\nbecause the currently AI tutor because\nd4313eab-a481-4ffd-bace-165527928d6f-1\nbecause the generated concepts are all\nright in in like all all writes in Word.\naa65dd90-e1c8-44c4-97c6-f1cceacbc32e-0\nBut some people are more interested in\nlike sounds or more interesting in videos.\n575f02c5-7c12-4e8d-b375-98f9fdd85420-0\nSo So personally I prefer the AI that can\ncan talk to me and to explain these\n575f02c5-7c12-4e8d-b375-98f9fdd85420-1\nconcepts.\nda5d135a-2642-4a9f-9d20-3fb2b84292dc-0\nOK,\nso you mean you prefer it can just\nda5d135a-2642-4a9f-9d20-3fb2b84292dc-1\ngradually unbox a complex concept instead\nof like giving you everything?\n74d5efe1-7c71-477f-a0be-2a74621e2fac-0\nIs that what you mean?\n6aa4181f-7458-4d23-9729-f4601272353b-0\nOK, OK,\nso another thing I would ask it is if in\n6aa4181f-7458-4d23-9729-f4601272353b-1\nthe future we also equipped our learning\nagents with, for example,\n6aa4181f-7458-4d23-9729-f4601272353b-2\ndraw you a diagram or generate image or\neven generate some 3D or just the\n6aa4181f-7458-4d23-9729-f4601272353b-3\ncontents like you see in the real lecture\nin real time.\nb97aa5fc-e587-45ed-9fce-1db1c68f5585-0\nBut it's but it's in in the learning\nagent.\n86971f24-4d75-4568-bea3-c4c063939a1f-0\nSo, So what do you think about this,\nfor example,\n86971f24-4d75-4568-bea3-c4c063939a1f-1\nor there could be like another feature,\nfor example,\n86971f24-4d75-4568-bea3-c4c063939a1f-2\nwhen you're exploring the 3D sayings,\nyou asking your own question to the\n86971f24-4d75-4568-bea3-c4c063939a1f-3\nlearning agent.\n3f44b917-4b48-46dc-9703-1c27b9368bf0-0\nThe learning agent can in real time just\nmake some modification to the 3D things.\n8419a435-294b-4ca6-b150-d7ac0306e7e2-0\nFor example, add memo,\nadd one more UI panels to help please\n8419a435-294b-4ca6-b150-d7ac0306e7e2-1\nexplain these things or just generate\nsome 3D stuff in real time to further\n8419a435-294b-4ca6-b150-d7ac0306e7e2-2\nillustrate another 3D stuff.\ne7f30bc7-902a-41f4-b82d-0ce14536b67f-0\nSo So what do you think about these\nfeatures?\nd72496b8-74ce-4fd7-8241-deef0cf22e56-0\nOh,\nI think a pretty cool feature that it can\nd72496b8-74ce-4fd7-8241-deef0cf22e56-1\nhelp students to explore more things in\nin this platform,\nd72496b8-74ce-4fd7-8241-deef0cf22e56-2\nlike literally everything in the world.\n18f9083b-e24c-4e92-90f4-174b77b482a0-0\nYou can just put it into the system and\nthey can explore,\n18f9083b-e24c-4e92-90f4-174b77b482a0-1\nexplore them in the system.\n2d91b484-0e59-42c0-8314-bce97d8ff0e6-0\nI think it's pretty cool.\n040d597b-d902-45ed-b4ff-1ed9a669b9ff-0\nAll right, thank you so much.\n663eb0a7-192b-4a52-ac1f-4d02301e7603-0\nAnything else you want to share or you\nwant to add?\na1b25a04-251f-4c7a-be6b-ff3c7e2a9400-0\nNo, that's all.\ne0f8da6c-024b-4d6d-b352-8f9a6269df05-0\nThank you.\n39ebf48c-483d-4cc5-80c9-60914e8c721e-0\nAll right.\nb679e23c-183f-4427-b000-f28ad8ffbb18-0\nThank you so much.\n7b5839ec-5696-4a86-b2e6-1a30db9d3789-0\nYeah.\n5b06f9f9-9f10-47e0-9b26-328b9fa84d12-0\nThank you.",
+      "raw_len": 37038
+    },
+    "gain": {
+      "mcq": 15,
+      "sa": 13,
+      "total": 28
+    }
+  },
+  {
+    "id": "P2-Shiv",
+    "pack": "gears",
+    "pack_label": "4 Mecha-Gear",
+    "pre": {
+      "file": "Shiv-quiz-pre-test.txt",
+      "is_pdf": false,
+      "mcq": 0,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 2,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 3,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 4,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 5,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 6,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 7,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 8,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 9,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 10,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 11,
+          "got": "[blank]",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 12,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 13,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 14,
+          "got": "[blank]",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 15,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        }
+      ],
+      "sa": 0,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 2,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 3,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 4,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 5,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        }
+      ],
+      "total": 0,
+      "answered_mcq_n": 0,
+      "blank": true,
+      "text_preview": "Gears and Gear Ratios Quiz | Student: shiv | Generated: 8/8/2026, 9:08:03 pm |  | PART I: MULTIPLE CHOICE | 1. The gear that supplies the input motion is called the: |    A. Driven gear |    B. Driver gear |    C. Ra"
+    },
+    "post": {
+      "file": "Shiv-quiz-post-test.txt",
+      "is_pdf": false,
+      "mcq": 15,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 2,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 3,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 4,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 5,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 6,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 7,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 8,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 9,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 10,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 11,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 12,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 13,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 14,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 15,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        }
+      ],
+      "sa": 12,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 3,
+          "why": "complete (~3 points): Uses driven teeth ÷ driver teeth for the stated ratio conven; A larger driven gear turns more slowly than a smaller driver; A smaller driven gear turns faster than a larger driver",
+          "answer": "The gear ratio determines speed, more driven teeth relative to the driver means slower output speed but more torque and vice versa."
+        },
+        {
+          "q": 2,
+          "score": 3,
+          "why": "complete (~3 points): An idler sits between driver and driven gears; It can change final rotation direction; It does not normally change the overall first-to-last ratio",
+          "answer": "An idle gear reverses the direction of the driven gear to match the driver, but it does not change the overall gear ratio or speed."
+        },
+        {
+          "q": 3,
+          "score": 1,
+          "why": "minimal: Two or more different-sized gears rotate together on one sha",
+          "answer": "A compound gear is two gears fixed on the same shaft so they spin together. This helps compound trains produce much bigger speed changes than a single gear pair."
+        },
+        {
+          "q": 4,
+          "score": 2,
+          "why": "partial: Find the ratio for each meshing stage; Multiply the stage ratios",
+          "answer": "Multiply the ratio of each stage together to get the overall ratio."
+        },
+        {
+          "q": 5,
+          "score": 3,
+          "why": "complete (~3 points): Rack-and-pinion converts rotation and linear motion; Worm gear gives strong reduction and can resist back-driving; Bevel gear changes shaft direction, commonly by 90°",
+          "answer": "Rack-and-pinion turns rotation into straight line motion, worm gear gives big speed reduction and locks in place, and bevel gear changes the direction of rotation between angled shafts."
+        }
+      ],
+      "total": 27,
+      "answered_mcq_n": 15,
+      "blank": false,
+      "text_preview": "Gears and Gear Ratios Quiz | Student: shiv | Generated: 9/8/2026, 8:22:41 am |  | PART I: MULTIPLE CHOICE | 1. The gear that supplies the input motion is called the: |    A. Driven gear |    B. Driver gear |    C. Ra"
+    },
+    "questionnaire": {
+      "participant_code": "Shiv",
+      "material": "Gears and More Gears: Building Drive Trains",
+      "age": "24",
+      "field": "Data Science",
+      "tlx_mental": "80",
+      "tlx_physical": "65",
+      "tlx_temporal": "15",
+      "tlx_performance": "90",
+      "tlx_effort": "70",
+      "tlx_frustration": "30",
+      "best": "The organized version of learning a new topic through interactive learning.",
+      "worst": "Sometimes the generation is still not conveying the proper information, could be fine-tuned a bit.",
+      "role": "Grad student",
+      "ai_use": "Weekly or more",
+      "s1": "7",
+      "s2": "6",
+      "s3": "7",
+      "a1": "5",
+      "a2": "5",
+      "a3": "6",
+      "a4": "7",
+      "l1": "6",
+      "l2": "6",
+      "l3": "6",
+      "l4": "6"
+    },
+    "interview": {
+      "kind": "vtt",
+      "start_line": 116,
+      "text": "part, and the AI tutor,\nwhich one do you\n85ae0dbb-1804-4e0f-bada-20d5e15560e4-2\nfeel like actually helped you learn?\nb6a2a88b-05a9-4047-b886-185e7e60bfce-0\nHonestly the quiz.\n63e7c923-e7bf-427d-9a33-1494211a3e9f-0\nOh interesting, can you\ntell me why?\n59f9add8-cdb2-4d7f-91d8-287c2addc069-0\nBecause it kind of forced\nme to actually check\n59f9add8-cdb2-4d7f-91d8-287c2addc069-1\nif I understood something instead\nof just skimming past\n59f9add8-cdb2-4d7f-91d8-287c2addc069-2\nit.\ndd467f9e-c0a9-4b09-b2ce-17467fc9bdfb-0\nWith the reading and the\nvisuals I could technically\ndd467f9e-c0a9-4b09-b2ce-17467fc9bdfb-1\njust click through without really\nabsorbing anything, but the\ndd467f9e-c0a9-4b09-b2ce-17467fc9bdfb-2\nquiz made me stop and think.\nef5f2d98-cab9-4d81-900c-8814b51b470e-0\nThat's a good point, thanks.\n51c811b7-5bf6-448d-ade0-44482ca6aeba-0\nWas there any moment where\nyou felt lost, or\n51c811b7-5bf6-448d-ade0-44482ca6aeba-1\nmaybe a little irritated?\n2cc7059e-8f71-487a-85bd-6e230eee2283-0\nYeah, honestly it was some\nof the 3D visualizations.\n17348cc4-270e-448d-85d0-34f0a1baf815-0\nA few times something just\ndidn't render properly, like\n17348cc4-270e-448d-85d0-34f0a1baf815-1\na scene would load half\nbroken or some objects\n17348cc4-270e-448d-85d0-34f0a1baf815-2\njust wouldn't show up right.\nac979e30-5274-4949-8537-2589b2f6699b-0\nCan you walk me\nthrough when that happened?\ndf7ffa86-5e25-43e2-bc8b-2742d55ff5c2-0\nIt happened a couple times\nin the 3D scenes\ndf7ffa86-5e25-43e2-bc8b-2742d55ff5c2-1\nspecifically, I'd be looking at\nsomething and part of\ndf7ffa86-5e25-43e2-bc8b-2742d55ff5c2-2\nit just looked off or missing.\n5d5020aa-3f82-47a6-9304-03ff725da368-0\nAnd when that happens it\ngets kind of confusing,\n5d5020aa-3f82-47a6-9304-03ff725da368-1\nlike I'm not sure if\nI'm supposed to be\n5d5020aa-3f82-47a6-9304-03ff725da368-2\nseeing something else, or\nif it's just glitching.\n088691dc-b425-48db-a99a-b387fa4f3e2e-0\nGot it, that's really\nuseful to know.\n6c18990c-d059-44b7-bb7b-273a14e74996-0\nDid that affect how easy\nit was to actually\n6c18990c-d059-44b7-bb7b-273a14e74996-1\nlearn from it?\n305a222b-ad6e-4579-818a-6ca192e102e7-0\nYeah a bit, because I'd\nend up focusing more\n305a222b-ad6e-4579-818a-6ca192e102e7-1\non trying to figure out\nwhat's wrong with the\n305a222b-ad6e-4579-818a-6ca192e102e7-2\nvisual instead of actually\nlearning the concept.\n4c28fb5f-df88-4534-8905-0096edd7b10e-0\nSo it kind of breaks\nthe flow when that\n4c28fb5f-df88-4534-8905-0096edd7b10e-1\nhappens.\naa8e7741-761f-4b8c-b033-745ed8fd03bd-0\nNoted, thank you.\nccbffde1-d168-47c2-aa69-971028b98bcb-0\nDid the actual content line\nup with the PDF\nccbffde1-d168-47c2-aa69-971028b98bcb-1\nwe gave you beforehand? Too\nbasic, too much, or\nccbffde1-d168-47c2-aa69-971028b98bcb-2\nabout right?\n286b3541-9301-4984-bc59-de837b1d9636-0\nI'd say it leaned\na little basic honestly.\n3c16a019-20a8-45a0-b919-9e1bc79f3fa9-0\nThere were a couple of\nconcepts in the PDF\n3c16a019-20a8-45a0-b919-9e1bc79f3fa9-1\nthat felt more detailed than\nwhat showed up in\n3c16a019-20a8-45a0-b919-9e1bc79f3fa9-2\nthe lesson.\n923d20c1-a612-48f5-9580-8052a265ae11-0\nInteresting, good to know.\n1a8c9f0c-5f5d-4d2f-a6f2-34785cbe798b-0\nWould you actually use something\nlike this, either to\n1a8c9f0c-5f5d-4d2f-a6f2-34785cbe798b-1\nstudy on your own or\nto teach somebody else?\n2e660d1d-c867-4a53-ae6c-17923b04b8d9-0\nFor studying, probably yes, especially\nfor topics I already\n2e660d1d-c867-4a53-ae6c-17923b04b8d9-1\nfind dry or hard to visualize.\n1dd98f83-4ca9-45e9-a3df-0031c7941737-0\nFor teaching though, I think\nI'd want a bit\n1dd98f83-4ca9-45e9-a3df-0031c7941737-1\nmore control before handing\nit to actual students.\nb1c4aaea-41f6-4ec9-870d-d24d6781852e-0\nThat makes sense.\n5504c3a4-448c-4a15-9610-4ee9f7d7ddc6-0\nIf we could only change\none thing about it\n5504c3a4-448c-4a15-9610-4ee9f7d7ddc6-1\nright now, what would you pick?\nb8682666-2460-47a7-a15a-04099809a599-0\nProbably fixing the 3D rendering\nstuff, like I mentioned.\n2cda31b5-e6da-4851-b581-89b4555f4f7a-0\nCan you expand on\nthat a bit?\n6fb420ec-e8d6-4de6-ac9c-6481fda8e72c-0\nYeah, just making sure the\nscenes load properly every\n6fb420ec-e8d6-4de6-ac9c-6481fda8e72c-1\ntime, so nothing looks\nbroken or missing.\n00446198-1a0b-4cfb-9002-1a45b329eaa2-0\nRight now it kind of\nshakes your trust in\n00446198-1a0b-4cfb-9002-1a45b329eaa2-1\nwhat you're looking at, and\nthat gets in the\n00446198-1a0b-4cfb-9002-1a45b329eaa2-2\nway of actually learning.\ne6fa4931-28fe-4d76-a790-22bc5a1534c1-0\nThat's a solid suggestion, thank you.\n999da358-ba4d-42f7-be3c-2f2babb14207-0\nLast question, anything else on\nyour mind before we\n999da358-ba4d-42f7-be3c-2f2babb14207-1\nfinish up?\n2d7d03fd-0f31-46b2-825d-9b05aae492c9-0\nNo, I think that covers it.\n0eb4a48c-58ed-4dcd-815a-442babb84e10-0\nAwesome, really appreciate your time today.\n41c0d893-d7dc-40e8-ab2e-72e347233e07-0\nOf course, thanks for having me.\ndfa8116b-cbdd-4bbe-b17b-dc284a657d16-0\nTake care.\ned078e19-a52a-403f-96a1-9596dcfaf852-0\nYou too.",
+      "raw_len": 9579
+    },
+    "gain": {
+      "mcq": 15,
+      "sa": 12,
+      "total": 27
+    }
+  },
+  {
+    "id": "P3-Charan",
+    "pack": "projectile",
+    "pack_label": "5 Phys-Projectile",
+    "pre": {
+      "file": "Charan-pre-quiz-test.txt",
+      "is_pdf": false,
+      "mcq": 0,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 2,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 3,
+          "got": "[blank]",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 4,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 5,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 6,
+          "got": "[blank]",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 7,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 8,
+          "got": "[blank]",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 9,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 10,
+          "got": "[blank]",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 11,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 12,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 13,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 14,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 15,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        }
+      ],
+      "sa": 0,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 2,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 3,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 4,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 5,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        }
+      ],
+      "total": 0,
+      "answered_mcq_n": 0,
+      "blank": true,
+      "text_preview": "Projectile Motion Quiz | Student: Charan | Generated: 8/8/2026, 5:24:43 pm |  | PART I: MULTIPLE CHOICE | 1. A projectile is an object that is: |    A. Moving only vertically |    B. Launched and then moves under g"
+    },
+    "post": {
+      "file": "Charan-quiz-post-test.txt",
+      "is_pdf": false,
+      "mcq": 15,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 2,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 3,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 4,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 5,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 6,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 7,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 8,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 9,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 10,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 11,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 12,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 13,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 14,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 15,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        }
+      ],
+      "sa": 11,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 2,
+          "why": "partial: Horizontal motion has zero acceleration and constant velocit; Vertical motion has acceleration -g",
+          "answer": "It means only gravity only affects vertical motion, so horizontal speed stays constant no matter whats happening vertically, the two only share the same time."
+        },
+        {
+          "q": 2,
+          "score": 2,
+          "why": "partial: Horizontal velocity remains constant; Vertical velocity decreases on ascent, becomes zero at the t",
+          "answer": "Vertical velocity decreases going up, hits zero at the peak, then increases coming back down, while horizontal velocity stays constant the entire time."
+        },
+        {
+          "q": 3,
+          "score": 2,
+          "why": "partial: Both begin with the same initial vertical velocity; Both experience the same vertical acceleration -g",
+          "answer": "Both balls start with zero vertical velocity and fall under the same gravity, so their vertical motion is identical no matter how fast one is moving sideways. Thats why they hit the ground together."
+        },
+        {
+          "q": 4,
+          "score": 3,
+          "why": "complete (~3 points): Vertical velocity is zero; Horizontal velocity remains nonzero and constant; Acceleration is still downward with magnitude g",
+          "answer": "At the top, velocity is only horizontal since the vertical component is zero, but acceleration is still g downward the whole time."
+        },
+        {
+          "q": 5,
+          "score": 2,
+          "why": "partial: Use vertical motion to find flight time; Use horizontal motion x = v0x t to find range",
+          "answer": "First use the vertical motion equation to solve for the time of flight, then plug that time into the horizontal equation to get how far the projectile travels."
+        }
+      ],
+      "total": 26,
+      "answered_mcq_n": 15,
+      "blank": false,
+      "text_preview": "Projectile Motion Quiz | Student: Charan | Generated: 8/8/2026, 6:39:02 pm |  | PART I: MULTIPLE CHOICE | 1. A projectile is an object that is: |    A. Moving only vertically |    B. Launched and then moves under g"
+    },
+    "questionnaire": {
+      "participant_code": "Charan",
+      "material": "Projectile Motion: Two Independent Motions in One Flight",
+      "age": "24",
+      "field": "Computer Science",
+      "tlx_mental": "75",
+      "tlx_physical": "60",
+      "tlx_temporal": "10",
+      "tlx_performance": "80",
+      "tlx_effort": "70",
+      "tlx_frustration": "20",
+      "best": "The 2D and 3D visualizations made concepts click faster and felt more engaging to explore than just reading about them.",
+      "worst": "The reading sections were too short, some concepts only had two or three lines, which wasn't enough for the trickier topics.",
+      "role": "Grad student",
+      "ai_use": "Weekly or more",
+      "s1": "6",
+      "s2": "6",
+      "s3": "7",
+      "a1": "5",
+      "a2": "4",
+      "a3": "6",
+      "a4": "6",
+      "l1": "6",
+      "l2": "7",
+      "l3": "6",
+      "l4": "7"
+    },
+    "interview": {
+      "kind": "vtt",
+      "start_line": 21,
+      "text": "d349f604-172f-4cae-8b96-7e38710d1e27-0\nSure, go ahead.\n65e13caf-807c-49da-b08f-f35f826ca5bd-0\nOkay so, in one sentence,\nwhat would you say\n65e13caf-807c-49da-b08f-f35f826ca5bd-1\nthis thing actually does?\neace7ddd-a748-4cfd-8e79-57bd8767e9db-0\nUm, I guess it kind\nof builds a whole\neace7ddd-a748-4cfd-8e79-57bd8767e9db-1\nlesson for you automatically, like\nfrom whatever material you\neace7ddd-a748-4cfd-8e79-57bd8767e9db-2\ngive it, quizzes and visuals\nand all that, so\neace7ddd-a748-4cfd-8e79-57bd8767e9db-3\nyou're not doing it by hand.\n2eaef3bc-aa30-4f7b-bba4-6ce3a0469ee1-0\nYeah, that's basically it.\nfc8d2776-90de-44da-be0c-857e6eb59334-0\nNext one, how did the\nloading or the generation\nfc8d2776-90de-44da-be0c-857e6eb59334-1\nfeel, was it too long,\nor was it fine?\nb500eb82-d4d4-48cf-adc8-cf3a863f8a06-0\nIt was fine for me\nhonestly, like there was\nb500eb82-d4d4-48cf-adc8-cf3a863f8a06-1\na small wait but\nnothing that bothered me.\n76a8c409-42fb-4cdc-aab9-5eda242d8f2e-0\nI think for what it's\nactually putting together, that's\n76a8c409-42fb-4cdc-aab9-5eda242d8f2e-1\npretty reasonable.\n5c667bfb-7f01-4014-8bd1-6713b59aa878-0\nGood to know.\n750176fc-b1c2-4f78-ba5f-5531fd2bf403-0\nOkay so between the reading,\nthe quiz, the interactive\n750176fc-b1c2-4f78-ba5f-5531fd2bf403-1\nstuff, and the AI tutor,\nwhich one do you\n750176fc-b1c2-4f78-ba5f-5531fd2bf403-2\nfeel actually helped you\nlearn the most?\n4e39f456-d7f4-4e5a-ac02-d9704b916d09-0\nI'd say the 2D and\n3D visualization part, honestly.\n0a6f5fe2-afbc-46df-a572-6820675772ec-0\nOh, can you tell me\na bit more about\n0a6f5fe2-afbc-46df-a572-6820675772ec-1\nthat?\ne34932c8-e05a-49aa-ac75-d0079adf58de-0\nYeah so, um, seeing the\nconcept actually laid out\ne34932c8-e05a-49aa-ac75-d0079adf58de-1\nin front of me just\nmade it click faster\ne34932c8-e05a-49aa-ac75-d0079adf58de-2\nthan reading about it would have.\ndb31ccfd-d5e0-4070-b76e-1fdd420f7a72-0\nLike it's just more engaging,\nI actually wanted to\ndb31ccfd-d5e0-4070-b76e-1fdd420f7a72-1\nexplore it instead of\njust skimming past it.\nccb62ea8-57ab-4a86-9925-c85dbd09709c-0\nThat's a fair point, thanks.\na32e9db5-b67b-40d1-a39e-2203942a19a2-0\nWas there any point where\nyou felt kind of\na32e9db5-b67b-40d1-a39e-2203942a19a2-1\nlost, or a bit annoyed?\nce39ecda-c484-45c4-84b3-67f2a8785227-0\nUm, yeah, actually, the reading\npart felt really short\nce39ecda-c484-45c4-84b3-67f2a8785227-1\nto me.\nfce2a30e-906b-4891-aaef-8f4aa7bd3c41-0\nLike some concepts only had\ntwo or three lines\nfce2a30e-906b-4891-aaef-8f4aa7bd3c41-1\nexplaining them, and I felt\nlike that wasn't really\nfce2a30e-906b-4891-aaef-8f4aa7bd3c41-2\nenough, especially for the trickier topics.\n84012700-5d96-471f-8371-b14d34b9c2c7-0\nCan you give me\nan example of that?\n7e3e8b37-d3f0-4cfc-9b1b-81e56e1d4691-0\nYeah, there was one concept\nwhere I felt like\n7e3e8b37-d3f0-4cfc-9b1b-81e56e1d4691-1\nI needed a bit more\ncontext before it moved\n7e3e8b37-d3f0-4cfc-9b1b-81e56e1d4691-2\non, but the reading just\nkind of stated it\n7e3e8b37-d3f0-4cfc-9b1b-81e56e1d4691-3\nand that was it.\na16a12fd-ecb4-4596-9adb-0da46a0e92c5-0\nSo I had to kind\nof piece it together\na16a12fd-ecb4-4596-9adb-0da46a0e92c5-1\nmyself using the visuals after.\n5a19574d-d655-41cc-af11-62f3ad8e44a5-0\nGot it, that's useful, thank you.\n56031a1b-4060-49e1-b576-9a5effe41d7a-0\nDid you notice anything else\nalong the way, even\n56031a1b-4060-49e1-b576-9a5effe41d7a-1\nsomething small?\n09e52e06-a34a-4b70-b4bf-2ec9c2143d5d-0\nUm, yeah, a couple of\nthe visuals felt like\n09e52e06-a34a-4b70-b4bf-2ec9c2143d5d-1\nthey took a second to\nfully settle in, like\n09e52e06-a34a-4b70-b4bf-2ec9c2143d5d-2\nthey weren't fully loaded right away.\n37d79886-c172-4ee0-87de-015329924839-0\nIt wasn't a big deal,\njust something I noticed\n37d79886-c172-4ee0-87de-015329924839-1\na couple times.\n20158bda-67d0-44dd-8439-60079895ea45-0\nNoted, thanks.\nd47510f7-0cdc-4437-84fc-4731f5e3979f-0\nOkay, did the course actually\nmatch the PDF we\nd47510f7-0cdc-4437-84fc-4731f5e3979f-1\ngave you, like was it\ntoo shallow, too much,\nd47510f7-0cdc-4437-84fc-4731f5e3979f-2\nor about right?\n81e5632d-4a67-46a7-b741-513e5ebaf5fa-0\nI'd say mostly about right,\nbut leaning a bit\n81e5632d-4a67-46a7-b741-513e5ebaf5fa-1\non the lighter side.\nb02894e6-c396-469b-94c7-2c5e76dcfe9f-0\nLike the explanations could've gone\na little deeper in\nb02894e6-c396-469b-94c7-2c5e76dcfe9f-1\na few spots.\n952f9beb-8b9d-499b-a14f-f98627a6eafb-0\nOkay, good to know.\n1916446c-ba12-46ad-9271-b4a0c97a33a4-0\nWould you actually use this\nyourself, either for studying,\n1916446c-ba12-46ad-9271-b4a0c97a33a4-1\nor to teach someone else?\nc7005137-2eef-445a-acb0-ba6092f9975b-0\nFor studying, yeah, definitely, especially\nwith the visuals doing\nc7005137-2eef-445a-acb0-ba6092f9975b-1\na lot of the heavy lifting.\n927c1dfa-9017-4ec5-aa0e-88df8d5a444e-0\nFor teaching, I think I'd\nwant to beef up\n927c1dfa-9017-4ec5-aa0e-88df8d5a444e-1\nthe reading parts a bit\nfirst, just so students\n927c1dfa-9017-4ec5-aa0e-88df8d5a444e-2\nget a bit more\nexplanation alongside the visuals.\nd88f8f02-4351-4d2b-ac23-b01685adfedd-0\nThat makes sense.\necfa89a2-e71e-4153-9842-df9d5ee797c5-0\nIf you could change just\none thing about it\necfa89a2-e71e-4153-9842-df9d5ee797c5-1\nright now, what would it be?\nef348b0b-42f5-4587-aa24-5b80f84dea3e-0\nProbably the reading content,\nlike I mentioned.\n0e295dd8-d405-4382-a2e8-7a7d5186a137-0\nCan you expand on\nthat a little?\nefb97321-2e46-4f84-bab1-cb45d1bc3ec2-0\nYeah, just, I don't know,\nmaybe a bit more\nefb97321-2e46-4f84-bab1-cb45d1bc3ec2-1\ntext for the harder topics\nspecifically, doesn't need to\nefb97321-2e46-4f84-bab1-cb45d1bc3ec2-2\nbe long everywhere, just where\nit actually needs it.\nda65418c-2017-4da6-95d9-85d884b61ba2-0\nThat way you're not relying\nonly on the visuals\nda65418c-2017-4da6-95d9-85d884b61ba2-1\nto fill in the gaps.\n48904ec9-ea6e-4fb6-96cf-18ca215bf894-0\nThat's a solid suggestion, thank you.\na4a13b15-08bf-437c-9516-763e6f296c68-0\nLast one, anything else you\nwant to add before\na4a13b15-08bf-437c-9516-763e6f296c68-1\nwe finish up?\nbdd4b99d-7073-4e95-8946-33f3801c4e1c-0\nNo, I think that's\npretty much everything.\n785617d1-439b-4198-bbb7-81a5d8eda1f6-0\nAwesome, thanks so much\nfor your time today.\n8f7b48e8-43db-4c2e-965d-45dfba5bfe88-0\nNo problem, thank you.\n9d9afe73-f5b9-4f87-ad2c-d8dcb4c4b8ac-0\nTake care.\n80747ced-14cd-45c9-ad24-6dd7b40b080f-0\nYou too, bye.",
+      "raw_len": 9319
+    },
+    "gain": {
+      "mcq": 15,
+      "sa": 11,
+      "total": 26
+    }
+  },
+  {
+    "id": "P4-Kirtan",
+    "pack": "virus",
+    "pack_label": "1 Bio-Virus",
+    "pre": {
+      "file": "Kirtan_quiz_pre_test.pdf",
+      "is_pdf": true,
+      "mcq": 0,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 2,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 3,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 4,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 5,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 6,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 7,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 8,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 9,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 10,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 11,
+          "got": "[blank]",
+          "key": "D",
+          "ok": false
+        },
+        {
+          "q": 12,
+          "got": "[blank]",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 13,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 14,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 15,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        }
+      ],
+      "sa": 0,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 2,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 3,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 4,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 5,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        }
+      ],
+      "total": 0,
+      "answered_mcq_n": 0,
+      "blank": true,
+      "text_preview": " |  |  |  |  |  |  | "
+    },
+    "post": {
+      "file": "Kirtan-quiz-post-test.txt",
+      "is_pdf": false,
+      "mcq": 14,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 2,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 3,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 4,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 5,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 6,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 7,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 8,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 9,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 10,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 11,
+          "got": "D",
+          "key": "D",
+          "ok": true
+        },
+        {
+          "q": 12,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 13,
+          "got": "D",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 14,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 15,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        }
+      ],
+      "sa": 4,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 1,
+          "why": "minimal: Genetic material is enclosed by a protein capsid",
+          "answer": "Genetic material wrapped in protein coats"
+        },
+        {
+          "q": 2,
+          "score": 1,
+          "why": "minimal: They lack cytoplasm, ribosomes, and other cellular machinery",
+          "answer": "They lack the machinery to do that."
+        },
+        {
+          "q": 3,
+          "score": 0,
+          "why": "no credit / off-topic",
+          "answer": "skip"
+        },
+        {
+          "q": 4,
+          "score": 0,
+          "why": "no credit / off-topic",
+          "answer": "skip"
+        },
+        {
+          "q": 5,
+          "score": 2,
+          "why": "partial: They lack cells and cannot reproduce independently; They do have genetic material",
+          "answer": "They can evolve in order to survive. They have genetic materials like DNA. Yet they need host cells in order to reproduce. They lack cell membranes and cell structure. So they possess both living and non-living traits, and that's why it's a judgment call."
+        }
+      ],
+      "total": 18,
+      "answered_mcq_n": 15,
+      "blank": false,
+      "text_preview": "Virus Structure and Function Quiz | Student: kirtan barot | Generated: 8/9/2026, 8:40:08 AM |  | PART I: MULTIPLE CHOICE | 1. An individual virus particle is called a: |    A. Cell |    B. Virion |    C. Capsule |    D"
+    },
+    "questionnaire": {
+      "participant_code": "P4",
+      "material": "Material 1/ Viruses: Structure, Classification & What It Means to Be Alive",
+      "age": "24",
+      "field": "Computer Science",
+      "tlx_mental": "80",
+      "tlx_physical": "25",
+      "tlx_temporal": "25",
+      "tlx_performance": "50",
+      "tlx_effort": "75",
+      "tlx_frustration": "25",
+      "best": "The follow-up quiz",
+      "worst": "UI-UX",
+      "role": "Grad student",
+      "ai_use": "Weekly or more",
+      "s1": "4",
+      "s2": "6",
+      "s3": "5",
+      "a1": "6",
+      "a2": "5",
+      "a3": "4",
+      "a4": "4",
+      "l1": "6",
+      "l2": "6",
+      "l3": "6",
+      "l4": "6"
+    },
+    "interview": {
+      "kind": "vtt",
+      "start_line": 856,
+      "text": "I'm going to ask you some questions,\nall right.\nf21916e5-e355-4d95-85e3-84955cb091f8-0\nAnd yeah, so it's done in one sentence.\na20b5a32-832d-4e59-b58b-8476dd93585b-0\nYou can like tell me, let's before that,\nlet's do one thing that on your learning,\na20b5a32-832d-4e59-b58b-8476dd93585b-1\nlet's answer the quiz again and let's see,\nis this really helpful to improve your\na20b5a32-832d-4e59-b58b-8476dd93585b-2\nknowledge and learning experience?\n8fbabedc-2738-49f7-8779-aaf640698387-0\nCan we reopen the quiz?\n0627f623-4bb7-4e32-ba67-84dc1e853431-0\nOK.\n287aef5a-7730-4192-a5cf-33c12096b92a-0\nIs it opening?\n08e766fc-9613-4d34-87dc-35f079d445ad-0\nYeah.\n87dcbc70-a206-4f2c-b96f-41a3f3c5be67-0\nNone.\n5b4611ff-2370-49f7-a094-564e83e0c2de-0\nHello, I'm finished with the quiz.\nc546f574-d460-4c8a-a186-29ef1f7223f7-0\nGreat.\ncff87d68-ee68-4cf1-8433-f450aa13029a-0\nThen can you download the answers now?\ndfd63924-4fee-4314-9212-e575ae96e3b5-0\nYes, I have downloaded the answer.\nc1b74207-22e1-4aef-8cbe-38044feab8a1-0\nOh great.\n4589723e-59cb-427c-a20a-2aad2f05afb5-0\nYeah.\n9022ebde-da12-42d7-bea9-3b8f564bed4b-0\nSo I want to ask you few little questions\nlike how was your experience before using\n9022ebde-da12-42d7-bea9-3b8f564bed4b-1\nthe like don't experience like your\nlearning stage and after learning from\n9022ebde-da12-42d7-bea9-3b8f564bed4b-2\nour platform, is it worth it or not?\n1d8dd88e-e7ae-4734-b96c-9ad5ceb854da-0\nIn one sentence, what you did you like?\n4a231e6b-8b91-41fa-a0a7-a5a4ccf565b9-0\nWhat didn't you like?\n690790e2-c718-4f0f-a7ff-46f1da310df0-0\nLet's begin with how was your experience?\n1560a255-73c9-488e-9e9a-6c6d81d64fd7-0\nYeah, I had a pretty decent experience.\nb2e7a75e-8517-4197-93a7-ca2ccac67f03-0\nI know the 1st and the 1st quiz I gave,\nI actually did not have any idea about\nb2e7a75e-8517-4197-93a7-ca2ccac67f03-1\nthe particular section of the subject,\ntried some sort of reasoning with it,\nb2e7a75e-8517-4197-93a7-ca2ccac67f03-2\nhaving no idea.\n3231f5c8-14c8-4d03-97be-41b39fa09335-0\nAnd then I went to the platform where\nthey had a very structural way of putting\n3231f5c8-14c8-4d03-97be-41b39fa09335-1\nthings, OK.\n6246f7f3-1a27-43f0-87c7-ed7d508e5dab-0\nAnd it was really interruptive.\n2e6bcd23-c99f-40bf-ad01-87f467c982c3-0\nIt's the visuals and the diagrams which\nsort of helped me a lot to keep me\n2e6bcd23-c99f-40bf-ad01-87f467c982c3-1\nengaged rather than just the theory.\n8e1da692-87b3-490d-892d-4b19c598dd4e-0\nIt was a great, yeah,\nwhich was pretty great part and following\n8e1da692-87b3-490d-892d-4b19c598dd4e-1\nthe section that was quiz in order to\ncreate that particular section that we\n8e1da692-87b3-490d-892d-4b19c598dd4e-2\nhave read.\nc5604144-dce5-4738-97df-298f67a0a0eb-0\nSo I found it really amusing and also\nthat the AI assistant feature was also\nc5604144-dce5-4738-97df-298f67a0a0eb-1\nhelpful.\n539e1d80-5441-4f74-95c5-0f22c957185c-0\nYou know,\nanytime you're reading something and\n539e1d80-5441-4f74-95c5-0f22c957185c-1\nsomething pops up in your head,\nquestion something that's not written,\n539e1d80-5441-4f74-95c5-0f22c957185c-2\nbut you have it.\n1618f27f-0665-4a33-b0bc-e589be8151eb-0\nAnd sometimes it's it actually bothers\nyou.\n61d73e6b-36db-4bb1-807b-301b47d0c758-0\nSo it's really pretty good to have a\nassistant.\n237297ff-e916-4fb9-9797-34ed2c66c65e-0\nAnd, you know,\nyou guys are using clouds or top notch\n237297ff-e916-4fb9-9797-34ed2c66c65e-1\nmodels.\nfc8588eb-ed23-4d93-ae66-dfad2ff8cd5f-0\nIt's really impressive.\n8a1a8521-ea12-4cbf-83c8-22533ad716ae-0\nYeah.\n350ed25b-7719-40de-84fd-ab8e3cfae37e-0\nSo I'll tell you what what is like,\nhow was the like speed,\n350ed25b-7719-40de-84fd-ab8e3cfae37e-1\nhow was the waiting or generation.\nf149cb15-7446-4b7a-acc4-a1d3abc6079f-0\nOr like was it interactive or not or\nsomething like that.\n5213de21-171e-4450-8e10-c8dcf2cfd752-0\nI think the quiz section,\nas a scope of improvement, I wouldn't say.\n4d18d862-2567-4b35-b336-673f9d3365bb-0\nAnd the image quality is used.\n7e975531-6c2e-4b8b-b328-ff8fed8da0e5-0\nThey may get better if you can use some\nother models.\ncaf19475-3c34-4515-be92-d965ac029947-0\nAnd that's the input I can give you for\nthat.\n2e9b50d7-c684-4c8e-9a93-d6d5c52d347a-0\nApart from it,\nI think overall it was a good experience.\n604e87fa-ea83-4519-a0c4-5927e5ce45c9-0\nOK, So yeah, what did you like the most?\nf557711c-94b2-42d5-b697-b22600f98769-0\nLike quiz section, interactive section,\n3D generation.\n6e4f3b97-f689-4410-a6b6-af1bd9321f85-0\nYeah, yeah,\n3D generation was really something.\n8120a192-24b4-4d0d-9e5d-74bac4221153-0\nI would like to point out that, you know,\nthe section where I have to segregate\n8120a192-24b4-4d0d-9e5d-74bac4221153-1\nsome of the traits to bacteria and the\nvirus,\n8120a192-24b4-4d0d-9e5d-74bac4221153-2\nthat actually gave me a pretty good idea\nabout what is happening and what I'm\n8120a192-24b4-4d0d-9e5d-74bac4221153-3\nlearning.\n54ce2a13-a552-4f70-bc76-da5aaad35f66-0\nSo that section really stand out.\naa01cf49-c28b-459d-9cd7-f3b799f55697-0\nOK,\nso where did you like get frustrated and\naa01cf49-c28b-459d-9cd7-f3b799f55697-1\nwhat didn't you like?\n91afa84b-18ae-4823-bab5-e53f39144e4f-0\nOK, the follow up quiz section,\ndo I think underdeveloped because I had a\n91afa84b-18ae-4823-bab5-e53f39144e4f-1\nproblem navigating through it.\n4cd81bac-1894-4380-b61d-40f9503c0ef5-0\nYeah, it's not most,\nbut for the most part I think it's a bit\n4cd81bac-1894-4380-b61d-40f9503c0ef5-1\ntechnical issue rather than the\neverything looks OK.\n63f34168-783e-4834-89a0-fd71b59296bf-0\nYeah.\n319004e4-2f2a-4471-97ad-2b45f5948752-0\nSo did the course match the PDF or is it\ntoo shallow about right or too much?\n7643bb1e-7fba-4c58-94ad-44f2046b2cbc-0\nI think it's bit shallow.\n1aba383f-bb0c-4e7f-bd04-8dccaf8e7d14-0\nYou know, they,\nthey didn't go as deep or started with a\n1aba383f-bb0c-4e7f-bd04-8dccaf8e7d14-1\nparticular notch that they are teaching\nit, focusing on a particular section.\na6efe375-e2d7-40d8-9d0e-4664056de321-0\nBut that's more of a structural part,\nI guess.\n0d3d1f1b-7bc6-4473-b889-8f06a56b9227-0\nYeah.\nfd6dec45-be8e-41e3-af57-b079b95f2b1b-0\nWould you use this tool for your own\nstudying or for teaching someone else?\n5d2ede52-6a1a-41b0-8a93-614677779e72-0\nYeah,\nIf I have a particular access on the\n5d2ede52-6a1a-41b0-8a93-614677779e72-1\nstructure side,\nI would really use it in order to teach\n5d2ede52-6a1a-41b0-8a93-614677779e72-2\nit.\n71bbdf4e-4fab-4f36-9b30-10ec2179dd1c-0\nBut as far as I go,\nor would I use it for my own study?\n3f04e5cb-61e3-4ef5-9a4c-317074e8d9df-0\nDepends on the material fairly.\nc3b57cf0-e6a9-4889-80b7-dba3e7aefaf2-0\nBut if I have to use it as a machine or\ntool,\nc3b57cf0-e6a9-4889-80b7-dba3e7aefaf2-1\nso I could teach somebody and then I I\nhave a control over the structure\nc3b57cf0-e6a9-4889-80b7-dba3e7aefaf2-2\nmaterials.\n31b37cbe-9da7-46b7-a0d7-25c776b78d86-0\nYeah, I think I would use it.\n7ed80399-8696-414b-a702-9033e7486062-0\nOK, one more thing,\nlike if we could fix only one thing,\n7ed80399-8696-414b-a702-9033e7486062-1\nwhat should it be?\n1e55cc32-8441-4e9c-b51a-0d847998b72e-0\nOne thing in technical terms,\nI think the website deals with congested.\n137b0fc9-ccf5-49ff-990d-8540ae116b0a-0\nYou can, yeah,\ndefinitely do some work on the UI.\na0b23970-6748-4c15-a2ae-35261ec64f71-0\nYou can hide the AI teaching agent as\nwell and outline as well if you just want\na0b23970-6748-4c15-a2ae-35261ec64f71-1\nto study the stuff like in the center\npart.\n1c4c8a9b-94c5-4508-aa7c-2cecc7cf4c4f-0\nYep.\nd98cc774-5126-4f7e-9e43-b9f7f39833d2-0\nApart from that you you can download our\ntranscript and save that as well.\n42dbf852-bd66-4a29-aa76-dd17df2caa9e-0\nThose are the added feature in that, no,\nfrom my suggestion,\n42dbf852-bd66-4a29-aa76-dd17df2caa9e-1\neven if I remove the bolts in order to be\nmore interactive or something of a really\n42dbf852-bd66-4a29-aa76-dd17df2caa9e-2\nengaging the fonts and the backgrounds,\nI think the UI needs a work in order to\n42dbf852-bd66-4a29-aa76-dd17df2caa9e-3\nbe more interactive.\ne2acc886-e8f2-4386-a45c-325ae6bf28be-0\nThat's all.\ncea61c6d-82b2-45ae-9424-efbde698e21e-0\nApart from that, I think as a basic the,\nyou know, the prototype,\ncea61c6d-82b2-45ae-9424-efbde698e21e-1\nit's it looks pretty good.\n8606383d-3967-4775-910e-611c2dca4e6f-0\nYeah.\n4180589f-c00f-401a-a943-9ce4de195758-0\nThank you.\n94f70dcf-fc5f-4566-8b90-25b7402d355b-0\nAnd lastly,\nanything else you want to tell us?\n85992091-fe06-4645-9ca9-89ad5e9c30e8-0\nOh, I think that's all I had to say.\nb2d1d18d-aebb-43f4-93c4-adc0bd0f3bf8-0\nReally good experience.\nb2438a5c-bc0e-4706-af03-43dd79ab4b57-0\nThank you.\n408c604c-2a0f-47ef-8b5f-66283d3b9183-0\nYeah.\n1fd28338-a897-4f99-bac9-882b6d661a35-0\nThank you for your time, Kirzan.\ndc74ac62-0899-495f-b564-040dc4662bc7-0\nIt was a pleasure talking with you.\nc58d1852-a0b7-4467-bd24-fd3d4c02346e-0\nAnd thank you for the feedback to improve\nour website and learning experience for\nc58d1852-a0b7-4467-bd24-fd3d4c02346e-1\neveryone.\n5077c256-4d58-4f43-8f68-b5b334920616-0\nWe will definitely improve this\nexperience.\naf0a9791-16ba-4dee-b052-f7a33261a6e1-0\nWe are still learning and improving our\nwebsite and you are one of the first,\naf0a9791-16ba-4dee-b052-f7a33261a6e1-1\nyou are the first member to review our\nwebsite and use that.\n3e167ff6-6a73-44eb-a5aa-f4600951cce8-0\nThank you.\nf59f2f97-7f9d-473c-94f9-38b04e27ecad-0\nThank you for your time.\n706d4038-a88f-4418-b4b1-1fb5177dcc6d-0\nYeah, the best for your website.\nd881ea4a-4afb-4c8a-bb1a-582ee3fce158-0\nI hope you guys do well.\n09599b65-252f-460c-846c-f61e6453b8d7-0\nThank you.\n5497165a-8931-4d8b-8c47-f7c11c895cb3-0\nYeah, Yeah.\n50f72b80-7e21-478f-b0a7-9d4be17272dc-0\nKrishna postcard there.",
+      "raw_len": 33677
+    },
+    "gain": {
+      "mcq": 14,
+      "sa": 4,
+      "total": 18
+    }
+  },
+  {
+    "id": "P5-CC",
+    "pack": "terrain",
+    "pack_label": "3 Geo-Terrain",
+    "pre": {
+      "file": "CC-quiz-pre-test.txt",
+      "is_pdf": false,
+      "mcq": 0,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "A",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 2,
+          "got": "B",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 3,
+          "got": "C",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 4,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 5,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 6,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 7,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 8,
+          "got": "D",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 9,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 10,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 11,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 12,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 13,
+          "got": "[blank]",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 14,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 15,
+          "got": "[blank]",
+          "key": "A",
+          "ok": false
+        }
+      ],
+      "sa": 0,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 2,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 3,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 4,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        },
+        {
+          "q": 5,
+          "score": 0,
+          "why": "blank",
+          "answer": ""
+        }
+      ],
+      "total": 0,
+      "answered_mcq_n": 4,
+      "blank": false,
+      "text_preview": "Terrain Formation Quiz | Student: P5-CC | Generated: 2026/8/10 17:41:45 |  | PART I: MULTIPLE CHOICE | 1. Weathering is the process of: |    A. Moving sediment from one place to another |    B. Breaking down rock a"
+    },
+    "post": {
+      "file": "CC-quiz-post.txt",
+      "is_pdf": false,
+      "mcq": 11,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 2,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 3,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 4,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 5,
+          "got": "C",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 6,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 7,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 8,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 9,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 10,
+          "got": "A",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 11,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 12,
+          "got": "B",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 13,
+          "got": "D",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 14,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 15,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        }
+      ],
+      "sa": 7,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 3,
+          "why": "complete (~3 points): Weathering breaks down or decomposes rock; Weathering does not require movement; Erosion is the movement of weathered material",
+          "answer": "Weathering = the breaking down of rock into smaller pieces at or near Earth’s surface.\nErosion = the movement of sediment from one place to another by water, wind, ice, or gravity."
+        },
+        {
+          "q": 2,
+          "score": 1,
+          "why": "minimal: Sediments were deposited in layers",
+          "answer": "Sediments were deposited in layers over time, then buried and compressed."
+        },
+        {
+          "q": 3,
+          "score": 1,
+          "why": "minimal: Uplift raised the Colorado Plateau",
+          "answer": "Uplift raised the land, giving the River more energy to flow downhill."
+        },
+        {
+          "q": 4,
+          "score": 2,
+          "why": "partial: Water erodes softer shale below; Sandstone collapses, causing the canyon to widen",
+          "answer": "Erosion removes the softer shale more quickly than the harder sandstone. This causes the sandstone above to collapse, making the canyon wider."
+        },
+        {
+          "q": 5,
+          "score": 0,
+          "why": "no credit / off-topic",
+          "answer": "Forgot"
+        }
+      ],
+      "total": 18,
+      "answered_mcq_n": 15,
+      "blank": false,
+      "text_preview": "Terrain Formation Quiz | Student: P5-CC | Generated: 2026/8/10 17:54:09 |  | PART I: MULTIPLE CHOICE | 1. Weathering is the process of: |    A. Moving sediment from one place to another |    B. Breaking down rock a"
+    },
+    "questionnaire": {
+      "participant_code": "P5-CC",
+      "material": "Geo-Terrain",
+      "age": "32",
+      "field": "Finance",
+      "tlx_mental": "40",
+      "tlx_physical": "30",
+      "tlx_temporal": "35",
+      "tlx_performance": "60",
+      "tlx_effort": "80",
+      "tlx_frustration": "70",
+      "best": "The follow quiz + learning companion that helps me to review my own understanding.",
+      "worst": "Sometime the reading need a bit more context, especially for people without little prior knowledge, it would be frustrated.",
+      "role": "Working / other",
+      "ai_use": "Sometimes",
+      "s1": "7",
+      "s2": "7",
+      "s3": "7",
+      "a1": "5",
+      "a2": "5",
+      "a3": "6",
+      "a4": "6",
+      "l1": "4",
+      "l2": "7",
+      "l3": "7",
+      "l4": "7"
+    },
+    "interview": {
+      "kind": "keynotes",
+      "start_line": 1,
+      "text": "1. In one sentence, what does this tool do?\nIt helps learning with fancy things.\n\n2. How did waiting / loading feel?\nNo feeling.\n\n3. Which part helped most — reading, quizzes, interactive, or 3D? Why?\nThe quizzes, since they check the understanding, and when I made mistake, it shows how.\n\n4. Where were you confused or annoyed?\nYea the reading part, sometime, it doesn't provide enough context/prior knowledge, so it makes me hard to understand the following reading chunks and quizzes.\n\n5. Did the course match the topic — too shallow, about right, too much?\nYes, very much.\n\n6. Would you use it for studying? For teaching someone else?\nI would do it myself, but not recommend to friends since I feel like it is still in the preview phase, the reading is a bit hard to be tailor for anyone but only those already with established background/prior knowledge.\n\n7. If we fix only one thing, what?\nThe reading with more prior knowledge, or at least a button to let people with different background / prior knowledge to pick where to start.\n\n8. Anything else?\nNo"
+    },
+    "gain": {
+      "mcq": 11,
+      "sa": 7,
+      "total": 18
+    }
+  },
+  {
+    "id": "P6-BZ",
+    "pack": "projectile",
+    "pack_label": "5 Phys-Projectile",
+    "pre": {
+      "file": "BZ-quiz-pre-test.txt",
+      "is_pdf": false,
+      "mcq": 7,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 2,
+          "got": "D",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 3,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 4,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 5,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 6,
+          "got": "A",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 7,
+          "got": "C",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 8,
+          "got": "A",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 9,
+          "got": "C",
+          "key": "B",
+          "ok": false
+        },
+        {
+          "q": 10,
+          "got": "B",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 11,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 12,
+          "got": "B",
+          "key": "A",
+          "ok": false
+        },
+        {
+          "q": 13,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 14,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 15,
+          "got": "B",
+          "key": "A",
+          "ok": false
+        }
+      ],
+      "sa": 0,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 0,
+          "why": "no credit / off-topic",
+          "answer": "They dont interfere each other"
+        },
+        {
+          "q": 2,
+          "score": 0,
+          "why": "no credit / off-topic",
+          "answer": "horizontal first increase then decrease, vertical do the opposite"
+        },
+        {
+          "q": 3,
+          "score": 0,
+          "why": "no credit / off-topic",
+          "answer": "they travel at the same condition horizontally"
+        },
+        {
+          "q": 4,
+          "score": 0,
+          "why": "no credit / off-topic",
+          "answer": "the velocity reach the max"
+        },
+        {
+          "q": 5,
+          "score": 0,
+          "why": "no credit / off-topic",
+          "answer": "x + y -> time and distance I guess."
+        }
+      ],
+      "total": 7,
+      "answered_mcq_n": 15,
+      "blank": false,
+      "text_preview": "Projectile Motion Quiz | Student: P6-BZ | Generated: 2026/8/10 18:12:41 |  | PART I: MULTIPLE CHOICE | 1. A projectile is an object that is: |    A. Moving only vertically |    B. Launched and then moves under grav"
+    },
+    "post": {
+      "file": "BZ-quiz-post-test.txt",
+      "is_pdf": false,
+      "mcq": 13,
+      "mcq_detail": [
+        {
+          "q": 1,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 2,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 3,
+          "got": "B",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 4,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 5,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 6,
+          "got": "D",
+          "key": "C",
+          "ok": false
+        },
+        {
+          "q": 7,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 8,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 9,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 10,
+          "got": "C",
+          "key": "C",
+          "ok": true
+        },
+        {
+          "q": 11,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 12,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        },
+        {
+          "q": 13,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 14,
+          "got": "B",
+          "key": "B",
+          "ok": true
+        },
+        {
+          "q": 15,
+          "got": "A",
+          "key": "A",
+          "ok": true
+        }
+      ],
+      "sa": 6,
+      "sa_detail": [
+        {
+          "q": 1,
+          "score": 1,
+          "why": "on-topic length but weak keyword match — minimal",
+          "answer": "They dont interfere each other, each contribute only to its own direction's speed and distance, the only thing they share is the same travel time."
+        },
+        {
+          "q": 2,
+          "score": 1,
+          "why": "minimal: Vertical velocity decreases on ascent, becomes zero at the t",
+          "answer": "horizontal keep unchanged, vertical follows the gravity"
+        },
+        {
+          "q": 3,
+          "score": 2,
+          "why": "partial: Both begin with the same initial vertical velocity; Both experience the same vertical acceleration -g",
+          "answer": "since their vertical components are the same, therefore, same time."
+        },
+        {
+          "q": 4,
+          "score": 2,
+          "why": "partial: Vertical velocity is zero; Acceleration is still downward with magnitude g",
+          "answer": "horizontal still unchanged, vertical becomes 0. the acceleration is still just the gravity"
+        },
+        {
+          "q": 5,
+          "score": 0,
+          "why": "no credit / off-topic",
+          "answer": "y for time, x for distance"
+        }
+      ],
+      "total": 19,
+      "answered_mcq_n": 15,
+      "blank": false,
+      "text_preview": "Projectile Motion Quiz | Student: P6-BZ | Generated: 2026/8/10 18:22:27 |  | PART I: MULTIPLE CHOICE | 1. A projectile is an object that is: |    A. Moving only vertically |    B. Launched and then moves under grav"
+    },
+    "questionnaire": {
+      "participant_code": "P6-BZ",
+      "material": "Physics Projectile Motion",
+      "age": "18",
+      "field": "Art",
+      "tlx_mental": "30",
+      "tlx_physical": "20",
+      "tlx_temporal": "15",
+      "tlx_performance": "75",
+      "tlx_effort": "15",
+      "tlx_frustration": "35",
+      "best": "This is a such a good product, I love it, any part is good!",
+      "worst": "No frustration.",
+      "role": "Undergrad student",
+      "ai_use": "Weekly or more",
+      "s1": "7",
+      "s2": "7",
+      "s3": "7",
+      "a1": "7",
+      "a2": "7",
+      "a3": "7",
+      "a4": "7",
+      "l1": "7",
+      "l2": "7",
+      "l3": "7",
+      "l4": "7"
+    },
+    "interview": {
+      "kind": "keynotes",
+      "start_line": 1,
+      "text": "1. In one sentence, what does this tool do?\nIt helps students and teachers to create high quality learning content, and be able to test it.\n\n2. How did waiting / loading feel?\nIts OK\n\n3. Which part helped most — reading, quizzes, interactive, or 3D? Why?\nThe 3D and 2D visualization and interaction, they are so good fitting in this topic. I wish I could have such a system when I was high school, it helps so much explaining the physics motion in processes.\n\n4. Where were you confused or annoyed?\nNo confusion, this system is very easy to use.\n\n5. Did the course match the topic — too shallow, about right, too much?\nIt matches, and not only simply matches, but also explaining well with just fitting visualizations and interactions so that I can drag around.\n\n6. Would you use it for studying? For teaching someone else?\nDefinitely! I would recommend this if I was in high school, this product will go viral I believe.\n\n7. If we fix only one thing, what?\nI think it would be better if the website you sent to me support doc uploading. I really want to try upload and generate for my own current learning topics, wish this doing better in the future!\n\n8. Anything else?\nNo"
+    },
+    "gain": {
+      "mcq": 6,
+      "sa": 6,
+      "total": 12
+    }
+  }
+]

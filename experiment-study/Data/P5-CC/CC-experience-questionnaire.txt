@@ -1,0 +1,27 @@
+XR EduAgent — Questionnaire responses
+
+participant_code: P5-CC
+material: Geo-Terrain
+age: 32
+field: Finance
+tlx_mental: 40
+tlx_physical: 30
+tlx_temporal: 35
+tlx_performance: 60
+tlx_effort: 80
+tlx_frustration: 70
+best: The follow quiz + learning companion that helps me to review my own understanding. 
+worst: Sometime the reading need a bit more context, especially for people without little prior knowledge, it would be frustrated.
+role: Working / other
+ai_use: Sometimes
+s1: 7
+s2: 7
+s3: 7
+a1: 5
+a2: 5
+a3: 6
+a4: 6
+l1: 4
+l2: 7
+l3: 7
+l4: 7

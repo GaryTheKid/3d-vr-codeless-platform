@@ -1,0 +1,125 @@
+Projectile Motion Quiz
+Student: P6-BZ
+Generated: 2026/8/10 18:22:27
+
+PART I: MULTIPLE CHOICE
+1. A projectile is an object that is:
+   A. Moving only vertically
+   B. Launched and then moves under gravity
+   C. Always traveling in a circle
+   D. At rest
+   Student answer: B
+
+2. Ignoring air resistance, what is the horizontal acceleration of a projectile?
+   A. 0
+   B. g
+   C. -g
+   D. It increases with time
+   Student answer: A
+
+3. Ignoring air resistance, what is the vertical acceleration of a projectile?
+   A. 0
+   B. +g
+   C. -g
+   D. It depends on horizontal speed
+   Student answer: B
+
+4. The initial horizontal velocity component is:
+   A. v0 sin θ
+   B. v0 cos θ
+   C. gt
+   D. v0 + gt
+   Student answer: B
+
+5. The initial vertical velocity component is:
+   A. v0 sin θ
+   B. v0 cos θ
+   C. v0/t
+   D. g cos θ
+   Student answer: A
+
+6. During ideal projectile motion, the horizontal velocity:
+   A. Increases steadily
+   B. Decreases steadily
+   C. Remains constant
+   D. Becomes zero at the top
+   Student answer: D
+
+7. At the highest point of the trajectory, the vertical velocity is:
+   A. Maximum upward
+   B. Zero
+   C. Equal to the horizontal velocity
+   D. -g
+   Student answer: B
+
+8. At the highest point, the projectile’s acceleration is:
+   A. Zero
+   B. Horizontal
+   C. Still downward with magnitude g
+   D. Upward
+   Student answer: C
+
+9. Horizontal and vertical motions are treated as:
+   A. Dependent in every way
+   B. Independent components
+   C. Identical motions
+   D. Circular components
+   Student answer: B
+
+10. In the demonstration with one ball launched horizontally and one dropped, they land:
+   A. The launched ball first
+   B. The dropped ball first
+   C. At the same time
+   D. Only if their masses are equal
+   Student answer: C
+
+11. Why does a ball tossed straight up by a person moving at constant horizontal speed return to the person?
+   A. The ball stops moving horizontally
+   B. The ball keeps the same horizontal velocity as the person
+   C. Gravity pulls it forward
+   D. Air resistance pushes it back
+   Student answer: B
+
+12. Which force acts on an ideal projectile after release?
+   A. Gravity only
+   B. A constant forward force
+   C. Normal force only
+   D. Tension only
+   Student answer: A
+
+13. For equal launch and landing heights with fixed speed, the maximum range occurs at:
+   A. 30°
+   B. 45°
+   C. 60°
+   D. 90°
+   Student answer: B
+
+14. Which equations are used to find how long a projectile is in flight?
+   A. Horizontal equations only
+   B. Vertical-motion equations
+   C. Gear-ratio equations
+   D. Density equations
+   Student answer: B
+
+15. Once flight time is known, horizontal distance is found using:
+   A. Constant horizontal velocity multiplied by time
+   B. Vertical acceleration multiplied by mass
+   C. The maximum height only
+   D. The projectile’s weight divided by time
+   Student answer: A
+
+PART II: SHORT ANSWER
+Short Answer 1. Explain what it means to say that horizontal and vertical projectile motions are independent.
+Student answer: They dont interfere each other, each contribute only to its own direction's speed and distance, the only thing they share is the same travel time.
+
+Short Answer 2. Describe what happens to the horizontal and vertical velocity components as a projectile rises and falls.
+Student answer: horizontal keep unchanged, vertical follows the gravity
+
+Short Answer 3. Explain why a horizontally launched ball and a simultaneously dropped ball reach the ground at the same time.
+Student answer: since their vertical components are the same, therefore, same time.
+
+Short Answer 4. Describe the velocity and acceleration of a projectile at the highest point of its path.
+Student answer: horizontal still unchanged, vertical becomes 0. the acceleration is still just the gravity
+
+Short Answer 5. Outline how you would calculate the horizontal range of a projectile using x- and y-motion equations.
+Student answer: y for time, x for distance

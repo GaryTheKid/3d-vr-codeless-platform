@@ -1,0 +1,27 @@
+XR EduAgent — Questionnaire responses
+
+participant_code: P6-BZ
+material: Physics Projectile Motion
+age: 18
+field: Art
+tlx_mental: 30
+tlx_physical: 20
+tlx_temporal: 15
+tlx_performance: 75
+tlx_effort: 15
+tlx_frustration: 35
+best: This is a such a good product, I love it, any part is good!
+worst: No frustration.
+role: Undergrad student
+ai_use: Weekly or more
+s1: 7
+s2: 7
+s3: 7
+a1: 7
+a2: 7
+a3: 7
+a4: 7
+l1: 7
+l2: 7
+l3: 7
+l4: 7

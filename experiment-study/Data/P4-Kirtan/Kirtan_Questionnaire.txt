@@ -1,0 +1,27 @@
+XR EduAgent — Questionnaire responses
+
+participant_code: P4
+material: Material 1/ Viruses: Structure, Classification & What It Means to Be Alive
+age: 24
+field: Computer Science
+tlx_mental: 80
+tlx_physical: 25
+tlx_temporal: 25
+tlx_performance: 50
+tlx_effort: 75
+tlx_frustration: 25
+best: The follow-up quiz
+worst: UI-UX
+role: Grad student
+ai_use: Weekly or more
+s1: 4
+s2: 6
+s3: 5
+a1: 6
+a2: 5
+a3: 4
+a4: 4
+l1: 6
+l2: 6
+l3: 6
+l4: 6

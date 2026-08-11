@@ -21,4 +21,6 @@ Open the **root** file (not this folder):
 
 Skills/tools catalogs (same art style): [`../agent-skills.html`](../agent-skills.html) · [`../agent-tools.html`](../agent-tools.html).
 
+Demo talk slides (intro / problem / study / close): [`../demo-talk-slides.html`](../demo-talk-slides.html) — ←→ / Space / click · `F` fullscreen.
+
 Upstream docs: `/general/`, `/assets-recyclable/`, `/experiment-study/`, `/Agent.md`.

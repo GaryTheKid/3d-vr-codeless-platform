@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keyi · Demo Talk Slides · CS6650</title>
+<style>
+:root {
+  --bg: #0b0e14;
+  --panel: #121722;
+  --panel-2: #182030;
+  --border: #2a3448;
+  --text: #e8eef8;
+  --muted: #8b97ad;
+  --dim: #5c6a84;
+  --accent: #5b9dff;
+  --green: #3ecf8e;
+  --purple: #a78bfa;
+  --pink: #f472b6;
+  --amber: #fbbf24;
+  --cyan: #22d3ee;
+  --orange: #fb923c;
+  --font: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --display: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; height:100%; background:var(--bg); color:var(--text); font-family:var(--font); overflow:hidden; }
+body {
+  background:
+    radial-gradient(1100px 620px at 12% -8%, rgba(91,157,255,.14), transparent 55%),
+    radial-gradient(900px 520px at 92% 108%, rgba(167,139,250,.12), transparent 50%),
+    linear-gradient(180deg, #0c1018 0%, #0b0e14 100%);
+}
+
+#deck { position:relative; width:100%; height:100%; }
+.slide {
+  position:absolute; inset:0;
+  display:none; flex-direction:column; justify-content:center;
+  padding: clamp(36px, 7vh, 72px) clamp(48px, 9vw, 120px);
+  opacity:0; transform: translateY(10px);
+  transition: opacity .35s ease, transform .35s ease;
+}
+.slide.on { display:flex; opacity:1; transform:none; }
+
+.kicker {
+  font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent); margin-bottom:18px;
+}
+.brand {
+  font-size: clamp(42px, 6.2vw, 78px); font-weight:800; line-height:1.05;
+  letter-spacing:-.02em; margin:0 0 16px; max-width:16ch;
+  background: linear-gradient(135deg, #fff 20%, #93c5fd 70%, #c4b5fd);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+h1 {
+  font-size: clamp(34px, 4.6vw, 58px); font-weight:800; line-height:1.12;
+  letter-spacing:-.02em; margin:0 0 18px; max-width:18ch;
+}
+h2 {
+  font-size: clamp(26px, 3.2vw, 40px); font-weight:800; line-height:1.15;
+  margin:0 0 22px; max-width:22ch;
+}
+.lead {
+  font-size: clamp(18px, 2vw, 24px); color:var(--muted); line-height:1.45;
+  max-width:34ch; margin:0 0 28px;
+}
+.one-liner {
+  font-size: clamp(22px, 2.6vw, 32px); font-weight:650; line-height:1.35;
+  max-width:28ch; margin:0 0 36px; color:#dbe7ff;
+}
+
+.team { display:flex; flex-wrap:wrap; gap:14px; margin-top:8px; }
+.person {
+  min-width:220px; flex:1;
+  background: linear-gradient(180deg, rgba(26,34,51,.95), rgba(15,20,30,.98));
+  border:1px solid var(--border); border-radius:16px; padding:16px 18px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.35);
+}
+.person .name { font-size:16px; font-weight:750; margin-bottom:4px; }
+.person .meta { font-size:12px; color:var(--muted); line-height:1.4; }
+
+.grid2 { display:grid; grid-template-columns: 1.1fr 1fr; gap:28px; align-items:stretch; }
+.grid3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; }
+.grid4 { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; }
+
+.card {
+  background: linear-gradient(180deg, rgba(26,34,51,.92), rgba(14,18,28,.96));
+  border:1px solid var(--border); border-radius:18px; padding:20px 22px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.35);
+}
+.card.fail { border-color: rgba(248,113,113,.35); }
+.card.bet { border-color: rgba(56,189,248,.4); }
+.card .num {
+  font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--dim); margin-bottom:10px;
+}
+.card h3 { margin:0 0 8px; font-size:20px; font-weight:750; }
+.card p { margin:0; color:var(--muted); font-size:15px; line-height:1.45; }
+
+.stat {
+  text-align:left; padding:18px 20px;
+  background: linear-gradient(180deg, rgba(26,34,51,.95), rgba(15,20,30,.98));
+  border:1px solid var(--border); border-radius:16px;
+}
+.stat b {
+  display:block; font-size: clamp(28px, 3.4vw, 40px); font-weight:800;
+  color:#fff; letter-spacing:-.02em; margin-bottom:4px;
+}
+.stat span { font-size:13px; color:var(--muted); line-height:1.35; }
+
+.flow {
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:8px;
+}
+.flow .chip {
+  background: rgba(56,189,248,.12); border:1px solid rgba(56,189,248,.35);
+  color:#e0f2fe; border-radius:999px; padding:8px 14px; font-size:14px; font-weight:700;
+}
+.flow .arrow { color:var(--dim); font-weight:700; }
+
+.bullets { list-style:none; padding:0; margin:0; }
+.bullets li {
+  position:relative; padding:10px 0 10px 22px;
+  font-size: clamp(17px, 1.8vw, 22px); color:#dbe7ff; line-height:1.4;
+  border-bottom:1px solid rgba(42,52,72,.7);
+}
+.bullets li:last-child { border-bottom:none; }
+.bullets li::before {
+  content:""; position:absolute; left:0; top:1.05em;
+  width:8px; height:8px; border-radius:50%; background:var(--accent);
+  box-shadow: 0 0 12px rgba(91,157,255,.55);
+}
+
+.quote {
+  font-size: clamp(22px, 2.8vw, 34px); font-weight:650; line-height:1.35;
+  max-width:22ch; color:#fff; margin:0 0 18px;
+}
+.subnote { font-size:14px; color:var(--dim); margin-top:18px; }
+
+#hud {
+  position:fixed; left:18px; bottom:16px; z-index:20;
+  display:flex; gap:10px; align-items:center;
+  font-size:11px; color:var(--dim);
+  background: rgba(10,14,22,.72); border:1px solid var(--border);
+  border-radius:999px; padding:6px 12px; backdrop-filter: blur(8px);
+}
+#hud b { color:var(--muted); font-weight:700; }
+#progress {
+  position:fixed; left:0; top:0; height:3px; z-index:30;
+  background: linear-gradient(90deg,#38bdf8,#a78bfa,#34d399);
+  width:0; transition: width .3s ease;
+}
+.hint-keys { opacity:.85; }
+
+@media (max-width: 900px) {
+  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+  .brand, h1 { max-width: none; }
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="deck">
+
+  <!-- ═══════ 1 INTRO ═══════ -->
+  <section class="slide on" data-sec="1">
+    <div class="kicker">CS6650 · GenAI Final · Demo</div>
+    <div class="brand">Keyi</div>
+    <p class="one-liner">A multimodal learning-experience builder that installs insight — not content.</p>
+    <div class="team">
+      <div class="person">
+        <div class="name">Chongyang Wang</div>
+        <div class="meta">Northeastern University<br>wang.chong@northeastern.edu</div>
+      </div>
+      <div class="person">
+        <div class="name">Vedant Shah</div>
+        <div class="meta">Northeastern University<br>shahh7107@gmail.com</div>
+      </div>
+      <div class="person">
+        <div class="name">Sri Sai Teja Mettu Srinivas</div>
+        <div class="meta">Northeastern University<br>srisaitejms2002@gmail.com</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-sec="1">
+    <div class="kicker">What we built · one sentence</div>
+    <h1>From teaching material → a full learning experience.</h1>
+    <p class="lead">Reading · 2D H5 · 3D/VR · Quiz — staged the way a strong teacher prepares a lesson, not the way a slide generator dumps pages.</p>
+    <div class="flow">
+      <span class="chip">Aha keys</span><span class="arrow">→</span>
+      <span class="chip">Knowledge graph</span><span class="arrow">→</span>
+      <span class="chip">Outline</span><span class="arrow">→</span>
+      <span class="chip">Section fill</span>
+    </div>
+  </section>
+
+  <!-- ═══════ 2 PROBLEM ═══════ -->
+  <section class="slide" data-sec="2">
+    <div class="kicker">Problem</div>
+    <p class="quote">AI courses look complete. Whether they teach is another question.</p>
+    <p class="lead" style="max-width:38ch;margin:0">Pretty content ≠ installed insight. Finishing a task with AI is not the same as learning from it.</p>
+  </section>
+
+  <section class="slide" data-sec="2">
+    <div class="kicker">Four connected failures</div>
+    <h2>Why “PDF → course” usually sucks</h2>
+    <div class="grid2" style="margin-top:8px">
+      <div class="card fail">
+        <div class="num">01 · Learning</div>
+        <h3>Gains are rare</h3>
+        <p>Task success with AI ≠ durable learning once the tool is gone.</p>
+      </div>
+      <div class="card fail">
+        <div class="num">02 · Modality</div>
+        <h3>Cheap ≠ right</h3>
+        <p>Medium follows what is easy to generate, not what the concept needs.</p>
+      </div>
+      <div class="card fail">
+        <div class="num">03 · Coverage</div>
+        <h3>No checkable goals</h3>
+        <p>Without structure, units skip prerequisites and quiz untaught ideas.</p>
+      </div>
+      <div class="card fail">
+        <div class="num">04 · Guidance</div>
+        <h3>Learners wander</h3>
+        <p>No scaffold → practice → transfer path; no companion that knows where you are.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-sec="2">
+    <div class="kicker">The litmus test we failed</div>
+    <h1>Strip the visuals. Is any teaching strategy left?</h1>
+    <p class="lead">Our early 3D spectacle demos looked impressive — then taught nothing. That moment reframed the project: generate teaching, not content piles.</p>
+  </section>
+
+  <section class="slide" data-sec="2">
+    <div class="kicker">Our bet</div>
+    <h2>Pedagogy first. Content second.</h2>
+    <div class="card bet" style="max-width:920px">
+      <div class="flow" style="margin:0">
+        <span class="chip">Pedagogy Core</span><span class="arrow">→</span>
+        <span class="chip">Aha keys</span><span class="arrow">→</span>
+        <span class="chip">KG contracts</span><span class="arrow">→</span>
+        <span class="chip">Outline</span><span class="arrow">→</span>
+        <span class="chip">Reading / H5 / 3D / Quiz</span>
+      </div>
+      <p style="margin:18px 0 0;color:var(--muted);font-size:16px;line-height:1.5;max-width:48ch">
+        Excellent teacher habits become data the system can check — not model goodwill.
+      </p>
+    </div>
+    <p class="subnote">Next on camera: sample course → live PDF build → pipeline / skills / tools</p>
+  </section>
+
+  <!-- ═══════ 6 STUDY ═══════ -->
+  <section class="slide" data-sec="6">
+    <div class="kicker">Study · method</div>
+    <h2>N = 6 · remote Zoom tryout</h2>
+    <ul class="bullets" style="max-width:720px">
+      <li>Pre-quiz → learn a sample course → post-quiz</li>
+      <li>NASA-TLX + satisfaction Likert + interview</li>
+      <li>Five subject packs (chem · bio · geo · mech · phys)</li>
+    </ul>
+    <p class="subnote">Gains reflect learner experience on pre-built samples — not live generation variance.</p>
+  </section>
+
+  <section class="slide" data-sec="6">
+    <div class="kicker">Study · results</div>
+    <h2>What moved</h2>
+    <div class="grid3" style="margin-top:6px">
+      <div class="stat">
+        <b>+22.3</b>
+        <span>Mean quiz gain / 30<br>1.5 → 23.8</span>
+      </div>
+      <div class="stat">
+        <b>6.4 / 7</b>
+        <span>Satisfaction cluster<br>S1–S3 · recommend 6.7</span>
+      </div>
+      <div class="stat">
+        <b>~63</b>
+        <span>Mental demand (TLX)<br>effort real · time pressure low</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-sec="6">
+    <div class="kicker">Study · insights</div>
+    <h2>What participants named</h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="num" style="color:var(--green)">Helped</div>
+        <h3>3D + interactives + quizzes</h3>
+        <p>Named as the learning engine — operate the idea, then transfer-check.</p>
+      </div>
+      <div class="card">
+        <div class="num" style="color:var(--orange)">Friction</div>
+        <h3>Thin reading · trust / UI</h3>
+        <p>Scaffolds felt light; occasional 3D fidelity + UI congestion; want upload on the public demo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 7 CLOSE ═══════ -->
+  <section class="slide" data-sec="7">
+    <div class="kicker">Close · summary</div>
+    <h1>Install keys. Don’t dump slides.</h1>
+    <ul class="bullets" style="max-width:760px">
+      <li>Pedagogy-first agent: Aha → KG → multimodal outline</li>
+      <li>20 skills · 40 tools · planner / executor discipline</li>
+      <li>Study: large gains · high satisfaction · clear next fixes</li>
+    </ul>
+  </section>
+
+  <section class="slide" data-sec="7">
+    <div class="kicker">Limits · future</div>
+    <div class="grid2">
+      <div class="card">
+        <div class="num">Limits</div>
+        <h3>Small · remote · samples</h3>
+        <p>N=6 · no comparison arm · blank-pre floor · same quiz pre/post · samples not live PDF in the study.</p>
+      </div>
+      <div class="card bet">
+        <div class="num">Future</div>
+        <h3>Where we go next</h3>
+        <p>Stronger reading scaffolds · fidelity / UI pass · upload on Pages · larger controlled study.</p>
+      </div>
+    </div>
+    <p class="one-liner" style="margin-top:28px;font-size:clamp(20px,2.4vw,28px)">Thanks — questions welcome.</p>
+  </section>
+
+</div>
+
+<div id="hud">
+  <b id="pos">1 / 1</b>
+  <span class="hint-keys">← → · Space · click · F fullscreen</span>
+  <span id="secLabel">Intro</span>
+</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const secName = { '1':'Intro', '2':'Problem', '6':'Study', '7':'Close' };
+let i = 0;
+
+function show(n) {
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle('on', k === i));
+  document.getElementById('pos').textContent = `${i + 1} / ${slides.length}`;
+  document.getElementById('secLabel').textContent = secName[slides[i].dataset.sec] || '';
+  document.getElementById('progress').style.width = `${((i + 1) / slides.length) * 100}%`;
+}
+
+function next() { show(i + 1); }
+function prev() { show(i - 1); }
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+  if (e.key === 'Home') show(0);
+  if (e.key === 'End') show(slides.length - 1);
+  if (e.key === 'f' || e.key === 'F') {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+});
+document.getElementById('deck').addEventListener('click', e => {
+  if (e.target.closest('a')) return;
+  const mid = window.innerWidth / 2;
+  if (e.clientX < mid) prev(); else next();
+});
+
+show(0);
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Keyi · Demo Talk Slides · CS6650</title>
+<title>Keyi · Demo Talk Slides · CS6180</title>
 <style>
 :root {
   --bg: #0b0e14;
@@ -79,23 +79,43 @@ h2 {
 .person .name { font-size:16px; font-weight:750; margin-bottom:4px; }
 .person .meta { font-size:12px; color:var(--muted); line-height:1.4; }
 
-.grid2 { display:grid; grid-template-columns: 1.1fr 1fr; gap:28px; align-items:stretch; }
+.grid2 { display:grid; grid-template-columns: 1.05fr 1fr; gap:28px; align-items:center; }
 .grid3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; }
-.grid4 { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; }
+.grid4 { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; align-items:stretch; }
+.split { display:grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); gap: clamp(20px, 3vw, 40px); align-items:center; width:100%; }
+.split.reverse { grid-template-columns: minmax(0,1fr) minmax(0,1.05fr); }
+.split .copy { min-width:0; }
+.split .copy h1, .split .copy h2, .split .copy .quote { max-width:16ch; }
+
+.art {
+  width:100%; aspect-ratio: 3 / 2; object-fit:cover; display:block;
+  border-radius:18px; border:1px solid rgba(91,157,255,.28);
+  box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.04) inset;
+}
+.art.square { aspect-ratio: 1 / 1; }
+.art.fig {
+  aspect-ratio: auto; max-height: min(58vh, 620px); width:100%; object-fit:contain;
+  background: rgba(8,12,20,.65); padding:10px;
+}
 
 .card {
   background: linear-gradient(180deg, rgba(26,34,51,.92), rgba(14,18,28,.96));
-  border:1px solid var(--border); border-radius:18px; padding:20px 22px;
+  border:1px solid var(--border); border-radius:18px; padding:16px 16px 14px;
   box-shadow: 0 16px 40px rgba(0,0,0,.35);
+  display:flex; flex-direction:column; min-height:0;
 }
 .card.fail { border-color: rgba(248,113,113,.35); }
 .card.bet { border-color: rgba(56,189,248,.4); }
-.card .num {
-  font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
-  color:var(--dim); margin-bottom:10px;
+.card .thumb {
+  width:100%; aspect-ratio:1; object-fit:cover; border-radius:12px;
+  border:1px solid rgba(255,255,255,.06); margin-bottom:12px;
 }
-.card h3 { margin:0 0 8px; font-size:20px; font-weight:750; }
-.card p { margin:0; color:var(--muted); font-size:15px; line-height:1.45; }
+.card .num {
+  font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--dim); margin-bottom:8px;
+}
+.card h3 { margin:0 0 6px; font-size:17px; font-weight:750; }
+.card p { margin:0; color:var(--muted); font-size:13px; line-height:1.4; }
 
 .stat {
   text-align:left; padding:18px 20px;
@@ -136,6 +156,62 @@ h2 {
 }
 .subnote { font-size:14px; color:var(--dim); margin-top:18px; }
 
+/* Movie-style credits */
+.slide.credits {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-top: clamp(28px, 5vh, 48px);
+  padding-bottom: clamp(48px, 8vh, 72px);
+}
+.credits-roll {
+  width: min(560px, 92%);
+  max-height: min(78vh, 820px);
+  overflow: auto;
+  padding: 8px 12px 24px;
+  scrollbar-width: thin;
+}
+.credit-block { margin: 0 0 22px; }
+.credit-block .role {
+  font-size: 12px; font-weight: 800; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+}
+.credit-block .who {
+  font-size: clamp(17px, 2vw, 22px); font-weight: 650;
+  color: #e8eef8; line-height: 1.45;
+}
+.credit-block .who span { display: block; }
+
+.slide.thanks {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.thanks-title {
+  margin: 0;
+  font-size: clamp(40px, 7vw, 84px);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.05;
+  background: linear-gradient(135deg, #fff 15%, #93c5fd 55%, #c4b5fd 90%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: none;
+  animation: thanksIn .7s cubic-bezier(.2,.9,.2,1) both;
+}
+.thanks-sub {
+  margin: 22px 0 0;
+  font-size: clamp(14px, 1.6vw, 18px);
+  color: var(--muted);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  animation: thanksIn .7s .15s cubic-bezier(.2,.9,.2,1) both;
+}
+@keyframes thanksIn {
+  from { opacity: 0; transform: translateY(16px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
 #hud {
   position:fixed; left:18px; bottom:16px; z-index:20;
   display:flex; gap:10px; align-items:center;
@@ -152,8 +228,9 @@ h2 {
 .hint-keys { opacity:.85; }
 
 @media (max-width: 900px) {
-  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+  .grid2, .grid3, .grid4, .split, .split.reverse { grid-template-columns: 1fr; }
   .brand, h1 { max-width: none; }
+  .art { max-height: 36vh; }
 }
 </style>
 </head>
@@ -163,7 +240,7 @@ h2 {
 
   <!-- ═══════ 1 INTRO ═══════ -->
   <section class="slide on" data-sec="1">
-    <div class="kicker">CS6650 · GenAI Final · Demo</div>
+    <div class="kicker">CS6180 · GenAI Final · Demo</div>
     <div class="brand">Keyi</div>
     <p class="one-liner">A multimodal learning-experience builder that installs insight — not content.</p>
     <div class="team">
@@ -183,44 +260,58 @@ h2 {
   </section>
 
   <section class="slide" data-sec="1">
-    <div class="kicker">What we built · one sentence</div>
-    <h1>From teaching material → a full learning experience.</h1>
-    <p class="lead">Reading · 2D H5 · 3D/VR · Quiz — staged the way a strong teacher prepares a lesson, not the way a slide generator dumps pages.</p>
-    <div class="flow">
-      <span class="chip">Aha keys</span><span class="arrow">→</span>
-      <span class="chip">Knowledge graph</span><span class="arrow">→</span>
-      <span class="chip">Outline</span><span class="arrow">→</span>
-      <span class="chip">Section fill</span>
+    <div class="split">
+      <div class="copy">
+        <div class="kicker">What we built · one sentence</div>
+        <h1>From teaching material → a full learning experience with pedagogy.</h1>
+        <p class="lead">Reading · 2D H5 · 3D/VR · Quiz — staged the way a strong teacher prepares a lesson, not the way a slide generator dumps pages.</p>
+        <div class="flow">
+          <span class="chip">Aha keys</span><span class="arrow">→</span>
+          <span class="chip">Knowledge graph</span><span class="arrow">→</span>
+          <span class="chip">Outline</span><span class="arrow">→</span>
+          <span class="chip">Section fill</span>
+        </div>
+      </div>
+      <img class="art" src="final-delivery/demo-slide-assets/p02_what_we_built.png?v=cartoon2" alt="Material becomes multimodal learning path">
     </div>
   </section>
 
   <!-- ═══════ 2 PROBLEM ═══════ -->
   <section class="slide" data-sec="2">
-    <div class="kicker">Problem</div>
-    <p class="quote">AI courses look complete. Whether they teach is another question.</p>
-    <p class="lead" style="max-width:38ch;margin:0">Pretty content ≠ installed insight. Finishing a task with AI is not the same as learning from it.</p>
+    <div class="split">
+      <div class="copy">
+        <div class="kicker">Problem</div>
+        <p class="quote">AI courses look complete. Whether they teach is another question.</p>
+        <p class="lead" style="max-width:34ch;margin:0">Pretty content ≠ installed insight. Finishing a task with AI is not the same as learning from it.</p>
+      </div>
+      <img class="art" src="final-delivery/demo-slide-assets/p03_pretty_empty.png?v=cartoon2" alt="Pretty hollow AI course facade">
+    </div>
   </section>
 
   <section class="slide" data-sec="2">
     <div class="kicker">Four connected failures</div>
-    <h2>Why “PDF → course” usually sucks</h2>
-    <div class="grid2" style="margin-top:8px">
+    <h2 style="margin-bottom:14px">Why “PDF → course” usually sucks</h2>
+    <div class="grid4">
       <div class="card fail">
+        <img class="thumb" src="final-delivery/demo-slide-assets/p04_fail_learning.png?v=cartoon2" alt="Task success without learning">
         <div class="num">01 · Learning</div>
         <h3>Gains are rare</h3>
         <p>Task success with AI ≠ durable learning once the tool is gone.</p>
       </div>
       <div class="card fail">
+        <img class="thumb" src="final-delivery/demo-slide-assets/p04_fail_modality.png?v=cartoon2" alt="Wrong modality">
         <div class="num">02 · Modality</div>
         <h3>Cheap ≠ right</h3>
         <p>Medium follows what is easy to generate, not what the concept needs.</p>
       </div>
       <div class="card fail">
+        <img class="thumb" src="final-delivery/demo-slide-assets/p04_fail_coverage.png?v=cartoon2" alt="Broken coverage graph">
         <div class="num">03 · Coverage</div>
         <h3>No checkable goals</h3>
         <p>Without structure, units skip prerequisites and quiz untaught ideas.</p>
       </div>
       <div class="card fail">
+        <img class="thumb" src="final-delivery/demo-slide-assets/p04_fail_guidance.png?v=cartoon2" alt="Learner lost in content maze">
         <div class="num">04 · Guidance</div>
         <h3>Learners wander</h3>
         <p>No scaffold → practice → transfer path; no companion that knows where you are.</p>
@@ -235,21 +326,26 @@ h2 {
   </section>
 
   <section class="slide" data-sec="2">
-    <div class="kicker">Our bet</div>
-    <h2>Pedagogy first. Content second.</h2>
-    <div class="card bet" style="max-width:920px">
-      <div class="flow" style="margin:0">
-        <span class="chip">Pedagogy Core</span><span class="arrow">→</span>
-        <span class="chip">Aha keys</span><span class="arrow">→</span>
-        <span class="chip">KG contracts</span><span class="arrow">→</span>
-        <span class="chip">Outline</span><span class="arrow">→</span>
-        <span class="chip">Reading / H5 / 3D / Quiz</span>
+    <div class="split reverse">
+      <img class="art" src="final-delivery/demo-slide-assets/p06_pedagogy_first.png?v=cartoon2" alt="Pedagogy-first key into knowledge graph">
+      <div class="copy">
+        <div class="kicker">Our bet</div>
+        <h2>Pedagogy first. Content second.</h2>
+        <div class="card bet">
+          <div class="flow" style="margin:0">
+            <span class="chip">Pedagogy Core</span><span class="arrow">→</span>
+            <span class="chip">Aha keys</span><span class="arrow">→</span>
+            <span class="chip">KG</span><span class="arrow">→</span>
+            <span class="chip">Outline</span><span class="arrow">→</span>
+            <span class="chip">Fill</span>
+          </div>
+          <p style="margin:16px 0 0;color:var(--muted);font-size:15px;line-height:1.5">
+            Excellent teacher habits become data the system can check — not model goodwill.
+          </p>
+        </div>
+        <p class="subnote">Next: sample → live PDF → pipeline / skills / tools</p>
       </div>
-      <p style="margin:18px 0 0;color:var(--muted);font-size:16px;line-height:1.5;max-width:48ch">
-        Excellent teacher habits become data the system can check — not model goodwill.
-      </p>
     </div>
-    <p class="subnote">Next on camera: sample course → live PDF build → pipeline / skills / tools</p>
   </section>
 
   <!-- ═══════ 6 STUDY ═══════ -->
@@ -266,21 +362,22 @@ h2 {
 
   <section class="slide" data-sec="6">
     <div class="kicker">Study · results</div>
-    <h2>What moved</h2>
-    <div class="grid3" style="margin-top:6px">
+    <h2 style="margin-bottom:12px">What moved</h2>
+    <div class="grid3" style="margin-bottom:14px">
       <div class="stat">
         <b>+22.3</b>
-        <span>Mean quiz gain / 30<br>1.5 → 23.8</span>
+        <span>Mean quiz gain / 30 · 1.5 → 23.8</span>
       </div>
       <div class="stat">
         <b>6.4 / 7</b>
-        <span>Satisfaction cluster<br>S1–S3 · recommend 6.7</span>
+        <span>Satisfaction S1–S3 · recommend 6.7</span>
       </div>
       <div class="stat">
         <b>~63</b>
-        <span>Mental demand (TLX)<br>effort real · time pressure low</span>
+        <span>Mental demand (TLX) · effort real</span>
       </div>
     </div>
+    <img class="art fig" src="final-delivery/fig_results.png" alt="Study results figure">
   </section>
 
   <section class="slide" data-sec="6">
@@ -302,13 +399,18 @@ h2 {
 
   <!-- ═══════ 7 CLOSE ═══════ -->
   <section class="slide" data-sec="7">
-    <div class="kicker">Close · summary</div>
-    <h1>Install keys. Don’t dump slides.</h1>
-    <ul class="bullets" style="max-width:760px">
-      <li>Pedagogy-first agent: Aha → KG → multimodal outline</li>
-      <li>20 skills · 40 tools · planner / executor discipline</li>
-      <li>Study: large gains · high satisfaction · clear next fixes</li>
-    </ul>
+    <div class="split">
+      <div class="copy">
+        <div class="kicker">Close · summary</div>
+        <h1>Install keys. Don’t dump slides.</h1>
+        <ul class="bullets">
+          <li>Pedagogy-first agent: Aha → KG → multimodal outline</li>
+          <li>20 skills · 40 tools · planner / executor discipline</li>
+          <li>Study: large gains · high satisfaction · clear next fixes</li>
+        </ul>
+      </div>
+      <img class="art" src="final-delivery/demo-slide-assets/p10_summary_keys.png?v=cartoon2" alt="Installed insight keys">
+    </div>
   </section>
 
   <section class="slide" data-sec="7">
@@ -325,7 +427,61 @@ h2 {
         <p>Stronger reading scaffolds · fidelity / UI pass · upload on Pages · larger controlled study.</p>
       </div>
     </div>
-    <p class="one-liner" style="margin-top:28px;font-size:clamp(20px,2.4vw,28px)">Thanks — questions welcome.</p>
+  </section>
+
+  <!-- ═══════ 12 CREDITS ═══════ -->
+  <section class="slide credits" data-sec="12">
+    <div class="kicker">Credits</div>
+    <div class="credits-roll">
+      <div class="credit-block">
+        <div class="role">Project Management &amp; Design Lead</div>
+        <div class="who"><span>Chongyang Wang</span></div>
+      </div>
+      <div class="credit-block">
+        <div class="role">Design &amp; Engineering</div>
+        <div class="who">
+          <span>Chongyang Wang</span>
+          <span>Vedant Amitkumar Shah</span>
+        </div>
+      </div>
+      <div class="credit-block">
+        <div class="role">Research</div>
+        <div class="who">
+          <span>Chongyang Wang</span>
+          <span>Sri Sai Teja Mettu Srinivas</span>
+        </div>
+      </div>
+      <div class="credit-block">
+        <div class="role">Experiment Study</div>
+        <div class="who">
+          <span>Sri Sai Teja Mettu Srinivas</span>
+          <span>Vedant Amitkumar Shah</span>
+          <span>Chongyang Wang</span>
+        </div>
+      </div>
+      <div class="credit-block">
+        <div class="role">Analysis</div>
+        <div class="who">
+          <span>Vedant Amitkumar Shah</span>
+          <span>Sri Sai Teja Mettu Srinivas</span>
+          <span>Chongyang Wang</span>
+        </div>
+      </div>
+      <div class="credit-block">
+        <div class="role">Writing</div>
+        <div class="who">
+          <span>Chongyang Wang</span>
+          <span>Vedant Amitkumar Shah</span>
+          <span>Sri Sai Teja Mettu Srinivas</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 13 THANKS ═══════ -->
+  <section class="slide thanks" data-sec="13">
+    <h1 class="thanks-title">Thanks For Watching!</h1>
+    <p class="thanks-sub">Keyi · CS6180 GenAI</p>
   </section>
 
 </div>
@@ -338,7 +494,7 @@ h2 {
 
 <script>
 const slides = [...document.querySelectorAll('.slide')];
-const secName = { '1':'Intro', '2':'Problem', '6':'Study', '7':'Close' };
+const secName = { '1':'Intro', '2':'Problem', '6':'Study', '7':'Close', '12':'Credits', '13':'Thanks' };
 let i = 0;
 
 function show(n) {

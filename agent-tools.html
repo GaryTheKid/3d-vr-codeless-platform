@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Tools · XR EduAgent</title>
+<link rel="stylesheet" href="agent-catalog.css">
+</head>
+<body>
+<header>
+  <h1>Agent Tools</h1>
+  <div class="sub" id="subtitle" data-zh="运行时工具库 · 与 js/agent/tools/ 同源 · Executor tool_use 分发执行"
+       data-en="Runtime tool library · same handlers as js/agent/tools/ · Executor dispatches tool_use"></div>
+  <nav class="tabs">
+    <a class="tab" href="agent-pipeline.html">Pipeline</a>
+    <a class="tab" href="agent-skills.html">Skills</a>
+    <a class="tab active" href="agent-tools.html">Tools</a>
+    <button class="btn" id="btn-lang">中文</button>
+  </nav>
+</header>
+
+<main class="catalog">
+  <aside class="catalog-list">
+    <div class="catalog-search">
+      <input id="search" data-zh-ph="搜索工具（名称 / 分组 / 摘要）…" data-en-ph="Search tools (name / group / summary)…">
+    </div>
+    <div class="catalog-meta" id="list-meta">—</div>
+    <div id="item-list"></div>
+  </aside>
+  <section class="catalog-detail" id="detail">
+    <div class="ph" data-zh="点击左侧工具查看说明" data-en="Click a tool on the left to see its description"></div>
+  </section>
+</main>
+
+<script src="xr-edu-agent/js/agent/agent-map.js"></script>
+<script src="agent-catalog-common.js"></script>
+<script>
+const TOOL_ICONS = {
+  add_asset:'📦', create_custom_object:'🧬', set_behavior:'⚙️', build_template:'📐', clear_scene:'🧹',
+  update_object:'🔧', remove_object:'🗑', select_object:'👆',
+  attach_label:'🏷', add_panel:'🪧', update_panel:'🪧', add_quiz_panel:'❓',
+  get_scene:'🔍', find_objects:'🔎', get_object_detail:'📄',
+  report_progress:'📶', set_environment:'🌤', configure_locomotion:'🚶', set_student_view:'👁',
+  add_arrow:'➤', add_path:'〰', build_room:'🏠', build_stairs:'🪜',
+  outline_get:'📋', outline_set_active:'👉', outline_update_course:'✎', outline_update_chapter:'✎',
+  outline_update_section:'✎', outline_add_chapter:'＋', outline_add_section:'＋', outline_remove_section:'🗑',
+  reading_set_chunks:'📖', h5_set_content:'🖱️', quiz_set_items:'✅',
+  course_tag_figures:'🖼️', course_build_outline_from_doc:'🕸', course_fill_section:'🧩',
+  course_kg_digest:'📎', course_enrich_reading_images:'🎨', course_generate_image:'🖼️',
+};
+
+function buildItems() {
+  const MAP = globalThis.XR_AGENT_MAP;
+  if (!MAP?.tools) return null;
+  return MAP.tools.map(t => {
+    const group = () => T(t.group);
+    const summary = () => T(t.summary);
+    const icon = TOOL_ICONS[t.name] || '🔧';
+    return {
+      key: t.name,
+      icon,
+      get group() { return group(); },
+      get groupKey() { return T(t.group); },
+      get title() { return t.name; },
+      get brief() { return summary(); },
+      get search() { return `${t.name} ${group()} ${summary()} ${t.file}`; },
+      render() {
+        const g = group();
+        const color = groupColor(g);
+        return `
+          <div class="d-head tool"><div class="ic">${icon}</div><div>
+            <h2>${esc(t.name)}</h2>
+            <span class="tag" style="color:var(--green);border-color:#3ecf8e55;background:#3ecf8e18">TOOL</span>
+            <span class="tag" style="color:${color};border-color:${color}55;background:${color}18">${esc(g)}</span>
+          </div></div>
+          <div class="d-file">${esc(t.file)}</div>
+          <div class="d-sec"><h3>${VL('作用', 'What it does')}</h3><p>${esc(summary())}</p></div>
+          <div class="d-sec"><h3>${VL('完整定义', 'Full definition')}</h3>
+            <p class="none">${VL(
+              `name / description / input_schema / exec / label 见源文件 ${esc(t.file)}（description 是发给 LLM 的「何时用 + 怎么用 + 坑」，input_schema 是参数协议）。`,
+              `See name / description / input_schema / exec / label in ${esc(t.file)} (the LLM-facing description covers when/how/gotchas; input_schema is the parameter contract).`
+            )}</p>
+          </div>`;
+      },
+    };
+  });
+}
+
+function boot() {
+  setStaticCopy();
+  document.getElementById('subtitle').textContent = VL(
+    document.getElementById('subtitle').dataset.zh,
+    document.getElementById('subtitle').dataset.en
+  );
+  const items = buildItems();
+  if (!items) {
+    document.getElementById('item-list').innerHTML =
+      `<div class="err">${VL('⚠ 未加载到 agent-map.js。', '⚠ Failed to load agent-map.js.')}</div>`;
+    return;
+  }
+  const api = initCatalog({ items, kind: 'tool' });
+  api.clearDetail();
+  setStaticCopy();
+}
+
+wireLangButton(boot);
+boot();
+</script>
+</body>
+</html>

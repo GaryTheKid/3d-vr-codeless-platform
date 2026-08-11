@@ -29,19 +29,19 @@ js/agent/
 │   ├── space-tools.js        Space: add_arrow / add_path / build_room / build_stairs
 │   ├── outline-tools.js      Outline: outline_* / reading_set_chunks / h5_set_content / quiz_set_items
 │   └── course-pipeline-tools.js  Course: course_tag_figures / course_build_outline_from_doc / course_fill_section / …
-├── agent-map.js              📊 Workflow digraph + tool catalog (**v6**; viewer data; sync manually)
-├── agent-viewer.html         🧭 Workflow viewer (group `course` = pedagogy / KG / pipeline)
-├── agent-viewer-skills.html  🧭 Skills viewer (loads skills/ registry scripts)
-├── agent-viewer-tools.html   🧭 Tools viewer (reads agent-map.js)
-├── agent-viewer.css / agent-viewer-common.js
+├── agent-map.js              📊 Workflow digraph + tool catalog (**v6**; tool catalog data for /agent-tools.html)
+├── agent-viewer.html         Legacy workflow map (prefer root `/agent-pipeline.html`)
+├── agent-viewer-skills.html  → redirects to `/agent-skills.html`
+├── agent-viewer-tools.html   → redirects to `/agent-tools.html`
+├── agent-viewer.css / agent-viewer-common.js   (legacy)
 └── README.md                 This file
 ```
 
 Project docs now live at the repo root: **`/Agent.md`** (coding-agent master guide) + **`/general/`** (per-feature docs). Aha Keys / KG portable manual: **`/assets-recyclable/aha-keys-and-knowledge-graph.md`**.
 
-**Open the viewers locally by double-clicking any `agent-viewer*.html`** (no server). Data sources are plain scripts, not JSON/ESM, because `file://` blocks fetch and module imports. The same skill files are imported as ESM by the app.
+**Open the catalogs at the repo root** (same art style as the pipeline demo): **`/agent-pipeline.html`**, **`/agent-skills.html`**, **`/agent-tools.html`**. Data sources are plain scripts, not JSON/ESM, because `file://` blocks fetch and module imports. The same skill files are imported as ESM by the app.
 
-**Viewers are bilingual**: top-right EN/中 (localStorage `xr_viewer_lang`). Data rules:
+**Catalogs are bilingual**: header EN/中文 (localStorage `xr_pipeline_lang`, shared with the pipeline page). Data rules:
 
 - `agent-map.js` copy fields are always `{"zh":"…","en":"…"}` objects;
 - Skill English mirrors live in `nameEn` / `descriptionEn` / `promptEn` (alongside Chinese). **Runtime LLM injection follows UI language**: EN UI uses `descriptionEn`/`promptEn` via `skillCatalogForLLM` / `skillPrompts`;

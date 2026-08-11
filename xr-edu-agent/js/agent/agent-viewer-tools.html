@@ -1,58 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title data-en="Tools — Agent Map · XR EduAgent">工具库 — Agent Map · XR EduAgent</title>
-<link rel="stylesheet" href="agent-viewer.css">
+<meta http-equiv="refresh" content="0; url=../../../agent-tools.html">
+<title>Redirecting to Agent Tools…</title>
+<script>location.replace('../../../agent-tools.html');</script>
 </head>
 <body>
-
-<header>
-  <h1>🧭 Agent Map</h1>
-  <span class="sub" data-en="Tool repository (40 tools, incl. course_* + outline) · agent-map.js v6 · docs: /general/overview.md">工具仓库(40 个,含 course_* + 大纲) · agent-map.js v6 · 文档见 /general/overview.md</span>
-  <nav class="tabs">
-    <a class="tab" href="agent-viewer.html" data-en="🔀 Workflow">🔀 工作流</a>
-    <a class="tab" href="agent-viewer-skills.html" data-en="🧠 Skills">🧠 技能库</a>
-    <a class="tab active" href="agent-viewer-tools.html" data-en="🔧 Tools">🔧 工具库</a>
-    <button class="tab" id="btn-viewer-lang">EN</button>
-  </nav>
-</header>
-
-<main class="repo">
-  <div class="repo-list">
-    <div class="repo-search"><input id="tool-search" placeholder="搜索工具(名称 / 分组 / 摘要)…" data-en-ph="Search tools (name / group / summary)…"></div>
-    <div id="tool-items"></div>
-  </div>
-  <div class="repo-detail" id="tool-detail"><div class="placeholder" data-en="Click a tool on the left to see its description">点击左侧工具查看说明</div></div>
-</main>
-
-<script src="agent-map.js"></script>
-<script src="agent-viewer-common.js"></script>
-<script>
-const MAP = globalThis.XR_AGENT_MAP;
-if (!MAP) {
-  document.getElementById('tool-items').innerHTML =
-    `<div class="err">${VL('⚠ 未加载到 agent-map.js(应与本页面同目录)。', '⚠ Failed to load agent-map.js (should sit next to this page).')}</div>`;
-} else {
-  initRepo({
-    items: MAP.tools.map(t => ({
-      key: t.name, group: T(t.group),
-      title: `<code>${esc(t.name)}</code>`,
-      brief: T(t.summary),
-      render: () => `
-        <div class="d-head"><span class="ic">🔧</span><h2>${esc(t.name)}</h2></div>
-        <span style="color:var(--tools);font-size:12px">${esc(T(t.group))}</span>
-        <div class="d-file">${esc(t.file)}</div>
-        <div class="d-sec"><h3>${VL('作用', 'What it does')}</h3><p>${esc(T(t.summary))}</p></div>
-        <div class="d-sec"><h3>${VL('完整定义', 'Full definition')}</h3><p class="none">${
-          VL(`name / description / input_schema / exec / label 见源文件 ${esc(t.file)}(description 是发给 LLM 的"何时用+怎么用+坑",input_schema 是参数协议)。`,
-             `See name / description / input_schema / exec / label in ${esc(t.file)} (the description sent to the LLM covers when to use it, how, and the gotchas; input_schema is the parameter contract).`)
-        }</p></div>`,
-    })),
-    listEl: 'tool-items', detailEl: 'tool-detail', searchEl: 'tool-search',
-  });
-}
-</script>
+  <p>Tools catalog moved to <a href="../../../agent-tools.html">/agent-tools.html</a>.</p>
 </body>
 </html>

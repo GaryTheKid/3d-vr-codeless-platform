@@ -86,18 +86,31 @@ reusable prompt rules). Consult `pain-log.md` when a bug feels familiar; consult
 
 ```
 Agent.md · README.md          this guide + human quick-start
+agent-pipeline.html           ★ DEMO pipeline visualizer (open in browser; no server)
+agent-skills.html · agent-tools.html   ★ Skills / Tools catalogs (same art style)
 general/                      docs tree (overview / technical-stack / theories / ui-design)
 assets-recyclable/            portable lessons & reusable patterns (not project docs)
 xr-edu-agent/                 ALL app code (js/agent, js/core, js/ui, js/scene, js/panels,
                               js/assets, js/export, js/labs, style.css, api-keys.txt)
   js/agent/README.md          code-adjacent maintenance rules for agent-map/viewers
+  js/agent/agent-viewer*.html legacy skill/tool viewers (still useful for catalogs)
   js/agent/pedagogy/          versioned pedagogy assets (pattern library, action vocab)
 server.py · services/         local dev server + Docling document service
 pre-built-samples/            sample .xrcourse packages + figure assets + build scripts
 experiment-study/             usability-study materials (RA run sheet, source PDFs)
+final-delivery/               ACM-style report + N=6 study analysis
 uploads/ · logs/ · download/  runtime artifacts (gitignored)
 index.html                    entry (local + GitHub Pages)
 ```
+
+### How to view the agent pipeline (demo)
+
+1. Open **[`agent-pipeline.html`](./agent-pipeline.html)** at the **repo root** (double-click, or serve via `python server.py` then visit `/agent-pipeline.html`).
+2. No build step. **Drag** to pan · **scroll** to zoom (Figma-style, no scrollbars) · click **▸** to expand (children overlay; overlapped nodes fade in place) · click any node for the detail panel.
+3. Header: **▶ Demo** (route picker + manual Prev/Next; Autoplay off by default) · Expand/Collapse all · EN/中文.
+4. Skills / Tools catalogs (same art style, linked from the Pipeline header): [`agent-skills.html`](./agent-skills.html) · [`agent-tools.html`](./agent-tools.html). Legacy paths `js/agent/agent-viewer-skills.html` / `agent-viewer-tools.html` redirect here. Legacy workflow map: `js/agent/agent-viewer.html`.
+
+The root visualizer is the **presentation spine**: Input Trigger → Turn → Context → Ask/Agent/Plan → task routing → Course authoring (Pedagogy Core directly above, single down-arrow) → Learning Outline → Reading / H5 / 3D / Quiz sub-pipelines → Wrap-up. Offline path is intentionally omitted.
 
 ## 6. Verification before you're done
 
@@ -106,6 +119,7 @@ index.html                    entry (local + GitHub Pages)
 - If you touched 3D: test the A→B→A section-switch cycle, save, reload, and reopen —
   the historical regression suite in doc 04 §known-fragile.
 - If you touched agent skills/tools: open `js/agent/agent-viewer*.html` and confirm
-  the map still matches.
+  the map still matches; if the **turn/course flow** changed, also update
+  root `agent-pipeline.html`.
 - If you touched anything deployed: push to BOTH repos and verify the Pages action
   (doc 08 checklist).

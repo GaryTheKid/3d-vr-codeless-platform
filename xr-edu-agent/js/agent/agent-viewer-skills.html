@@ -1,70 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title data-en="Skills — Agent Map · XR EduAgent">技能库 — Agent Map · XR EduAgent</title>
-<link rel="stylesheet" href="agent-viewer.css">
+<meta http-equiv="refresh" content="0; url=../../../agent-skills.html">
+<title>Redirecting to Agent Skills…</title>
+<script>location.replace('../../../agent-skills.html');</script>
 </head>
 <body>
-
-<header>
-  <h1>🧭 Agent Map</h1>
-  <span class="sub" data-en="Skill repository (20 skills, incl. course-* + debugging) · data source skills/ (same files as runtime, auto-synced)">技能仓库(20 个,含 course-* 备课 + debugging 排障) · 数据源 skills/(与运行时同一份文件,自动同步)</span>
-  <nav class="tabs">
-    <a class="tab" href="agent-viewer.html" data-en="🔀 Workflow">🔀 工作流</a>
-    <a class="tab active" href="agent-viewer-skills.html" data-en="🧠 Skills">🧠 技能库</a>
-    <a class="tab" href="agent-viewer-tools.html" data-en="🔧 Tools">🔧 工具库</a>
-    <button class="tab" id="btn-viewer-lang">EN</button>
-  </nav>
-</header>
-
-<main class="repo">
-  <div class="repo-list">
-    <div class="repo-search"><input id="skill-search" placeholder="搜索技能(id / 名称 / 描述)…" data-en-ph="Search skills (id / name / description)…"></div>
-    <div id="skill-items"></div>
-  </div>
-  <div class="repo-detail" id="skill-detail"><div class="placeholder" data-en="Click a skill on the left to see its full prompt">点击左侧技能查看完整提示词</div></div>
-</main>
-
-<script src="skills/manifest.js"></script>
-<script src="agent-viewer-common.js"></script>
-<script>
-// 按 manifest 逐个注入技能脚本(注册表写法,file:// 下普通 <script> 可加载)
-const files = globalThis.XR_SKILL_FILES || [];
-Promise.all(files.map(f => new Promise((res, rej) => {
-  const s = document.createElement('script');
-  s.src = 'skills/' + f;
-  s.onload = res;
-  s.onerror = () => rej(new Error(VL('加载失败:', 'Failed to load: ') + 'skills/' + f));
-  document.head.appendChild(s);
-}))).then(() => {
-  // 动态注入的脚本执行顺序不定,按 manifest 顺序重排(约定:文件名 = id + '.js')
-  const reg = globalThis.XR_AGENT_SKILLS || [];
-  const skills = files.map(f => reg.find(s => s.id + '.js' === f)).filter(Boolean);
-  // 英文版取 nameEn/descriptionEn/promptEn 字段,缺失时回退中文
-  const sName = s => (isEN && s.nameEn) || s.name;
-  const sDesc = s => (isEN && s.descriptionEn) || s.description;
-  const sPrompt = s => (isEN && s.promptEn) || s.prompt;
-  initRepo({
-    items: skills.map(s => ({
-      key: s.id, group: VL('技能 skills/', 'Skills skills/'),
-      title: `${esc(sName(s))} <code>${esc(s.id)}</code>`,
-      brief: sDesc(s),
-      render: () => `
-        <div class="d-head"><span class="ic">🧠</span><h2>${esc(sName(s))}</h2></div>
-        <span style="color:var(--context);font-size:12px"><code>${esc(s.id)}</code></span>
-        <div class="d-file">js/agent/skills/${esc(s.id)}.js</div>
-        <div class="d-sec"><h3>${VL('路由描述(Planner 挑选依据)', 'Routing description (what the Planner picks by)')}</h3><p>${esc(sDesc(s))}</p></div>
-        <div class="d-sec"><h3>${VL('完整提示词(选中后注入 Executor 系统提示)', 'Full prompt (injected into the Executor system prompt when selected)')}</h3><pre>${esc(sPrompt(s))}</pre></div>
-        ${isEN ? `<div class="d-sec"><p class="none">Note: the runtime prompt sent to the LLM is the Chinese original; this is its English mirror (promptEn) for reading.</p></div>` : ''}`,
-    })),
-    listEl: 'skill-items', detailEl: 'skill-detail', searchEl: 'skill-search',
-  });
-}).catch(e => {
-  document.getElementById('skill-items').innerHTML =
-    `<div class="err">⚠ ${esc(e.message)}<br><br>${VL('检查 skills/manifest.js 的文件清单与实际文件是否一致。', 'Check that skills/manifest.js matches the actual files.')}</div>`;
-});
-</script>
+  <p>Skills catalog moved to <a href="../../../agent-skills.html">/agent-skills.html</a>.</p>
 </body>
 </html>

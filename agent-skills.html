@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Skills · XR EduAgent</title>
+<link rel="stylesheet" href="agent-catalog.css">
+</head>
+<body>
+<header>
+  <h1>Agent Skills</h1>
+  <div class="sub" id="subtitle" data-zh="运行时技能库 · 与 js/agent/skills/ 同源 · Planner 挑选后注入 Executor"
+       data-en="Runtime skill library · same files as js/agent/skills/ · Planner picks → inject into Executor"></div>
+  <nav class="tabs">
+    <a class="tab" href="agent-pipeline.html">Pipeline</a>
+    <a class="tab active" href="agent-skills.html">Skills</a>
+    <a class="tab" href="agent-tools.html">Tools</a>
+    <button class="btn" id="btn-lang">中文</button>
+  </nav>
+</header>
+
+<main class="catalog">
+  <aside class="catalog-list">
+    <div class="catalog-search">
+      <input id="search" data-zh-ph="搜索技能（id / 名称 / 描述）…" data-en-ph="Search skills (id / name / description)…">
+    </div>
+    <div class="catalog-meta" id="list-meta">—</div>
+    <div id="item-list"></div>
+  </aside>
+  <section class="catalog-detail" id="detail">
+    <div class="ph" data-zh="点击左侧技能查看完整提示词" data-en="Click a skill on the left to see its full prompt"></div>
+  </section>
+</main>
+
+<script src="xr-edu-agent/js/agent/skills/manifest.js"></script>
+<script src="agent-catalog-common.js"></script>
+<script>
+const SKILL_ICONS = {
+  'course-pipeline': '🧭', 'course-outline': '📋', 'course-reading': '📖',
+  'course-h5': '🖱️', 'course-quiz': '✅', 'course-live-edit': '✏️',
+  'pedagogy': '📚', 'scene-organization': '🏗️', 'object-creation': '🧱',
+  'custom-modeling': '🎨', 'experiment-logic': '⚗️', 'interaction-design': '👆',
+  'animation': '🌀', 'ui-panel': '🪧', 'validation': '✔️', 'locomotion': '🚶',
+  'xr-design': '🥽', 'view-navigation': '🔭', 'room-design': '🏠', 'debugging': '🩹',
+};
+
+const BASE = 'xr-edu-agent/js/agent/skills/';
+const files = globalThis.XR_SKILL_FILES || [];
+let catalogApi = null;
+
+function buildItems() {
+  const reg = globalThis.XR_AGENT_SKILLS || [];
+  const skills = files.map(f => reg.find(s => s.id + '.js' === f)).filter(Boolean);
+  return skills.map(s => {
+    const name = () => (lang === 'en' && s.nameEn) ? s.nameEn : s.name;
+    const desc = () => (lang === 'en' && s.descriptionEn) ? s.descriptionEn : s.description;
+    const prompt = () => (lang === 'en' && s.promptEn) ? s.promptEn : s.prompt;
+    const icon = SKILL_ICONS[s.id] || '🧠';
+    return {
+      key: s.id,
+      icon,
+      group: VL('技能 skills/', 'Skills · skills/'),
+      groupKey: 'skill',
+      get title() { return name(); },
+      get brief() { return desc(); },
+      get search() { return `${s.id} ${name()} ${desc()} ${s.nameEn || ''} ${s.descriptionEn || ''}`; },
+      render() {
+        return `
+          <div class="d-head skill"><div class="ic">${icon}</div><div>
+            <h2>${esc(name())}</h2>
+            <span class="tag" style="color:var(--purple);border-color:#a78bfa55;background:#a78bfa18">SKILL</span>
+            <span class="tag" style="color:var(--muted);border-color:var(--border)"><code>${esc(s.id)}</code></span>
+          </div></div>
+          <div class="d-file">js/agent/skills/${esc(s.id)}.js</div>
+          <div class="d-sec"><h3>${VL('路由描述（Planner 挑选依据）', 'Routing description (Planner picks by this)')}</h3>
+            <p>${esc(desc())}</p></div>
+          <div class="d-sec"><h3>${VL('完整提示词（选中后注入 Executor）', 'Full prompt (injected into Executor when selected)')}</h3>
+            <pre>${esc(prompt())}</pre></div>
+          ${lang === 'en' ? `<div class="d-sec"><p class="none">Note: the runtime prompt sent to the LLM is the Chinese original; English above is the promptEn mirror for reading.</p></div>` : ''}`;
+      },
+    };
+  });
+}
+
+function boot() {
+  setStaticCopy();
+  document.getElementById('subtitle').textContent = VL(
+    document.getElementById('subtitle').dataset.zh,
+    document.getElementById('subtitle').dataset.en
+  );
+  const items = buildItems();
+  catalogApi = initCatalog({ items, kind: 'skill' });
+  catalogApi.clearDetail();
+  setStaticCopy();
+}
+
+Promise.all(files.map(f => new Promise((res, rej) => {
+  const s = document.createElement('script');
+  s.src = BASE + f;
+  s.onload = res;
+  s.onerror = () => rej(new Error(VL('加载失败: ', 'Failed to load: ') + BASE + f));
+  document.head.appendChild(s);
+}))).then(() => {
+  wireLangButton(boot);
+  boot();
+}).catch(e => {
+  document.getElementById('item-list').innerHTML =
+    `<div class="err">⚠ ${esc(e.message)}<br><br>${VL(
+      '检查 skills/manifest.js 与实际文件是否一致。',
+      'Check that skills/manifest.js matches the actual files.'
+    )}</div>`;
+});
+</script>
+</body>
+</html>

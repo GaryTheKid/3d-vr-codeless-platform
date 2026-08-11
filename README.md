@@ -1,4 +1,4 @@
-# XR EduAgent — AI course builder for teachers (PDF → multimodal course)
+# Keyi — a multimodal learning-experience builder that installs insight, not content
 
 A browser-based learning agent: a teacher uploads teaching material (or just
 chats), and the AI authors a complete course — **Learning Outline** with

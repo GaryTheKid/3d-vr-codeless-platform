@@ -18,3 +18,13 @@ For code and technical detail, go to the **repo root** and read [`../../README.m
 File: [`../../agent-pipeline.html`](../../agent-pipeline.html) (repo root).
 
 Open by **double-click** locally (or from repo root: `python server.py` → `/agent-pipeline.html`). Drag to pan, scroll to zoom, click **▸** to expand, **▶ Demo** to walk the pipeline. Skills / Tools: [`../../agent-skills.html`](../../agent-skills.html), [`../../agent-tools.html`](../../agent-tools.html).
+
+## Supplementary — coverage-contract audit
+
+The paper claims every section declares `covers[]` / `installsAha[]` against the knowledge graph. [`audit_coverage_contracts.py`](./audit_coverage_contracts.py) is the short check: it walks the five sample `.xrcourse` packs and reports pass rates (covers ids in KG nodes, installsAha ids in aha keys, every aha installed ≥1×, reading+quiz present, interactive installer share).
+
+```bash
+python audit_coverage_contracts.py
+```
+
+This is an **as-shipped** structural audit of saved packages, not a learner study and not a content-quality judge. Unknown `installsAha` ids are dropped and orphan ahas are patched at bind time (`applyKgAndOutline`), so those two rates on saved files are post-repair. `covers[]` is not filtered — dangling covers would show here.
